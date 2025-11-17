@@ -29,6 +29,10 @@ export default function Navbar() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const { user } = useAuth();
+  // Control whether the admin link appears in the navbar. For public portfolios
+  // we hide the link by default. Set NEXT_PUBLIC_SHOW_ADMIN_LINK=true in
+  // .env.local during development or for owners that want the link visible.
+  const showAdminLink = process.env.NEXT_PUBLIC_SHOW_ADMIN_LINK === "true";
 
   // Scroll-spy effect
   useEffect(() => {
@@ -175,7 +179,7 @@ export default function Navbar() {
                   )}
                 </motion.button>
               ))}
-              {user && (
+              {showAdminLink && user && (
                 <Link
                   href="/admin"
                   className="px-1.5 sm:px-2 py-1 text-[10px] sm:text-xs font-medium text-foreground/70 hover:text-foreground hover:bg-primary/10 rounded-md transition-all inline-flex items-center gap-1"
