@@ -3,37 +3,23 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Plus,
-  Edit2,
-  Trash2,
-  GraduationCap,
-  X,
-  Loader2,
-  Calendar,
-} from "lucide-react";
+import { Plus, Edit2, Trash2, GraduationCap, X, Loader2, Calendar } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { getAllEducation, createEducation, updateEducation, deleteEducation } from "@/lib/firebase-queries";
-import { Education } from "@/lib/content-types";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 
-const educationSchema = z.object({
-  school: z.string().min(1, "School name is required"),
-  degree: z.string().min(1, "Degree is required"),
-  field: z.string().min(1, "Field of study is required"),
-  startDate: z.string().min(1, "Start date is required"),
-  endDate: z.string().optional(),
-  current: z.boolean().optional(),
-  grade: z.string().optional(),
-  description: z.string().optional(),
-  achievements: z.array(z.string()).optional(),
-  location: z.string().optional(),
-});
-
-type EducationFormData = z.infer<typeof educationSchema>;
+interface Education {
+  id: string;
+  institution: string;
+  degree: string;
+  field: string;
+  start_date: string;
+  end_date?: string;
+  is_current?: boolean;
+  description?: string;
+  grade?: string;
+  achievements?: string[];
+}
 
 export default function EducationAdminPage() {
   const { user, loading: authLoading } = useAuth();
@@ -43,23 +29,18 @@ export default function EducationAdminPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEducation, setEditingEducation] = useState<Education | null>(null);
   const [submitting, setSubmitting] = useState(false);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    setValue,
-    watch,
-  } = useForm<EducationFormData>({
-    resolver: zodResolver(educationSchema),
-    defaultValues: {
-      current: false,
-      achievements: [],
-    },
+  const [formData, setFormData] = useState({
+    institution: "",
+    degree: "",
+    field: "",
+    start_date: "",
+    end_date: "",
+    is_current: false,
+    description: "",
+    grade: "",
+    achievements: [] as string[],
   });
-
-  const isCurrent = watch("current");
+  const [achievementInput, setAchievementInput] = useState("");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -77,11 +58,7 @@ export default function EducationAdminPage() {
     try {
       setLoading(true);
       const data = await getAllEducation();
-      // Sort by start date (most recent first)
-      const sorted = data.sort((a, b) => 
-        new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
-      );
-      setEducation(sorted);
+      setEducation(data);
     } catch (error) {
       console.error("Error loading education:", error);
     } finally {
@@ -92,19 +69,30 @@ export default function EducationAdminPage() {
   const handleOpenModal = (edu?: Education) => {
     if (edu) {
       setEditingEducation(edu);
-      setValue("school", edu.school);
-      setValue("degree", edu.degree);
-      setValue("field", edu.field);
-      setValue("startDate", edu.startDate);
-      setValue("endDate", edu.endDate || "");
-      setValue("current", edu.current || false);
-      setValue("grade", edu.grade || "");
-      setValue("description", edu.description || "");
-      setValue("location", edu.location || "");
-      setValue("achievements", edu.achievements || []);
+      setFormData({
+        institution: edu.institution,
+        degree: edu.degree,
+        field: edu.field,
+        start_date: edu.start_date,
+        end_date: edu.end_date || "",
+        is_current: edu.is_current || false,
+        description: edu.description || "",
+        grade: edu.grade || "",
+        achievements: edu.achievements || [],
+      });
     } else {
       setEditingEducation(null);
-      reset();
+      setFormData({
+        institution: "",
+        degree: "",
+        field: "",
+        start_date: "",
+        end_date: "",
+        is_current: false,
+        description: "",
+        grade: "",
+        achievements: [],
+      });
     }
     setIsModalOpen(true);
   };
@@ -112,22 +100,42 @@ export default function EducationAdminPage() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingEducation(null);
-    reset();
+    setAchievementInput("");
   };
 
-  const onSubmit = async (data: EducationFormData) => {
+  const handleAddAchievement = () => {
+    if (achievementInput.trim()) {
+      setFormData({
+        ...formData,
+        achievements: [...formData.achievements, achievementInput.trim()],
+      });
+      setAchievementInput("");
+    }
+  };
+
+  const handleRemoveAchievement = (index: number) => {
+    setFormData({
+      ...formData,
+      achievements: formData.achievements.filter((_, i) => i !== index),
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
       setSubmitting(true);
+
       const submitData = {
-        ...data,
-        endDate: data.current ? undefined : data.endDate,
+        ...formData,
+        end_date: formData.is_current ? null : formData.end_date || null,
       };
-      
+
       if (editingEducation) {
         await updateEducation(editingEducation.id, submitData);
       } else {
         await createEducation(submitData);
       }
+
       await loadEducation();
       handleCloseModal();
     } catch (error) {
@@ -140,6 +148,7 @@ export default function EducationAdminPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this education entry?")) return;
+
     try {
       await deleteEducation(id);
       await loadEducation();
@@ -149,354 +158,331 @@ export default function EducationAdminPage() {
     }
   };
 
-  if (authLoading || loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" text="Loading education..." />
-      </div>
-    );
-  }
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  };
 
-  if (!user) {
-    return null;
+  if (authLoading || loading) {
+    return <LoadingSpinner />;
   }
 
   return (
-    <div className="min-h-screen py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-8 flex justify-between items-center">
           <div>
-            <h1 className="text-4xl font-display font-bold text-gradient mb-2">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               Education Management
             </h1>
-            <p className="text-muted-foreground">
-              Manage your academic background and achievements
+            <p className="text-gray-600 dark:text-gray-400">
+              Manage your educational background and qualifications
             </p>
           </div>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+          <button
             onClick={() => handleOpenModal()}
-            className="button-futuristic flex items-center gap-2"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors"
           >
-            <Plus size={20} />
-            <span>Add Education</span>
-          </motion.button>
+            <Plus className="w-5 h-5" />
+            Add Education
+          </button>
         </div>
 
-        {/* Education Timeline */}
-        <div className="space-y-6">
-          <AnimatePresence>
-            {education.map((edu, index) => (
-              <motion.div
-                key={edu.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ delay: index * 0.1 }}
-                className="glass-ultra p-6 rounded-2xl border-2 border-white/10 relative group hover:border-white/20 transition-all"
-              >
-                {/* Current Badge */}
-                {edu.current && (
-                  <div className="absolute top-4 right-4 px-3 py-1 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full text-xs font-bold text-white">
-                    Currently Studying
+        <div className="space-y-4">
+          {education.map((edu) => (
+            <motion.div
+              key={edu.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6"
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex gap-4 flex-1">
+                  <div className="bg-blue-100 dark:bg-blue-900 p-3 rounded-lg">
+                    <GraduationCap className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                   </div>
-                )}
-
-                <div className="flex gap-6">
-                  {/* Icon */}
-                  <div className="flex-shrink-0">
-                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center">
-                      <GraduationCap size={32} className="text-white" />
-                    </div>
-                  </div>
-
-                  {/* Content */}
                   <div className="flex-1">
-                    {/* Degree and Field */}
-                    <h3 className="text-2xl font-bold mb-1">
-                      {edu.degree} in {edu.field}
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+                      {edu.degree}
                     </h3>
-
-                    {/* School */}
-                    <p className="text-lg text-primary mb-2">{edu.school}</p>
-
-                    {/* Location and Date */}
-                    <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
-                      {edu.location && (
-                        <span>📍 {edu.location}</span>
-                      )}
-                      <span className="flex items-center gap-1">
-                        <Calendar size={14} />
-                        {edu.startDate} - {edu.current ? "Present" : edu.endDate || "N/A"}
+                    <p className="text-lg text-blue-600 dark:text-blue-400 mb-2">
+                      {edu.institution}
+                    </p>
+                    <p className="text-gray-600 dark:text-gray-400 mb-2">
+                      {edu.field}
+                    </p>
+                    <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-3">
+                      <Calendar className="w-4 h-4" />
+                      <span>
+                        {formatDate(edu.start_date)} -{" "}
+                        {edu.is_current ? "Present" : edu.end_date ? formatDate(edu.end_date) : "N/A"}
                       </span>
                       {edu.grade && (
-                        <span className="font-medium text-primary">
-                          Grade: {edu.grade}
+                        <span className="ml-4 px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded">
+                          {edu.grade}
                         </span>
                       )}
                     </div>
-
-                    {/* Description */}
                     {edu.description && (
-                      <p className="text-muted-foreground mb-4">
+                      <p className="text-gray-700 dark:text-gray-300 mb-3">
                         {edu.description}
                       </p>
                     )}
-
-                    {/* Achievements */}
                     {edu.achievements && edu.achievements.length > 0 && (
-                      <div className="mb-4">
-                        <p className="text-sm font-medium mb-2">Achievements:</p>
-                        <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                          {edu.achievements.map((achievement, i) => (
-                            <li key={i}>{achievement}</li>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                          Achievements:
+                        </p>
+                        <ul className="list-disc list-inside space-y-1">
+                          {edu.achievements.map((achievement, index) => (
+                            <li
+                              key={index}
+                              className="text-sm text-gray-600 dark:text-gray-400"
+                            >
+                              {achievement}
+                            </li>
                           ))}
                         </ul>
                       </div>
                     )}
-
-                    {/* Actions */}
-                    <div className="flex gap-2 mt-4">
-                      <button
-                        onClick={() => handleOpenModal(edu)}
-                        className="px-4 py-2 bg-primary/20 hover:bg-primary/30 rounded-lg transition-all flex items-center gap-2"
-                      >
-                        <Edit2 size={16} />
-                        <span>Edit</span>
-                      </button>
-                      <button
-                        onClick={() => handleDelete(edu.id)}
-                        className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-all flex items-center gap-2"
-                      >
-                        <Trash2 size={16} />
-                        <span>Delete</span>
-                      </button>
-                    </div>
                   </div>
                 </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-
-        {/* Empty State */}
-        {education.length === 0 && (
-          <div className="text-center py-12 glass-ultra rounded-2xl">
-            <GraduationCap size={48} className="mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-xl font-bold mb-2">No education entries yet</h3>
-            <p className="text-muted-foreground mb-4">
-              Add your academic background to showcase your qualifications
-            </p>
-            <button
-              onClick={() => handleOpenModal()}
-              className="button-futuristic inline-flex items-center gap-2"
-            >
-              <Plus size={20} />
-              <span>Add Your First Education</span>
-            </button>
-          </div>
-        )}
-
-        {/* Modal */}
-        <AnimatePresence>
-          {isModalOpen && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80"
-              onClick={handleCloseModal}
-            >
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                onClick={(e) => e.stopPropagation()}
-                className="glass-ultra p-8 rounded-2xl border-2 border-white/10 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-              >
-                {/* Header */}
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold">
-                    {editingEducation ? "Edit Education" : "Add New Education"}
-                  </h2>
+                <div className="flex gap-2">
                   <button
-                    onClick={handleCloseModal}
-                    className="p-2 hover:bg-white/10 rounded-lg transition-all"
+                    onClick={() => handleOpenModal(edu)}
+                    className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
                   >
-                    <X size={20} />
+                    <Edit2 className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(edu.id)}
+                    className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  >
+                    <Trash2 className="w-5 h-5" />
                   </button>
                 </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
 
-                {/* Form */}
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                  {/* School Name */}
+        {education.length === 0 && (
+          <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg">
+            <GraduationCap className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-600 dark:text-gray-400">No education entries yet</p>
+          </div>
+        )}
+      </div>
+
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+            onClick={handleCloseModal}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {editingEducation ? "Edit Education" : "Add Education"}
+                </h2>
+                <button
+                  onClick={handleCloseModal}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Institution *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.institution}
+                    onChange={(e) => setFormData({ ...formData, institution: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">
-                      School/University <span className="text-red-500">*</span>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Degree *
                     </label>
                     <input
-                      {...register("school")}
                       type="text"
-                      placeholder="e.g., Harvard University"
-                      className="w-full px-4 py-3 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all"
+                      value={formData.degree}
+                      onChange={(e) => setFormData({ ...formData, degree: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                      required
                     />
-                    {errors.school && (
-                      <p className="text-red-500 text-sm mt-1">{errors.school.message}</p>
-                    )}
                   </div>
 
-                  {/* Degree and Field */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Degree <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        {...register("degree")}
-                        type="text"
-                        placeholder="e.g., Bachelor of Science"
-                        className="w-full px-4 py-3 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all"
-                      />
-                      {errors.degree && (
-                        <p className="text-red-500 text-sm mt-1">{errors.degree.message}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Field of Study <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        {...register("field")}
-                        type="text"
-                        placeholder="e.g., Computer Science"
-                        className="w-full px-4 py-3 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all"
-                      />
-                      {errors.field && (
-                        <p className="text-red-500 text-sm mt-1">{errors.field.message}</p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Location */}
                   <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Location
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Field of Study *
                     </label>
                     <input
-                      {...register("location")}
                       type="text"
-                      placeholder="e.g., Cambridge, MA"
-                      className="w-full px-4 py-3 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all"
+                      value={formData.field}
+                      onChange={(e) => setFormData({ ...formData, field: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                      required
                     />
                   </div>
+                </div>
 
-                  {/* Dates */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Start Date <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        {...register("startDate")}
-                        type="text"
-                        placeholder="e.g., September 2018"
-                        className="w-full px-4 py-3 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all"
-                      />
-                      {errors.startDate && (
-                        <p className="text-red-500 text-sm mt-1">{errors.startDate.message}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        End Date {!isCurrent && <span className="text-red-500">*</span>}
-                      </label>
-                      <input
-                        {...register("endDate")}
-                        type="text"
-                        placeholder="e.g., May 2022"
-                        disabled={isCurrent}
-                        className="w-full px-4 py-3 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all disabled:opacity-50"
-                      />
-                      {errors.endDate && !isCurrent && (
-                        <p className="text-red-500 text-sm mt-1">{errors.endDate.message}</p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Currently Studying Checkbox */}
-                  <div className="flex items-center gap-3">
-                    <input
-                      {...register("current")}
-                      type="checkbox"
-                      id="current"
-                      className="w-5 h-5 rounded border-2 border-white/10"
-                    />
-                    <label htmlFor="current" className="text-sm font-medium cursor-pointer">
-                      I currently study here
-                    </label>
-                  </div>
-
-                  {/* Grade/GPA */}
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Grade/GPA
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Start Date *
                     </label>
                     <input
-                      {...register("grade")}
+                      type="date"
+                      value={formData.start_date}
+                      onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      End Date
+                    </label>
+                    <input
+                      type="date"
+                      value={formData.end_date}
+                      onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
+                      disabled={formData.is_current}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="is_current"
+                    checked={formData.is_current}
+                    onChange={(e) => setFormData({ ...formData, is_current: e.target.checked, end_date: "" })}
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                  />
+                  <label htmlFor="is_current" className="text-sm text-gray-700 dark:text-gray-300">
+                    Currently studying here
+                  </label>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Grade / GPA
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.grade}
+                    onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
+                    placeholder="e.g., 3.8 GPA, First Class"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    rows={3}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Achievements
+                  </label>
+                  <div className="flex gap-2 mb-2">
+                    <input
                       type="text"
-                      placeholder="e.g., 3.8/4.0, First Class"
-                      className="w-full px-4 py-3 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all"
+                      value={achievementInput}
+                      onChange={(e) => setAchievementInput(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddAchievement())}
+                      placeholder="Add an achievement..."
+                      className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                     />
-                  </div>
-
-                  {/* Description */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Description
-                    </label>
-                    <textarea
-                      {...register("description")}
-                      rows={3}
-                      placeholder="Brief description of your studies, coursework, or focus areas"
-                      className="w-full px-4 py-3 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all resize-none"
-                    />
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex gap-4">
                     <button
                       type="button"
-                      onClick={handleCloseModal}
-                      className="flex-1 px-6 py-3 glass rounded-xl hover:bg-white/10 transition-all"
+                      onClick={handleAddAchievement}
+                      className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
                     >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={submitting}
-                      className="flex-1 button-futuristic flex items-center justify-center gap-2"
-                    >
-                      {submitting ? (
-                        <>
-                          <Loader2 size={20} className="animate-spin" />
-                          <span>Saving...</span>
-                        </>
-                      ) : (
-                        <span>{editingEducation ? "Update" : "Create"} Education</span>
-                      )}
+                      Add
                     </button>
                   </div>
-                </form>
-              </motion.div>
+                  {formData.achievements.length > 0 && (
+                    <ul className="space-y-2">
+                      {formData.achievements.map((achievement, index) => (
+                        <li
+                          key={index}
+                          className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-2 rounded"
+                        >
+                          <span className="text-sm text-gray-700 dark:text-gray-300">
+                            {achievement}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveAchievement(index)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={handleCloseModal}
+                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    disabled={submitting}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    disabled={submitting}
+                  >
+                    {submitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>{editingEducation ? "Update" : "Create"}</>
+                    )}
+                  </button>
+                </div>
+              </form>
             </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
-

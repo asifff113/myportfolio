@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 /**
@@ -13,6 +13,11 @@ interface AnimatedBackgroundProps {
 }
 
 export default function AnimatedBackground({ variant = "default" }: AnimatedBackgroundProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   // Color configurations for different variants
   const variants = {
     hero: {
@@ -68,6 +73,15 @@ export default function AnimatedBackground({ variant = "default" }: AnimatedBack
   };
 
   const config = variants[variant];
+
+  // Don't render animated elements during SSR to avoid hydration mismatch
+  if (!mounted) {
+    return (
+      <div className="fixed inset-0 overflow-hidden -z-10 pointer-events-none">
+        <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient}`} />
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 overflow-hidden -z-10 pointer-events-none">

@@ -1,31 +1,40 @@
 /**
  * Central Content Access Layer
  * Provides a unified interface for fetching portfolio content
- * Falls back to mock data when Firebase is not configured
+ * Fetches from Supabase, falls back to mock data on error
  */
 
-import { isFirebaseConfigured } from "./firebase";
-import { getAllPortfolioContent as getFirebaseContent } from "./firebase-queries";
+import { getAllPortfolioContent as getSupabaseContent } from "./firebase-queries";
 import { mockPortfolioContent } from "./mock-data";
 import { PortfolioContent } from "./content-types";
 
 /**
  * Get all portfolio content
- * Uses Firebase if configured, otherwise falls back to mock data
+ * Fetches from Supabase, falls back to mock data on error
  */
 export async function getAllPublicContent(): Promise<PortfolioContent> {
   try {
-    // Check if Firebase is properly configured
-    if (!isFirebaseConfigured) {
-      console.warn("⚠️ Firebase not configured, using mock data");
-      return mockPortfolioContent;
-    }
-
-    // Fetch from Firebase
-    const content = await getFirebaseContent();
-    return content;
+    // Fetch from Supabase
+    const content = await getSupabaseContent();
+    
+    // Transform to match expected format
+    return {
+      personalInfo: content.personalInfo,
+      skillCategories: content.skills,
+      education: content.education,
+      experience: content.experience,
+      projects: content.projects,
+      achievements: content.achievements,
+      certificates: content.certificates,
+      gallery: content.gallery,
+      hobbies: content.hobbies,
+      futureGoals: content.futureGoals,
+      testimonials: content.testimonials,
+      blogPosts: content.blogPosts,
+      contactInfo: content.contactInfo,
+    };
   } catch (error) {
-    console.error("Error fetching portfolio content:", error);
+    console.error("Error fetching portfolio content from Supabase:", error);
     console.warn("⚠️ Falling back to mock data due to error");
     // Fall back to mock data on error
     return mockPortfolioContent;
@@ -63,8 +72,9 @@ export function clearContentCache(): void {
 
 /**
  * Check if using mock data
+ * Always returns false since we're using Supabase
  */
 export function isUsingMockData(): boolean {
-  return !isFirebaseConfigured;
+  return false;
 }
 

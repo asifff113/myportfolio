@@ -16,6 +16,10 @@ import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import ContactSection from "@/components/sections/ContactSection";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
+// Force dynamic rendering - no caching
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 /**
  * Main Portfolio Home Page
  * Fetches all content and renders sections

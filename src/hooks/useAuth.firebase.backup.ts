@@ -1,13 +1,18 @@
 "use client";
 
 /**
- * Custom React Hook for Supabase Authentication
+ * Custom React Hook for Firebase Authentication
  * Provides authentication state and methods throughout the app
  */
 
 import { useEffect, useState } from "react";
-import { User } from "@supabase/supabase-js";
-import { supabase } from "@/lib/supabase";
+import { User } from "firebase/auth";
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+  getCurrentUser,
+} from "@/lib/auth";
 
 interface AuthState {
   user: User | null;
@@ -42,46 +47,24 @@ export function useAuth(): UseAuthReturn {
 
   // Subscribe to auth state changes
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setAuthState({
-        user: session?.user ?? null,
-        loading: false,
-        error: null,
-      });
-    });
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    const unsubscribe = onAuthStateChanged((user) => {
       setAuthState((prev) => ({
         ...prev,
-        user: session?.user ?? null,
+        user,
         loading: false,
       }));
     });
 
-    return () => subscription.unsubscribe();
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
   }, []);
 
   // Login function
   const login = async (email: string, password: string): Promise<void> => {
     try {
       setAuthState((prev) => ({ ...prev, loading: true, error: null }));
-      
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
-
-      setAuthState({
-        user: data.user,
-        loading: false,
-        error: null,
-      });
+      await signInWithEmailAndPassword(email, password);
+      // User state will be updated by onAuthStateChanged listener
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to sign in";
       setAuthState((prev) => ({
@@ -97,16 +80,8 @@ export function useAuth(): UseAuthReturn {
   const logout = async (): Promise<void> => {
     try {
       setAuthState((prev) => ({ ...prev, loading: true, error: null }));
-      
-      const { error } = await supabase.auth.signOut();
-      
-      if (error) throw error;
-
-      setAuthState({
-        user: null,
-        loading: false,
-        error: null,
-      });
+      await signOut();
+      // User state will be updated by onAuthStateChanged listener
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to sign out";
       setAuthState((prev) => ({
@@ -148,3 +123,4 @@ export function useCurrentUser(): User | null {
   const { user } = useAuth();
   return user;
 }
+

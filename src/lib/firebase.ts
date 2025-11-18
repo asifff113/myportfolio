@@ -82,10 +82,7 @@ if (!getApps().length) {
 }
 
 // Export Firebase services (may be null if not configured)
-export { auth, db, storage };
-
-// Export the app instance
-export default app;
+export { auth, db, storage, app };
 
 // Export configuration status for conditional rendering
 export const isFirebaseConfigured = isConfigured;

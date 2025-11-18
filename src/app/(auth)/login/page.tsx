@@ -35,21 +35,19 @@ export default function LoginPage() {
   // Redirect if already logged in
   useEffect(() => {
     if (user && !authLoading) {
-      router.push("/admin");
+      console.log("User authenticated, redirecting to admin dashboard...");
+      router.replace("/admin/dashboard");
     }
   }, [user, authLoading, router]);
-
-  // Clear errors when component unmounts
-  useEffect(() => {
-    return () => clearError();
-  }, [clearError]);
 
   const onSubmit = async (data: LoginFormData) => {
     setIsSubmitting(true);
     clearError();
 
     try {
+      console.log("Attempting login...");
       await login(data.email, data.password);
+      console.log("Login successful, waiting for redirect...");
       // Redirect will happen automatically via useEffect
     } catch (error) {
       // Error is handled by useAuth hook

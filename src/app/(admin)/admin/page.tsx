@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -18,10 +18,24 @@ import {
   MessageSquare,
   BookOpen,
   Mail,
+  TrendingUp,
   LogOut,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import {
+  getAllSkills,
+  getAllEducation,
+  getAllExperience,
+  getAllProjects,
+  getAchievements,
+  getCertificates,
+  getGalleryItems,
+  getHobbies,
+  getFutureGoals,
+  getTestimonials,
+  getBlogPosts,
+} from "@/lib/firebase-queries";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Overview", href: "/admin", active: true },
@@ -40,14 +54,21 @@ const menuItems = [
   { icon: Mail, label: "Contact Info", href: "/admin/contact" },
 ];
 
-const stats = [
-  { label: "Total Projects", value: "12", icon: FolderKanban, color: "from-blue-500 to-cyan-500" },
-  { label: "Skills", value: "24", icon: Award, color: "from-purple-500 to-pink-500" },
-  { label: "Achievements", value: "8", icon: Trophy, color: "from-orange-500 to-red-500" },
-  { label: "Blog Posts", value: "15", icon: BookOpen, color: "from-green-500 to-emerald-500" },
-];
-
 export default function AdminDashboard() {
+  const [stats, setStats] = useState({
+    skills: 0,
+    education: 0,
+    experience: 0,
+    projects: 0,
+    achievements: 0,
+    certificates: 0,
+    gallery: 0,
+    hobbies: 0,
+    goals: 0,
+    testimonials: 0,
+    blogPosts: 0,
+  });
+  const [loadingStats, setLoadingStats] = useState(true);
   const router = useRouter();
   const { user, loading, logout } = useAuth();
 
@@ -55,11 +76,64 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (!loading && !user) {
       router.push("/login");
-    } else if (!loading && user) {
-      // Redirect to dashboard page
-      router.push("/admin/dashboard");
     }
   }, [user, loading, router]);
+
+  // Load statistics
+  useEffect(() => {
+    if (user) {
+      loadStatistics();
+    }
+  }, [user]);
+
+  const loadStatistics = async () => {
+    try {
+      setLoadingStats(true);
+      const [
+        skillsData,
+        educationData,
+        experienceData,
+        projectsData,
+        achievementsData,
+        certificatesData,
+        galleryData,
+        hobbiesData,
+        goalsData,
+        testimonialsData,
+        blogData,
+      ] = await Promise.all([
+        getAllSkills(),
+        getAllEducation(),
+        getAllExperience(),
+        getAllProjects(),
+        getAchievements(),
+        getCertificates(),
+        getGalleryItems(),
+        getHobbies(),
+        getFutureGoals(),
+        getTestimonials(),
+        getBlogPosts(),
+      ]);
+
+      setStats({
+        skills: skillsData.length,
+        education: educationData.length,
+        experience: experienceData.length,
+        projects: projectsData.length,
+        achievements: achievementsData.length,
+        certificates: certificatesData.length,
+        gallery: galleryData.length,
+        hobbies: hobbiesData.length,
+        goals: goalsData.length,
+        testimonials: testimonialsData.length,
+        blogPosts: blogData.length,
+      });
+    } catch (error) {
+      console.error("Error loading statistics:", error);
+    } finally {
+      setLoadingStats(false);
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -154,29 +228,20 @@ export default function AdminDashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8"
         >
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.1 }}
-                className="glass p-6 rounded-xl relative overflow-hidden group hover:scale-105 transition-transform"
-              >
-                <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-10 transition-opacity`} />
-                <div className="relative">
-                  <div className={`inline-flex p-3 rounded-lg bg-gradient-to-br ${stat.color} mb-4`}>
-                    <Icon size={24} className="text-white" />
-                  </div>
-                  <p className="text-3xl font-display font-bold mb-1">{stat.value}</p>
-                  <p className="text-sm text-muted-foreground">{stat.label}</p>
-                </div>
-              </motion.div>
-            );
-          })}
+          <StatCard icon={Award} label="Skills" value={stats.skills} color="from-blue-500 to-cyan-500" href="/admin/skills" loading={loadingStats} />
+          <StatCard icon={GraduationCap} label="Education" value={stats.education} color="from-purple-500 to-pink-500" href="/admin/education" loading={loadingStats} />
+          <StatCard icon={Briefcase} label="Experience" value={stats.experience} color="from-green-500 to-emerald-500" href="/admin/experience" loading={loadingStats} />
+          <StatCard icon={FolderKanban} label="Projects" value={stats.projects} color="from-orange-500 to-red-500" href="/admin/projects" loading={loadingStats} />
+          <StatCard icon={Trophy} label="Achievements" value={stats.achievements} color="from-yellow-500 to-amber-500" href="/admin/achievements" loading={loadingStats} />
+          <StatCard icon={FileText} label="Certificates" value={stats.certificates} color="from-indigo-500 to-purple-500" href="/admin/certificates" loading={loadingStats} />
+          <StatCard icon={Image} label="Gallery" value={stats.gallery} color="from-pink-500 to-rose-500" href="/admin/gallery" loading={loadingStats} />
+          <StatCard icon={Heart} label="Hobbies" value={stats.hobbies} color="from-red-500 to-pink-500" href="/admin/hobbies" loading={loadingStats} />
+          <StatCard icon={Target} label="Goals" value={stats.goals} color="from-teal-500 to-cyan-500" href="/admin/goals" loading={loadingStats} />
+          <StatCard icon={MessageSquare} label="Testimonials" value={stats.testimonials} color="from-blue-500 to-indigo-500" href="/admin/testimonials" loading={loadingStats} />
+          <StatCard icon={BookOpen} label="Blog Posts" value={stats.blogPosts} color="from-green-500 to-teal-500" href="/admin/blog" loading={loadingStats} />
+          <StatCard icon={TrendingUp} label="Total Items" value={Object.values(stats).reduce((a, b) => a + b, 0)} color="from-violet-500 to-purple-500" href="/admin" loading={loadingStats} />
         </motion.div>
 
         {/* Quick Actions */}
@@ -282,6 +347,31 @@ export default function AdminDashboard() {
         </motion.div>
       </main>
     </div>
+  );
+}
+
+// Stat Card Component
+function StatCard({ icon: Icon, label, value, color, href, loading }: { icon: any; label: string; value: number; color: string; href: string; loading: boolean }) {
+  return (
+    <motion.a
+      href={href}
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="glass p-4 rounded-xl relative overflow-hidden group hover:scale-105 transition-transform cursor-pointer"
+    >
+      <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-0 group-hover:opacity-10 transition-opacity`} />
+      <div className="relative">
+        <div className={`inline-flex p-2 rounded-lg bg-gradient-to-br ${color} mb-3`}>
+          <Icon size={20} className="text-white" />
+        </div>
+        {loading ? (
+          <div className="h-8 w-12 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-1" />
+        ) : (
+          <p className="text-2xl font-display font-bold mb-1">{value}</p>
+        )}
+        <p className="text-xs text-muted-foreground">{label}</p>
+      </div>
+    </motion.a>
   );
 }
 

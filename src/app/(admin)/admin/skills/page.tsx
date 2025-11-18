@@ -8,38 +8,23 @@ import {
   Edit2,
   Trash2,
   Search,
-  Star,
   Code,
   X,
   Loader2,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { getAllSkills, createSkill, updateSkill, deleteSkill } from "@/lib/firebase-queries";
-import { Skill } from "@/lib/content-types";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 
-const skillSchema = z.object({
-  name: z.string().min(1, "Skill name is required"),
-  category: z.string().min(1, "Category is required"),
-  level: z.number().min(0).max(100),
-  proficiency: z.enum(["Beginner", "Intermediate", "Advanced", "Expert"]),
-  icon: z.string().optional(),
-  description: z.string().optional(),
-  isPrimary: z.boolean().optional(),
-  yearsOfExperience: z.number().optional(),
-});
+interface Skill {
+  id: string;
+  category: string;
+  name: string;
+  level: number;
+  icon?: string;
+}
 
-type SkillFormData = z.infer<typeof skillSchema>;
-
-const proficiencyColors = {
-  Expert: "from-purple-500 to-pink-500",
-  Advanced: "from-blue-500 to-cyan-500",
-  Intermediate: "from-green-500 to-emerald-500",
-  Beginner: "from-orange-500 to-yellow-500",
-};
+const categories = ["Frontend", "Backend", "DevOps", "Other"];
 
 export default function SkillsAdminPage() {
   const { user, loading: authLoading } = useAuth();
@@ -51,20 +36,11 @@ export default function SkillsAdminPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSkill, setEditingSkill] = useState<Skill | null>(null);
   const [submitting, setSubmitting] = useState(false);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    setValue,
-  } = useForm<SkillFormData>({
-    resolver: zodResolver(skillSchema),
-    defaultValues: {
-      level: 50,
-      proficiency: "Intermediate",
-      isPrimary: false,
-    },
+  const [formData, setFormData] = useState({
+    name: "",
+    category: "Frontend",
+    level: 50,
+    icon: "",
   });
 
   useEffect(() => {
@@ -94,17 +70,20 @@ export default function SkillsAdminPage() {
   const handleOpenModal = (skill?: Skill) => {
     if (skill) {
       setEditingSkill(skill);
-      setValue("name", skill.name);
-      setValue("category", skill.category);
-      setValue("level", skill.level);
-      setValue("proficiency", skill.proficiency);
-      setValue("icon", skill.icon || "");
-      setValue("description", skill.description || "");
-      setValue("isPrimary", skill.isPrimary || false);
-      setValue("yearsOfExperience", skill.yearsOfExperience);
+      setFormData({
+        name: skill.name,
+        category: skill.category,
+        level: skill.level,
+        icon: skill.icon || "",
+      });
     } else {
       setEditingSkill(null);
-      reset();
+      setFormData({
+        name: "",
+        category: "Frontend",
+        level: 50,
+        icon: "",
+      });
     }
     setIsModalOpen(true);
   };
@@ -112,17 +91,25 @@ export default function SkillsAdminPage() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingSkill(null);
-    reset();
+    setFormData({
+      name: "",
+      category: "Frontend",
+      level: 50,
+      icon: "",
+    });
   };
 
-  const onSubmit = async (data: SkillFormData) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
       setSubmitting(true);
+
       if (editingSkill) {
-        await updateSkill(editingSkill.id, data);
+        await updateSkill(editingSkill.id, formData);
       } else {
-        await createSkill(data);
+        await createSkill(formData);
       }
+
       await loadSkills();
       handleCloseModal();
     } catch (error) {
@@ -135,6 +122,7 @@ export default function SkillsAdminPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this skill?")) return;
+
     try {
       await deleteSkill(id);
       await loadSkills();
@@ -144,91 +132,72 @@ export default function SkillsAdminPage() {
     }
   };
 
-  if (authLoading || loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" text="Loading skills..." />
-      </div>
-    );
-  }
-
-  if (!user) {
-    return null;
-  }
-
-  // Get unique categories
-  const categories = ["All", ...Array.from(new Set(skills.map((s) => s.category)))];
-
-  // Filter skills
   const filteredSkills = skills.filter((skill) => {
     const matchesSearch = skill.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "All" || skill.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
+  const uniqueCategories = ["All", ...Array.from(new Set(skills.map((s) => s.category)))];
+
+  if (authLoading || loading) {
+    return <LoadingSpinner />;
+  }
+
   return (
-    <div className="min-h-screen py-8">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-4xl font-display font-bold text-gradient mb-2">
-              Skills Management
-            </h1>
-            <p className="text-muted-foreground">
-              Add and manage your technical and soft skills
-            </p>
-          </div>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => handleOpenModal()}
-            className="button-futuristic flex items-center gap-2"
-          >
-            <Plus size={20} />
-            <span>Add Skill</span>
-          </motion.button>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            Skills Management
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Manage your technical skills and proficiencies
+          </p>
         </div>
 
-        {/* Search and Filter */}
-        <div className="glass-ultra p-6 rounded-2xl mb-8 border-2 border-white/10">
-          <div className="flex flex-col md:flex-row gap-4">
+        {/* Controls */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6">
+          <div className="flex flex-col sm:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search skills..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
             {/* Category Filter */}
-            <div className="flex gap-2 flex-wrap">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                    selectedCategory === cat
-                      ? "bg-gradient-to-r from-primary to-secondary text-white"
-                      : "glass hover:bg-primary/20"
-                  }`}
-                >
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+            >
+              {uniqueCategories.map((cat) => (
+                <option key={cat} value={cat}>
                   {cat}
-                </button>
+                </option>
               ))}
-            </div>
+            </select>
+
+            {/* Add Button */}
+            <button
+              onClick={() => handleOpenModal()}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors"
+            >
+              <Plus className="w-5 h-5" />
+              Add Skill
+            </button>
           </div>
         </div>
 
         {/* Skills Grid */}
-        <motion.div
-          layout
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <AnimatePresence>
             {filteredSkills.map((skill) => (
               <motion.div
@@ -237,288 +206,191 @@ export default function SkillsAdminPage() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="glass-ultra p-6 rounded-2xl border-2 border-white/10 relative group hover:border-white/20 transition-all"
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
               >
-                {/* Primary Badge */}
-                {skill.isPrimary && (
-                  <div className="absolute top-4 right-4 flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full text-xs font-bold text-white">
-                    <Star size={12} fill="white" />
-                    <span>Primary</span>
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    {skill.icon ? (
+                      <span className="text-2xl">{skill.icon}</span>
+                    ) : (
+                      <Code className="w-8 h-8 text-blue-500" />
+                    )}
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">
+                        {skill.name}
+                      </h3>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                        {skill.category}
+                      </span>
+                    </div>
                   </div>
-                )}
-
-                {/* Icon */}
-                {skill.icon && (
-                  <div className="text-4xl mb-4">{skill.icon}</div>
-                )}
-
-                {/* Skill Name */}
-                <h3 className="text-xl font-bold mb-2">{skill.name}</h3>
-
-                {/* Category */}
-                <p className="text-sm text-muted-foreground mb-3">{skill.category}</p>
-
-                {/* Proficiency */}
-                <div className="mb-4">
-                  <div className="flex items-center justify-between text-sm mb-2">
-                    <span className={`font-medium bg-gradient-to-r ${proficiencyColors[skill.proficiency]} bg-clip-text text-transparent`}>
-                      {skill.proficiency}
-                    </span>
-                    <span className="text-muted-foreground">{skill.level}%</span>
-                  </div>
-                  <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${skill.level}%` }}
-                      transition={{ duration: 1, delay: 0.2 }}
-                      className={`h-full bg-gradient-to-r ${proficiencyColors[skill.proficiency]}`}
-                    />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleOpenModal(skill)}
+                      className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(skill.id)}
+                      className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
 
-                {/* Description */}
-                {skill.description && (
-                  <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                    {skill.description}
-                  </p>
-                )}
-
-                {/* Years of Experience */}
-                {skill.yearsOfExperience && (
-                  <p className="text-xs text-muted-foreground mb-4">
-                    {skill.yearsOfExperience} years of experience
-                  </p>
-                )}
-
-                {/* Actions */}
-                <div className="flex gap-2 mt-4">
-                  <button
-                    onClick={() => handleOpenModal(skill)}
-                    className="flex-1 px-4 py-2 bg-primary/20 hover:bg-primary/30 rounded-lg transition-all flex items-center justify-center gap-2"
-                  >
-                    <Edit2 size={16} />
-                    <span>Edit</span>
-                  </button>
-                  <button
-                    onClick={() => handleDelete(skill.id)}
-                    className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-all"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                {/* Level Bar */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600 dark:text-gray-400">Proficiency</span>
+                    <span className="font-medium text-gray-900 dark:text-white">
+                      {skill.level}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div
+                      className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all"
+                      style={{ width: `${skill.level}%` }}
+                    />
+                  </div>
                 </div>
               </motion.div>
             ))}
           </AnimatePresence>
-        </motion.div>
+        </div>
 
-        {/* Empty State */}
         {filteredSkills.length === 0 && (
           <div className="text-center py-12">
-            <Code size={48} className="mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-xl font-bold mb-2">No skills found</h3>
-            <p className="text-muted-foreground mb-4">
-              {searchQuery || selectedCategory !== "All"
-                ? "Try adjusting your search or filter"
-                : "Get started by adding your first skill"}
-            </p>
-            {!searchQuery && selectedCategory === "All" && (
-              <button
-                onClick={() => handleOpenModal()}
-                className="button-futuristic inline-flex items-center gap-2"
-              >
-                <Plus size={20} />
-                <span>Add Your First Skill</span>
-              </button>
-            )}
+            <Code className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-600 dark:text-gray-400">No skills found</p>
           </div>
         )}
+      </div>
 
-        {/* Modal */}
-        <AnimatePresence>
-          {isModalOpen && (
+      {/* Modal */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+            onClick={handleCloseModal}
+          >
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80"
-              onClick={handleCloseModal}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
             >
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                onClick={(e) => e.stopPropagation()}
-                className="glass-ultra p-8 rounded-2xl border-2 border-white/10 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-              >
-                {/* Header */}
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold">
-                    {editingSkill ? "Edit Skill" : "Add New Skill"}
-                  </h2>
-                  <button
-                    onClick={handleCloseModal}
-                    className="p-2 hover:bg-white/10 rounded-lg transition-all"
-                  >
-                    <X size={20} />
-                  </button>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {editingSkill ? "Edit Skill" : "Add Skill"}
+                </h2>
+                <button
+                  onClick={handleCloseModal}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Skill Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
                 </div>
 
-                {/* Form */}
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                  {/* Skill Name */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Skill Name <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      {...register("name")}
-                      type="text"
-                      placeholder="e.g., React, Python, UI Design"
-                      className="w-full px-4 py-3 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all"
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Category *
+                  </label>
+                  <select
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    required
+                  >
+                    {categories.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Proficiency Level: {formData.level}%
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={formData.level}
+                    onChange={(e) => setFormData({ ...formData, level: parseInt(e.target.value) })}
+                    className="w-full"
+                  />
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-2">
+                    <div
+                      className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all"
+                      style={{ width: `${formData.level}%` }}
                     />
-                    {errors.name && (
-                      <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Icon (emoji or leave empty)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.icon}
+                    onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    placeholder="⚛️"
+                  />
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={handleCloseModal}
+                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    disabled={submitting}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    disabled={submitting}
+                  >
+                    {submitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>{editingSkill ? "Update" : "Create"}</>
                     )}
-                  </div>
-
-                  {/* Category */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Category <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      {...register("category")}
-                      type="text"
-                      placeholder="e.g., Frontend, Backend, Design"
-                      className="w-full px-4 py-3 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all"
-                    />
-                    {errors.category && (
-                      <p className="text-red-500 text-sm mt-1">{errors.category.message}</p>
-                    )}
-                  </div>
-
-                  {/* Level and Proficiency */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Level (%) <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        {...register("level", { valueAsNumber: true })}
-                        type="number"
-                        min="0"
-                        max="100"
-                        className="w-full px-4 py-3 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all"
-                      />
-                      {errors.level && (
-                        <p className="text-red-500 text-sm mt-1">{errors.level.message}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Proficiency <span className="text-red-500">*</span>
-                      </label>
-                      <select
-                        {...register("proficiency")}
-                        className="w-full px-4 py-3 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all"
-                      >
-                        <option value="Beginner">Beginner</option>
-                        <option value="Intermediate">Intermediate</option>
-                        <option value="Advanced">Advanced</option>
-                        <option value="Expert">Expert</option>
-                      </select>
-                      {errors.proficiency && (
-                        <p className="text-red-500 text-sm mt-1">{errors.proficiency.message}</p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Icon */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Icon (emoji or text)
-                    </label>
-                    <input
-                      {...register("icon")}
-                      type="text"
-                      placeholder="e.g., ⚛️, 🐍, 🎨"
-                      className="w-full px-4 py-3 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all"
-                    />
-                  </div>
-
-                  {/* Years of Experience */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Years of Experience
-                    </label>
-                    <input
-                      {...register("yearsOfExperience", { valueAsNumber: true })}
-                      type="number"
-                      min="0"
-                      step="0.5"
-                      placeholder="e.g., 3.5"
-                      className="w-full px-4 py-3 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all"
-                    />
-                  </div>
-
-                  {/* Description */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Description (optional)
-                    </label>
-                    <textarea
-                      {...register("description")}
-                      rows={3}
-                      placeholder="Brief description of your experience with this skill"
-                      className="w-full px-4 py-3 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all resize-none"
-                    />
-                  </div>
-
-                  {/* Primary Skill Checkbox */}
-                  <div className="flex items-center gap-3">
-                    <input
-                      {...register("isPrimary")}
-                      type="checkbox"
-                      id="isPrimary"
-                      className="w-5 h-5 rounded border-2 border-white/10"
-                    />
-                    <label htmlFor="isPrimary" className="text-sm font-medium cursor-pointer">
-                      Mark as primary skill
-                    </label>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex gap-4">
-                    <button
-                      type="button"
-                      onClick={handleCloseModal}
-                      className="flex-1 px-6 py-3 glass rounded-xl hover:bg-white/10 transition-all"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={submitting}
-                      className="flex-1 button-futuristic flex items-center justify-center gap-2"
-                    >
-                      {submitting ? (
-                        <>
-                          <Loader2 size={20} className="animate-spin" />
-                          <span>Saving...</span>
-                        </>
-                      ) : (
-                        <span>{editingSkill ? "Update" : "Create"} Skill</span>
-                      )}
-                    </button>
-                  </div>
-                </form>
-              </motion.div>
+                  </button>
+                </div>
+              </form>
             </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
-

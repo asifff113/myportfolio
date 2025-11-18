@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useAdmin } from "@/hooks/useAdmin";
+import { Shield } from "lucide-react";
 import { Settings, ArrowUp, Moon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
@@ -29,10 +31,7 @@ export default function Navbar() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const { user } = useAuth();
-  // Control whether the admin link appears in the navbar. For public portfolios
-  // we hide the link by default. Set NEXT_PUBLIC_SHOW_ADMIN_LINK=true in
-  // .env.local during development or for owners that want the link visible.
-  const showAdminLink = process.env.NEXT_PUBLIC_SHOW_ADMIN_LINK === "true";
+  const isAdmin = useAdmin();
 
   // Scroll-spy effect
   useEffect(() => {
@@ -179,13 +178,13 @@ export default function Navbar() {
                   )}
                 </motion.button>
               ))}
-              {showAdminLink && user && (
+              {isAdmin && (
                 <Link
                   href="/admin"
-                  className="px-1.5 sm:px-2 py-1 text-[10px] sm:text-xs font-medium text-foreground/70 hover:text-foreground hover:bg-primary/10 rounded-md transition-all inline-flex items-center gap-1"
+                  className="px-1.5 sm:px-2 py-1 text-[10px] sm:text-xs font-medium text-blue-500 hover:text-blue-700 hover:bg-blue-100 rounded-md transition-all inline-flex items-center gap-1"
+                  title="Admin Panel"
                 >
-                  <Settings size={10} />
-                  <span>Admin</span>
+                  <Shield size={16} />
                 </Link>
               )}
             </div>

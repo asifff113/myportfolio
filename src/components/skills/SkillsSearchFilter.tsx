@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, Filter } from "lucide-react";
 import { SkillCategory } from "@/lib/content-types";
@@ -22,6 +22,22 @@ export default function SkillsSearchFilter({
   const [activeCategory, setActiveCategory] = useState<string | null>("All");
   const [activeProficiency, setActiveProficiency] = useState<string | null>("All");
   const [showFilters, setShowFilters] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const updateIsDesktop = () => {
+      if (typeof window !== "undefined") {
+        setIsDesktop(window.innerWidth >= 768);
+      }
+    };
+
+    updateIsDesktop();
+    window.addEventListener("resize", updateIsDesktop);
+
+    return () => {
+      window.removeEventListener("resize", updateIsDesktop);
+    };
+  }, []);
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
@@ -103,7 +119,7 @@ export default function SkillsSearchFilter({
 
       {/* Filter Chips */}
       <AnimatePresence>
-        {(showFilters || window.innerWidth >= 768) && (
+        {(showFilters || isDesktop) && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}

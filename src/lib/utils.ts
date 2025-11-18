@@ -12,8 +12,16 @@ export function cn(...inputs: ClassValue[]) {
 /**
  * Format a date string to a readable format
  */
-export function formatDate(date: string | Date): string {
+export function formatDate(date: string | Date | undefined | null): string {
+  if (!date) return "N/A";
+  
   const d = typeof date === "string" ? new Date(date) : date;
+  
+  // Check if date is valid
+  if (!d || isNaN(d.getTime())) {
+    return "N/A";
+  }
+  
   return d.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -25,11 +33,19 @@ export function formatDate(date: string | Date): string {
  * Format date range for display (e.g., "Jan 2020 - Present")
  */
 export function formatDateRange(
-  startDate: string | Date,
+  startDate: string | Date | undefined | null,
   endDate?: string | Date | null,
   isCurrent?: boolean
 ): string {
+  if (!startDate) return "Present";
+  
   const start = typeof startDate === "string" ? new Date(startDate) : startDate;
+  
+  // Check if date is valid
+  if (!start || isNaN(start.getTime())) {
+    return "Present";
+  }
+  
   const startFormatted = start.toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
@@ -44,6 +60,12 @@ export function formatDateRange(
   }
 
   const end = typeof endDate === "string" ? new Date(endDate) : endDate;
+  
+  // Check if end date is valid
+  if (!end || isNaN(end.getTime())) {
+    return startFormatted;
+  }
+  
   const endFormatted = end.toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",

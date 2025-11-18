@@ -1,202 +1,180 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import {
-  Plus,
-  Edit,
-  Trash2,
-  Save,
-  X,
-  Upload,
-  ExternalLink,
-  Github,
-  CheckCircle,
-  AlertCircle,
-} from "lucide-react";
+import { Plus, Edit2, Trash2, FolderGit2, X, Loader2, Upload, ExternalLink, Github } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import {
-  getProjects,
-  createProject,
-  updateProject,
-  deleteProject,
-} from "@/lib/firebase-queries";
+import { getAllProjects, createProject, updateProject, deleteProject } from "@/lib/firebase-queries";
 import { uploadProjectImage } from "@/lib/firebase-storage";
-import { Project } from "@/lib/content-types";
-import { generateSlug } from "@/lib/utils";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import Image from "next/image";
 
-// Form validation schema
-const projectSchema = z.object({
-  title: z.string().min(3, "Title must be at least 3 characters"),
-  summary: z.string().min(10, "Summary must be at least 10 characters"),
-  description: z.string().min(20, "Description must be at least 20 characters"),
-  type: z.enum(["Personal", "Professional", "School", "Freelance", "Open Source", "Practice"]),
-  status: z.enum(["In Progress", "Completed", "Maintained", "Archived"]).optional(),
-  githubUrl: z.string().url("Invalid URL").optional().or(z.literal("")),
-  liveUrl: z.string().url("Invalid URL").optional().or(z.literal("")),
-  techStack: z.string().min(1, "Add at least one technology"),
-  featured: z.boolean().optional(),
-});
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+  long_description?: string;
+  image_url?: string;
+  technologies?: string[];
+  category?: string;
+  github_url?: string;
+  demo_url?: string;
+  featured?: boolean;
+}
 
-type ProjectFormData = z.infer<typeof projectSchema>;
-
-export default function ProjectsPage() {
-  const router = useRouter();
+export default function ProjectsAdminPage() {
   const { user, loading: authLoading } = useAuth();
-  const [loading, setLoading] = useState(true);
+  const router = useRouter();
   const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [uploadingImage, setUploadingImage] = useState(false);
-  const [imageUrl, setImageUrl] = useState("");
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [saveStatus, setSaveStatus] = useState<"idle" | "success" | "error">("idle");
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    setValue,
-  } = useForm<ProjectFormData>({
-    resolver: zodResolver(projectSchema),
+  const [submitting, setSubmitting] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    long_description: "",
+    image_url: "",
+    technologies: [] as string[],
+    category: "Web Development",
+    github_url: "",
+    demo_url: "",
+    featured: false,
   });
+  const [technologyInput, setTechnologyInput] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
 
-  // Protect route
   useEffect(() => {
     if (!authLoading && !user) {
       router.push("/login");
     }
   }, [user, authLoading, router]);
 
-  // Load projects
   useEffect(() => {
-    const loadProjects = async () => {
-      try {
-        const data = await getProjects();
-        setProjects(data);
-      } catch (error) {
-        console.error("Error loading projects:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (user) {
       loadProjects();
     }
   }, [user]);
 
-  const openModal = (project?: Project) => {
+  const loadProjects = async () => {
+    try {
+      setLoading(true);
+      const data = await getAllProjects();
+      setProjects(data);
+    } catch (error) {
+      console.error("Error loading projects:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOpenModal = (project?: Project) => {
     if (project) {
       setEditingProject(project);
-      reset({
+      setFormData({
         title: project.title,
-        summary: project.summary,
         description: project.description,
-        type: project.type,
-        status: project.status,
-        githubUrl: project.githubUrl || "",
-        liveUrl: project.liveUrl || "",
-        techStack: project.techStack.join(", "),
+        long_description: project.long_description || "",
+        image_url: project.image_url || "",
+        technologies: project.technologies || [],
+        category: project.category || "Web Development",
+        github_url: project.github_url || "",
+        demo_url: project.demo_url || "",
         featured: project.featured || false,
       });
-      setImageUrl(project.imageUrl || "");
+      setImagePreview(project.image_url || "");
     } else {
       setEditingProject(null);
-      reset({
+      setFormData({
         title: "",
-        summary: "",
         description: "",
-        type: "Personal",
-        status: "In Progress",
-        githubUrl: "",
-        liveUrl: "",
-        techStack: "",
+        long_description: "",
+        image_url: "",
+        technologies: [],
+        category: "Web Development",
+        github_url: "",
+        demo_url: "",
         featured: false,
       });
-      setImageUrl("");
+      setImagePreview("");
     }
+    setImageFile(null);
     setIsModalOpen(true);
-    setSaveStatus("idle");
   };
 
-  const closeModal = () => {
+  const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingProject(null);
-    setImageUrl("");
-    setSaveStatus("idle");
+    setTechnologyInput("");
+    setImageFile(null);
+    setImagePreview("");
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploadingImage(true);
-    setUploadProgress(0);
-
-    try {
-      const result = await uploadProjectImage(file, (progress) => {
-        setUploadProgress(progress);
-      });
-      setImageUrl(result.url);
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      alert("Failed to upload image. Please try again.");
-    } finally {
-      setUploadingImage(false);
-      setUploadProgress(0);
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
-  const onSubmit = async (data: ProjectFormData) => {
-    setSaving(true);
-    setSaveStatus("idle");
+  const handleAddTechnology = () => {
+    if (technologyInput.trim()) {
+      setFormData({
+        ...formData,
+        technologies: [...formData.technologies, technologyInput.trim()],
+      });
+      setTechnologyInput("");
+    }
+  };
 
+  const handleRemoveTechnology = (index: number) => {
+    setFormData({
+      ...formData,
+      technologies: formData.technologies.filter((_, i) => i !== index),
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      const projectData: Omit<Project, "id"> = {
-        title: data.title,
-        slug: generateSlug(data.title),
-        summary: data.summary,
-        description: data.description,
-        imageUrl: imageUrl,
-        techStack: data.techStack.split(",").map((s) => s.trim()).filter(Boolean),
-        githubUrl: data.githubUrl || undefined,
-        liveUrl: data.liveUrl || undefined,
-        type: data.type,
-        status: data.status,
-        featured: data.featured,
-        order: editingProject?.order || projects.length,
-        createdAt: editingProject?.createdAt || new Date().toISOString(),
-      };
+      setSubmitting(true);
 
-      if (editingProject?.id) {
-        await updateProject(editingProject.id, projectData);
-        setProjects(
-          projects.map((p) =>
-            p.id === editingProject.id ? { ...p, ...projectData } : p
-          )
-        );
-      } else {
-        const id = await createProject(projectData);
-        setProjects([...projects, { id, ...projectData }]);
+      let imageUrl = formData.image_url;
+
+      // Upload image if new file selected
+      if (imageFile) {
+        setUploading(true);
+        imageUrl = await uploadProjectImage(imageFile);
+        setUploading(false);
       }
 
-      setSaveStatus("success");
-      setTimeout(() => {
-        closeModal();
-      }, 1500);
+      const submitData = {
+        ...formData,
+        image_url: imageUrl,
+      };
+
+      if (editingProject) {
+        await updateProject(editingProject.id, submitData);
+      } else {
+        await createProject(submitData);
+      }
+
+      await loadProjects();
+      handleCloseModal();
     } catch (error) {
       console.error("Error saving project:", error);
-      setSaveStatus("error");
+      alert("Failed to save project. Please try again.");
     } finally {
-      setSaving(false);
+      setSubmitting(false);
+      setUploading(false);
     }
   };
 
@@ -205,7 +183,7 @@ export default function ProjectsPage() {
 
     try {
       await deleteProject(id);
-      setProjects(projects.filter((p) => p.id !== id));
+      await loadProjects();
     } catch (error) {
       console.error("Error deleting project:", error);
       alert("Failed to delete project. Please try again.");
@@ -213,223 +191,345 @@ export default function ProjectsPage() {
   };
 
   if (authLoading || loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" text="Loading projects..." />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
-  if (!user) return null;
-
   return (
-    <div className="min-h-screen p-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between mb-8"
-        >
+        <div className="mb-8 flex justify-between items-center">
           <div>
-            <h1 className="text-4xl font-display font-bold mb-2">
-              <span className="text-gradient">Projects</span>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              Projects Management
             </h1>
-            <p className="text-muted-foreground">
-              Manage your portfolio projects ({projects.length} total)
+            <p className="text-gray-600 dark:text-gray-400">
+              Manage your portfolio projects and showcase work
             </p>
           </div>
           <button
-            onClick={() => openModal()}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:shadow-lg transition-all"
+            onClick={() => handleOpenModal()}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors"
           >
-            <Plus size={20} />
+            <Plus className="w-5 h-5" />
             Add Project
           </button>
-        </motion.div>
+        </div>
 
-        {/* Projects Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project) => (
-            <ProjectCard
+            <motion.div
               key={project.id}
-              project={project}
-              onEdit={() => openModal(project)}
-              onDelete={() => handleDelete(project.id!)}
-            />
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden group"
+            >
+              {project.image_url && (
+                <div className="relative h-48 bg-gray-200 dark:bg-gray-700">
+                  <Image
+                    src={project.image_url}
+                    alt={project.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              )}
+              <div className="p-6">
+                <div className="flex items-start justify-between mb-2">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                    {project.title}
+                  </h3>
+                  {project.featured && (
+                    <span className="px-2 py-1 bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 text-xs rounded">
+                      Featured
+                    </span>
+                  )}
+                </div>
+                <p className="text-gray-600 dark:text-gray-400 mb-3 text-sm">
+                  {project.description}
+                </p>
+                {project.technologies && project.technologies.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {project.technologies.slice(0, 3).map((tech, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded text-xs"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                    {project.technologies.length > 3 && (
+                      <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs">
+                        +{project.technologies.length - 3}
+                      </span>
+                    )}
+                  </div>
+                )}
+                <div className="flex gap-2 mt-4">
+                  {project.github_url && (
+                    <a
+                      href={project.github_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                    >
+                      <Github className="w-4 h-4" />
+                    </a>
+                  )}
+                  {project.demo_url && (
+                    <a
+                      href={project.demo_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  )}
+                  <div className="flex-1"></div>
+                  <button
+                    onClick={() => handleOpenModal(project)}
+                    className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(project.id)}
+                    className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
           ))}
-        </motion.div>
+        </div>
 
         {projects.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-20 glass rounded-2xl"
-          >
-            <p className="text-muted-foreground mb-6">No projects yet. Start by adding your first project!</p>
-            <button
-              onClick={() => openModal()}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold"
-            >
-              <Plus size={20} />
-              Add Your First Project
-            </button>
-          </motion.div>
+          <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg">
+            <FolderGit2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-600 dark:text-gray-400">No projects yet</p>
+          </div>
         )}
       </div>
 
-      {/* Modal */}
       <AnimatePresence>
         {isModalOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
-            onClick={closeModal}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+            onClick={handleCloseModal}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
-              className="glass p-8 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto"
             >
-              {/* Modal Header */}
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-display font-bold">
-                  {editingProject ? "Edit Project" : "Add New Project"}
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {editingProject ? "Edit Project" : "Add Project"}
                 </h2>
                 <button
-                  onClick={closeModal}
-                  className="p-2 hover:bg-primary/10 rounded-lg transition-colors"
+                  onClick={handleCloseModal}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                 >
-                  <X size={24} />
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
-              {/* Form */}
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                {/* Image Upload */}
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Project Image</label>
-                  <div className="flex gap-4 items-start">
-                    {imageUrl && (
-                      <div className="w-32 h-32 rounded-lg overflow-hidden">
-                        <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Project Image
+                  </label>
+                  <div className="flex items-center gap-4">
+                    {imagePreview && (
+                      <div className="relative w-32 h-32 rounded-lg overflow-hidden">
+                        <Image src={imagePreview} alt="Preview" fill className="object-cover" />
                       </div>
                     )}
-                    <label className="flex-1 flex items-center justify-center gap-2 px-6 py-12 border-2 border-dashed border-border rounded-lg hover:border-primary transition-colors cursor-pointer">
-                      <Upload size={20} />
-                      <span>{uploadingImage ? `Uploading... ${uploadProgress}%` : "Upload Image"}</span>
+                    <label className="cursor-pointer px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center gap-2">
+                      <Upload className="w-4 h-4" />
+                      Choose Image
                       <input
                         type="file"
                         accept="image/*"
-                        onChange={handleImageUpload}
+                        onChange={handleImageChange}
                         className="hidden"
-                        disabled={uploadingImage}
                       />
                     </label>
                   </div>
                 </div>
 
-                {/* Title */}
                 <div>
-                  <label htmlFor="title" className="block text-sm font-medium mb-2">Title *</label>
-                  <input {...register("title")} type="text" id="title" className={`w-full px-4 py-3 bg-background/50 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${errors.title ? "border-red-500" : "border-border"}`} />
-                  {errors.title && <p className="mt-1 text-sm text-red-500">{errors.title.message}</p>}
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Title *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
                 </div>
 
-                {/* Type & Status */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Short Description *
+                  </label>
+                  <textarea
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    rows={2}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Long Description
+                  </label>
+                  <textarea
+                    value={formData.long_description}
+                    onChange={(e) => setFormData({ ...formData, long_description: e.target.value })}
+                    rows={4}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="type" className="block text-sm font-medium mb-2">Type *</label>
-                    <select {...register("type")} id="type" className="w-full px-4 py-3 bg-background/50 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-                      <option value="Personal">Personal</option>
-                      <option value="Professional">Professional</option>
-                      <option value="School">School</option>
-                      <option value="Freelance">Freelance</option>
-                      <option value="Open Source">Open Source</option>
-                      <option value="Practice">Practice</option>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Category
+                    </label>
+                    <select
+                      value={formData.category}
+                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option>Web Development</option>
+                      <option>Mobile App</option>
+                      <option>Desktop App</option>
+                      <option>Other</option>
                     </select>
                   </div>
-                  <div>
-                    <label htmlFor="status" className="block text-sm font-medium mb-2">Status</label>
-                    <select {...register("status")} id="status" className="w-full px-4 py-3 bg-background/50 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-                      <option value="In Progress">In Progress</option>
-                      <option value="Completed">Completed</option>
-                      <option value="Maintained">Maintained</option>
-                      <option value="Archived">Archived</option>
-                    </select>
+
+                  <div className="flex items-end">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.featured}
+                        onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
+                        className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-gray-700 dark:text-gray-300">Featured Project</span>
+                    </label>
                   </div>
                 </div>
 
-                {/* Summary */}
-                <div>
-                  <label htmlFor="summary" className="block text-sm font-medium mb-2">Summary *</label>
-                  <input {...register("summary")} type="text" id="summary" placeholder="One-line description" className={`w-full px-4 py-3 bg-background/50 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${errors.summary ? "border-red-500" : "border-border"}`} />
-                  {errors.summary && <p className="mt-1 text-sm text-red-500">{errors.summary.message}</p>}
-                </div>
-
-                {/* Description */}
-                <div>
-                  <label htmlFor="description" className="block text-sm font-medium mb-2">Description *</label>
-                  <textarea {...register("description")} id="description" rows={4} className={`w-full px-4 py-3 bg-background/50 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none ${errors.description ? "border-red-500" : "border-border"}`} />
-                  {errors.description && <p className="mt-1 text-sm text-red-500">{errors.description.message}</p>}
-                </div>
-
-                {/* Tech Stack */}
-                <div>
-                  <label htmlFor="techStack" className="block text-sm font-medium mb-2">Tech Stack * (comma-separated)</label>
-                  <input {...register("techStack")} type="text" id="techStack" placeholder="React, Next.js, TypeScript, Tailwind" className={`w-full px-4 py-3 bg-background/50 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${errors.techStack ? "border-red-500" : "border-border"}`} />
-                  {errors.techStack && <p className="mt-1 text-sm text-red-500">{errors.techStack.message}</p>}
-                </div>
-
-                {/* Links */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="githubUrl" className="block text-sm font-medium mb-2">GitHub URL</label>
-                    <input {...register("githubUrl")} type="url" id="githubUrl" placeholder="https://github.com/..." className={`w-full px-4 py-3 bg-background/50 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${errors.githubUrl ? "border-red-500" : "border-border"}`} />
-                    {errors.githubUrl && <p className="mt-1 text-sm text-red-500">{errors.githubUrl.message}</p>}
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      GitHub URL
+                    </label>
+                    <input
+                      type="url"
+                      value={formData.github_url}
+                      onChange={(e) => setFormData({ ...formData, github_url: e.target.value })}
+                      placeholder="https://github.com/..."
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    />
                   </div>
+
                   <div>
-                    <label htmlFor="liveUrl" className="block text-sm font-medium mb-2">Live Demo URL</label>
-                    <input {...register("liveUrl")} type="url" id="liveUrl" placeholder="https://..." className={`w-full px-4 py-3 bg-background/50 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${errors.liveUrl ? "border-red-500" : "border-border"}`} />
-                    {errors.liveUrl && <p className="mt-1 text-sm text-red-500">{errors.liveUrl.message}</p>}
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Demo URL
+                    </label>
+                    <input
+                      type="url"
+                      value={formData.demo_url}
+                      onChange={(e) => setFormData({ ...formData, demo_url: e.target.value })}
+                      placeholder="https://demo.example.com"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    />
                   </div>
                 </div>
 
-                {/* Featured */}
-                <div className="flex items-center gap-3">
-                  <input {...register("featured")} type="checkbox" id="featured" className="w-5 h-5" />
-                  <label htmlFor="featured" className="text-sm font-medium">Mark as Featured Project</label>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Technologies
+                  </label>
+                  <div className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      value={technologyInput}
+                      onChange={(e) => setTechnologyInput(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddTechnology())}
+                      placeholder="Add a technology..."
+                      className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddTechnology}
+                      className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                    >
+                      Add
+                    </button>
+                  </div>
+                  {formData.technologies.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {formData.technologies.map((tech, index) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm flex items-center gap-2"
+                        >
+                          {tech}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveTechnology(index)}
+                            className="text-blue-700 dark:text-blue-300 hover:text-blue-900"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                {/* Buttons */}
-                <div className="flex items-center gap-4">
-                  <button type="submit" disabled={saving} className={`flex items-center gap-2 px-8 py-3 rounded-lg font-semibold transition-all ${saving ? "bg-primary/50 cursor-not-allowed" : "bg-primary text-primary-foreground hover:shadow-lg"}`}>
-                    {saving ? <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Save size={20} />}
-                    <span>{saving ? "Saving..." : "Save Project"}</span>
-                  </button>
-                  <button type="button" onClick={closeModal} className="px-8 py-3 glass hover:bg-primary/10 rounded-lg font-semibold transition-colors">
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={handleCloseModal}
+                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    disabled={submitting}
+                  >
                     Cancel
                   </button>
-                  {saveStatus === "success" && (
-                    <div className="flex items-center gap-2 text-green-500">
-                      <CheckCircle size={20} />
-                      <span>Saved!</span>
-                    </div>
-                  )}
-                  {saveStatus === "error" && (
-                    <div className="flex items-center gap-2 text-red-500">
-                      <AlertCircle size={20} />
-                      <span>Failed to save</span>
-                    </div>
-                  )}
+                  <button
+                    type="submit"
+                    className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    disabled={submitting || uploading}
+                  >
+                    {uploading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Uploading Image...
+                      </>
+                    ) : submitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>{editingProject ? "Update" : "Create"}</>
+                    )}
+                  </button>
                 </div>
               </form>
             </motion.div>
@@ -439,49 +539,3 @@ export default function ProjectsPage() {
     </div>
   );
 }
-
-// Project Card Component
-function ProjectCard({
-  project,
-  onEdit,
-  onDelete,
-}: {
-  project: Project;
-  onEdit: () => void;
-  onDelete: () => void;
-}) {
-  return (
-    <div className="glass rounded-xl overflow-hidden">
-      <div className="relative h-48 bg-gradient-to-br from-neon-purple/20 to-neon-cyan/20">
-        {project.imageUrl && (
-          <img src={project.imageUrl} alt={project.title} className="w-full h-full object-cover" />
-        )}
-        {project.featured && (
-          <div className="absolute top-3 right-3 px-3 py-1 bg-yellow-500 text-yellow-900 rounded-full text-xs font-bold">
-            Featured
-          </div>
-        )}
-      </div>
-      <div className="p-6">
-        <h3 className="text-lg font-bold mb-2">{project.title}</h3>
-        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{project.summary}</p>
-        <div className="flex flex-wrap gap-2 mb-4">
-          {project.techStack.slice(0, 3).map((tech, i) => (
-            <span key={i} className="px-2 py-1 bg-primary/10 text-primary rounded text-xs">{tech}</span>
-          ))}
-          {project.techStack.length > 3 && <span className="text-xs text-muted-foreground">+{project.techStack.length - 3}</span>}
-        </div>
-        <div className="flex items-center gap-2">
-          <button onClick={onEdit} className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors">
-            <Edit size={16} />
-            <span>Edit</span>
-          </button>
-          <button onClick={onDelete} className="p-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors">
-            <Trash2 size={20} />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-

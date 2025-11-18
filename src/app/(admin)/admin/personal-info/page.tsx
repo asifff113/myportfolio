@@ -136,11 +136,15 @@ export default function PersonalInfoPage() {
         updatedAt: new Date().toISOString(),
       };
 
+      console.log("Saving personal info:", personalInfoData);
       await updatePersonalInfo(personalInfoData);
+      console.log("Save successful!");
       setSaveStatus("success");
       setTimeout(() => setSaveStatus("idle"), 3000);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving personal info:", error);
+      console.error("Error message:", error?.message);
+      alert(`Failed to save: ${error?.message || "Unknown error"}`);
       setSaveStatus("error");
     } finally {
       setSaving(false);

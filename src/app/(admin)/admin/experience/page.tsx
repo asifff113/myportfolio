@@ -3,67 +3,45 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Plus,
-  Edit2,
-  Trash2,
-  Briefcase,
-  X,
-  Loader2,
-  Calendar,
-  MapPin,
-} from "lucide-react";
+import { Plus, Edit2, Trash2, Briefcase, X, Loader2, Calendar, MapPin } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { getAllExperience, createExperience, updateExperience, deleteExperience } from "@/lib/firebase-queries";
-import { Experience } from "@/lib/content-types";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 
-const experienceSchema = z.object({
-  company: z.string().min(1, "Company name is required"),
-  role: z.string().min(1, "Role is required"),
-  startDate: z.string().min(1, "Start date is required"),
-  endDate: z.string().optional(),
-  current: z.boolean().optional(),
-  description: z.string().min(1, "Description is required"),
-  location: z.string().optional(),
-  type: z.string().optional(),
-  techStack: z.array(z.string()).optional(),
-  achievements: z.array(z.string()).optional(),
-});
-
-type ExperienceFormData = z.infer<typeof experienceSchema>;
+interface Experience {
+  id: string;
+  company: string;
+  position: string;
+  location?: string;
+  start_date: string;
+  end_date?: string;
+  is_current?: boolean;
+  description?: string;
+  responsibilities?: string[];
+  technologies?: string[];
+}
 
 export default function ExperienceAdminPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const [experiences, setExperiences] = useState<Experience[]>([]);
+  const [experience, setExperience] = useState<Experience[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingExperience, setEditingExperience] = useState<Experience | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [techStackInput, setTechStackInput] = useState("");
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    setValue,
-    watch,
-  } = useForm<ExperienceFormData>({
-    resolver: zodResolver(experienceSchema),
-    defaultValues: {
-      current: false,
-      techStack: [],
-      achievements: [],
-    },
+  const [formData, setFormData] = useState({
+    company: "",
+    position: "",
+    location: "",
+    start_date: "",
+    end_date: "",
+    is_current: false,
+    description: "",
+    responsibilities: [] as string[],
+    technologies: [] as string[],
   });
-
-  const isCurrent = watch("current");
-  const techStack = watch("techStack") || [];
+  const [responsibilityInput, setResponsibilityInput] = useState("");
+  const [technologyInput, setTechnologyInput] = useState("");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -73,21 +51,17 @@ export default function ExperienceAdminPage() {
 
   useEffect(() => {
     if (user) {
-      loadExperiences();
+      loadExperience();
     }
   }, [user]);
 
-  const loadExperiences = async () => {
+  const loadExperience = async () => {
     try {
       setLoading(true);
       const data = await getAllExperience();
-      // Sort by start date (most recent first)
-      const sorted = data.sort((a, b) => 
-        new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
-      );
-      setExperiences(sorted);
+      setExperience(data);
     } catch (error) {
-      console.error("Error loading experiences:", error);
+      console.error("Error loading experience:", error);
     } finally {
       setLoading(false);
     }
@@ -96,19 +70,30 @@ export default function ExperienceAdminPage() {
   const handleOpenModal = (exp?: Experience) => {
     if (exp) {
       setEditingExperience(exp);
-      setValue("company", exp.company);
-      setValue("role", exp.role);
-      setValue("startDate", exp.startDate);
-      setValue("endDate", exp.endDate || "");
-      setValue("current", exp.current || false);
-      setValue("description", exp.description);
-      setValue("location", exp.location || "");
-      setValue("type", exp.type || "");
-      setValue("techStack", exp.techStack || []);
-      setValue("achievements", exp.achievements || []);
+      setFormData({
+        company: exp.company,
+        position: exp.position,
+        location: exp.location || "",
+        start_date: exp.start_date,
+        end_date: exp.end_date || "",
+        is_current: exp.is_current || false,
+        description: exp.description || "",
+        responsibilities: exp.responsibilities || [],
+        technologies: exp.technologies || [],
+      });
     } else {
       setEditingExperience(null);
-      reset();
+      setFormData({
+        company: "",
+        position: "",
+        location: "",
+        start_date: "",
+        end_date: "",
+        is_current: false,
+        description: "",
+        responsibilities: [],
+        technologies: [],
+      });
     }
     setIsModalOpen(true);
   };
@@ -116,37 +101,61 @@ export default function ExperienceAdminPage() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingExperience(null);
-    setTechStackInput("");
-    reset();
+    setResponsibilityInput("");
+    setTechnologyInput("");
   };
 
-  const handleAddTech = () => {
-    if (techStackInput.trim()) {
-      const newStack = [...techStack, techStackInput.trim()];
-      setValue("techStack", newStack);
-      setTechStackInput("");
+  const handleAddResponsibility = () => {
+    if (responsibilityInput.trim()) {
+      setFormData({
+        ...formData,
+        responsibilities: [...formData.responsibilities, responsibilityInput.trim()],
+      });
+      setResponsibilityInput("");
     }
   };
 
-  const handleRemoveTech = (index: number) => {
-    const newStack = techStack.filter((_, i) => i !== index);
-    setValue("techStack", newStack);
+  const handleRemoveResponsibility = (index: number) => {
+    setFormData({
+      ...formData,
+      responsibilities: formData.responsibilities.filter((_, i) => i !== index),
+    });
   };
 
-  const onSubmit = async (data: ExperienceFormData) => {
+  const handleAddTechnology = () => {
+    if (technologyInput.trim()) {
+      setFormData({
+        ...formData,
+        technologies: [...formData.technologies, technologyInput.trim()],
+      });
+      setTechnologyInput("");
+    }
+  };
+
+  const handleRemoveTechnology = (index: number) => {
+    setFormData({
+      ...formData,
+      technologies: formData.technologies.filter((_, i) => i !== index),
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
       setSubmitting(true);
+
       const submitData = {
-        ...data,
-        endDate: data.current ? undefined : data.endDate,
+        ...formData,
+        end_date: formData.is_current ? null : formData.end_date || null,
       };
-      
+
       if (editingExperience) {
         await updateExperience(editingExperience.id, submitData);
       } else {
         await createExperience(submitData);
       }
-      await loadExperiences();
+
+      await loadExperience();
       handleCloseModal();
     } catch (error) {
       console.error("Error saving experience:", error);
@@ -157,419 +166,383 @@ export default function ExperienceAdminPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this experience?")) return;
+    if (!confirm("Are you sure you want to delete this experience entry?")) return;
+
     try {
       await deleteExperience(id);
-      await loadExperiences();
+      await loadExperience();
     } catch (error) {
       console.error("Error deleting experience:", error);
       alert("Failed to delete experience. Please try again.");
     }
   };
 
-  if (authLoading || loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" text="Loading experiences..." />
-      </div>
-    );
-  }
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  };
 
-  if (!user) {
-    return null;
+  if (authLoading || loading) {
+    return <LoadingSpinner />;
   }
 
   return (
-    <div className="min-h-screen py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-8 flex justify-between items-center">
           <div>
-            <h1 className="text-4xl font-display font-bold text-gradient mb-2">
-              Work Experience
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              Experience Management
             </h1>
-            <p className="text-muted-foreground">
-              Manage your professional work history
+            <p className="text-gray-600 dark:text-gray-400">
+              Manage your work experience and professional history
             </p>
           </div>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+          <button
             onClick={() => handleOpenModal()}
-            className="button-futuristic flex items-center gap-2"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors"
           >
-            <Plus size={20} />
-            <span>Add Experience</span>
-          </motion.button>
+            <Plus className="w-5 h-5" />
+            Add Experience
+          </button>
         </div>
 
-        {/* Experience Timeline */}
-        <div className="space-y-6">
-          <AnimatePresence>
-            {experiences.map((exp, index) => (
-              <motion.div
-                key={exp.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ delay: index * 0.1 }}
-                className="glass-ultra p-6 rounded-2xl border-2 border-white/10 relative group hover:border-white/20 transition-all"
-              >
-                {/* Current Badge */}
-                {exp.current && (
-                  <div className="absolute top-4 right-4 px-3 py-1 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full text-xs font-bold text-white">
-                    Current Position
+        <div className="space-y-4">
+          {experience.map((exp) => (
+            <motion.div
+              key={exp.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6"
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex gap-4 flex-1">
+                  <div className="bg-purple-100 dark:bg-purple-900 p-3 rounded-lg">
+                    <Briefcase className="w-8 h-8 text-purple-600 dark:text-purple-400" />
                   </div>
-                )}
-
-                <div className="flex gap-6">
-                  {/* Icon */}
-                  <div className="flex-shrink-0">
-                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                      <Briefcase size={32} className="text-white" />
-                    </div>
-                  </div>
-
-                  {/* Content */}
                   <div className="flex-1">
-                    {/* Role */}
-                    <h3 className="text-2xl font-bold mb-1">{exp.role}</h3>
-
-                    {/* Company */}
-                    <p className="text-lg text-primary mb-2">{exp.company}</p>
-
-                    {/* Location, Type and Date */}
-                    <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
-                      {exp.location && (
-                        <span className="flex items-center gap-1">
-                          <MapPin size={14} />
-                          {exp.location}
-                        </span>
-                      )}
-                      {exp.type && (
-                        <span className="px-2 py-1 bg-primary/20 rounded-full text-xs font-medium">
-                          {exp.type}
-                        </span>
-                      )}
-                      <span className="flex items-center gap-1">
-                        <Calendar size={14} />
-                        {exp.startDate} - {exp.current ? "Present" : exp.endDate || "N/A"}
-                      </span>
-                    </div>
-
-                    {/* Description */}
-                    <p className="text-muted-foreground mb-4 whitespace-pre-line">
-                      {exp.description}
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+                      {exp.position}
+                    </h3>
+                    <p className="text-lg text-purple-600 dark:text-purple-400 mb-2">
+                      {exp.company}
                     </p>
-
-                    {/* Tech Stack */}
-                    {exp.techStack && exp.techStack.length > 0 && (
-                      <div className="mb-4">
-                        <p className="text-sm font-medium mb-2">Tech Stack:</p>
-                        <div className="flex flex-wrap gap-2">
-                          {exp.techStack.map((tech, i) => (
-                            <span
-                              key={i}
-                              className="px-3 py-1 bg-primary/20 text-primary rounded-full text-xs font-medium border border-primary/30"
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                        </div>
+                    <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-3">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-4 h-4" />
+                        <span>
+                          {formatDate(exp.start_date)} -{" "}
+                          {exp.is_current ? "Present" : exp.end_date ? formatDate(exp.end_date) : "N/A"}
+                        </span>
                       </div>
+                      {exp.location && (
+                        <div className="flex items-center gap-1">
+                          <MapPin className="w-4 h-4" />
+                          <span>{exp.location}</span>
+                        </div>
+                      )}
+                    </div>
+                    {exp.description && (
+                      <p className="text-gray-700 dark:text-gray-300 mb-3">
+                        {exp.description}
+                      </p>
                     )}
-
-                    {/* Achievements */}
-                    {exp.achievements && exp.achievements.length > 0 && (
-                      <div className="mb-4">
-                        <p className="text-sm font-medium mb-2">Key Achievements:</p>
-                        <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                          {exp.achievements.map((achievement, i) => (
-                            <li key={i}>{achievement}</li>
+                    {exp.responsibilities && exp.responsibilities.length > 0 && (
+                      <div className="mb-3">
+                        <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                          Responsibilities:
+                        </p>
+                        <ul className="list-disc list-inside space-y-1">
+                          {exp.responsibilities.map((responsibility, index) => (
+                            <li
+                              key={index}
+                              className="text-sm text-gray-600 dark:text-gray-400"
+                            >
+                              {responsibility}
+                            </li>
                           ))}
                         </ul>
                       </div>
                     )}
-
-                    {/* Actions */}
-                    <div className="flex gap-2 mt-4">
-                      <button
-                        onClick={() => handleOpenModal(exp)}
-                        className="px-4 py-2 bg-primary/20 hover:bg-primary/30 rounded-lg transition-all flex items-center gap-2"
-                      >
-                        <Edit2 size={16} />
-                        <span>Edit</span>
-                      </button>
-                      <button
-                        onClick={() => handleDelete(exp.id)}
-                        className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-all flex items-center gap-2"
-                      >
-                        <Trash2 size={16} />
-                        <span>Delete</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-
-        {/* Empty State */}
-        {experiences.length === 0 && (
-          <div className="text-center py-12 glass-ultra rounded-2xl">
-            <Briefcase size={48} className="mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-xl font-bold mb-2">No work experience yet</h3>
-            <p className="text-muted-foreground mb-4">
-              Add your professional work history to showcase your career path
-            </p>
-            <button
-              onClick={() => handleOpenModal()}
-              className="button-futuristic inline-flex items-center gap-2"
-            >
-              <Plus size={20} />
-              <span>Add Your First Experience</span>
-            </button>
-          </div>
-        )}
-
-        {/* Modal */}
-        <AnimatePresence>
-          {isModalOpen && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80"
-              onClick={handleCloseModal}
-            >
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                onClick={(e) => e.stopPropagation()}
-                className="glass-ultra p-8 rounded-2xl border-2 border-white/10 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-              >
-                {/* Header */}
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold">
-                    {editingExperience ? "Edit Experience" : "Add New Experience"}
-                  </h2>
-                  <button
-                    onClick={handleCloseModal}
-                    className="p-2 hover:bg-white/10 rounded-lg transition-all"
-                  >
-                    <X size={20} />
-                  </button>
-                </div>
-
-                {/* Form */}
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                  {/* Company and Role */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Company <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        {...register("company")}
-                        type="text"
-                        placeholder="e.g., Google"
-                        className="w-full px-4 py-3 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all"
-                      />
-                      {errors.company && (
-                        <p className="text-red-500 text-sm mt-1">{errors.company.message}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Role/Position <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        {...register("role")}
-                        type="text"
-                        placeholder="e.g., Senior Software Engineer"
-                        className="w-full px-4 py-3 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all"
-                      />
-                      {errors.role && (
-                        <p className="text-red-500 text-sm mt-1">{errors.role.message}</p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Location and Type */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Location
-                      </label>
-                      <input
-                        {...register("location")}
-                        type="text"
-                        placeholder="e.g., San Francisco, CA"
-                        className="w-full px-4 py-3 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Employment Type
-                      </label>
-                      <select
-                        {...register("type")}
-                        className="w-full px-4 py-3 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all"
-                      >
-                        <option value="">Select type</option>
-                        <option value="Full-time">Full-time</option>
-                        <option value="Part-time">Part-time</option>
-                        <option value="Contract">Contract</option>
-                        <option value="Freelance">Freelance</option>
-                        <option value="Internship">Internship</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Dates */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Start Date <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        {...register("startDate")}
-                        type="text"
-                        placeholder="e.g., January 2020"
-                        className="w-full px-4 py-3 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all"
-                      />
-                      {errors.startDate && (
-                        <p className="text-red-500 text-sm mt-1">{errors.startDate.message}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        End Date {!isCurrent && <span className="text-red-500">*</span>}
-                      </label>
-                      <input
-                        {...register("endDate")}
-                        type="text"
-                        placeholder="e.g., December 2022"
-                        disabled={isCurrent}
-                        className="w-full px-4 py-3 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all disabled:opacity-50"
-                      />
-                      {errors.endDate && !isCurrent && (
-                        <p className="text-red-500 text-sm mt-1">{errors.endDate.message}</p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Currently Working Checkbox */}
-                  <div className="flex items-center gap-3">
-                    <input
-                      {...register("current")}
-                      type="checkbox"
-                      id="current"
-                      className="w-5 h-5 rounded border-2 border-white/10"
-                    />
-                    <label htmlFor="current" className="text-sm font-medium cursor-pointer">
-                      I currently work here
-                    </label>
-                  </div>
-
-                  {/* Description */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Description <span className="text-red-500">*</span>
-                    </label>
-                    <textarea
-                      {...register("description")}
-                      rows={5}
-                      placeholder="Describe your role, responsibilities, and key contributions..."
-                      className="w-full px-4 py-3 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all resize-none"
-                    />
-                    {errors.description && (
-                      <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
+                    {exp.technologies && exp.technologies.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {exp.technologies.map((tech, index) => (
+                          <span
+                            key={index}
+                            className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm"
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
                     )}
                   </div>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleOpenModal(exp)}
+                    className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  >
+                    <Edit2 className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(exp.id)}
+                    className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
 
-                  {/* Tech Stack */}
+        {experience.length === 0 && (
+          <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg">
+            <Briefcase className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-600 dark:text-gray-400">No experience entries yet</p>
+          </div>
+        )}
+      </div>
+
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+            onClick={handleCloseModal}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {editingExperience ? "Edit Experience" : "Add Experience"}
+                </h2>
+                <button
+                  onClick={handleCloseModal}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Tech Stack
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Company *
                     </label>
-                    <div className="flex gap-2 mb-2">
-                      <input
-                        type="text"
-                        value={techStackInput}
-                        onChange={(e) => setTechStackInput(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            handleAddTech();
-                          }
-                        }}
-                        placeholder="Add technology (press Enter)"
-                        className="flex-1 px-4 py-2 glass rounded-xl border-2 border-white/10 focus:border-primary/50 transition-all"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleAddTech}
-                        className="px-4 py-2 bg-primary/20 hover:bg-primary/30 rounded-xl transition-all"
-                      >
-                        Add
-                      </button>
-                    </div>
+                    <input
+                      type="text"
+                      value={formData.company}
+                      onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Position *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.position}
+                      onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Location
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.location}
+                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                    placeholder="e.g., Remote, New York, NY"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Start Date *
+                    </label>
+                    <input
+                      type="date"
+                      value={formData.start_date}
+                      onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      End Date
+                    </label>
+                    <input
+                      type="date"
+                      value={formData.end_date}
+                      onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
+                      disabled={formData.is_current}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="is_current"
+                    checked={formData.is_current}
+                    onChange={(e) => setFormData({ ...formData, is_current: e.target.checked, end_date: "" })}
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                  />
+                  <label htmlFor="is_current" className="text-sm text-gray-700 dark:text-gray-300">
+                    Currently working here
+                  </label>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    rows={3}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Responsibilities
+                  </label>
+                  <div className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      value={responsibilityInput}
+                      onChange={(e) => setResponsibilityInput(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddResponsibility())}
+                      placeholder="Add a responsibility..."
+                      className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddResponsibility}
+                      className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                    >
+                      Add
+                    </button>
+                  </div>
+                  {formData.responsibilities.length > 0 && (
+                    <ul className="space-y-2">
+                      {formData.responsibilities.map((responsibility, index) => (
+                        <li
+                          key={index}
+                          className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-2 rounded"
+                        >
+                          <span className="text-sm text-gray-700 dark:text-gray-300">
+                            {responsibility}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveResponsibility(index)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Technologies
+                  </label>
+                  <div className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      value={technologyInput}
+                      onChange={(e) => setTechnologyInput(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddTechnology())}
+                      placeholder="Add a technology..."
+                      className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddTechnology}
+                      className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                    >
+                      Add
+                    </button>
+                  </div>
+                  {formData.technologies.length > 0 && (
                     <div className="flex flex-wrap gap-2">
-                      {techStack.map((tech, index) => (
+                      {formData.technologies.map((tech, index) => (
                         <span
                           key={index}
-                          className="px-3 py-1 bg-primary/20 text-primary rounded-full text-sm flex items-center gap-2"
+                          className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm flex items-center gap-2"
                         >
                           {tech}
                           <button
                             type="button"
-                            onClick={() => handleRemoveTech(index)}
-                            className="hover:text-red-400 transition-colors"
+                            onClick={() => handleRemoveTechnology(index)}
+                            className="text-blue-700 dark:text-blue-300 hover:text-blue-900"
                           >
-                            <X size={14} />
+                            <X className="w-3 h-3" />
                           </button>
                         </span>
                       ))}
                     </div>
-                  </div>
+                  )}
+                </div>
 
-                  {/* Actions */}
-                  <div className="flex gap-4">
-                    <button
-                      type="button"
-                      onClick={handleCloseModal}
-                      className="flex-1 px-6 py-3 glass rounded-xl hover:bg-white/10 transition-all"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={submitting}
-                      className="flex-1 button-futuristic flex items-center justify-center gap-2"
-                    >
-                      {submitting ? (
-                        <>
-                          <Loader2 size={20} className="animate-spin" />
-                          <span>Saving...</span>
-                        </>
-                      ) : (
-                        <span>{editingExperience ? "Update" : "Create"} Experience</span>
-                      )}
-                    </button>
-                  </div>
-                </form>
-              </motion.div>
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={handleCloseModal}
+                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    disabled={submitting}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    disabled={submitting}
+                  >
+                    {submitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>{editingExperience ? "Update" : "Create"}</>
+                    )}
+                  </button>
+                </div>
+              </form>
             </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
-

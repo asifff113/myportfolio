@@ -31,29 +31,8 @@ export async function getPersonalInfo(): Promise<PersonalInfo | null> {
       .select('*')
       .single();
     
-    if (error) {
-      // If no data exists yet, return null without error
-      if (error.code === 'PGRST116') return null;
-      throw error;
-    }
-
-    // Transform snake_case to camelCase
-    return {
-      id: data.id,
-      name: data.name,
-      headline: data.headline,
-      shortBio: data.short_bio,
-      longBio: data.long_bio,
-      location: data.location,
-      email: data.email,
-      phone: data.phone,
-      currentStatus: data.current_status,
-      profileImageUrl: data.profile_image_url,
-      resumeUrl: data.resume_url,
-      socialLinks: data.social_links || [],
-      createdAt: data.created_at,
-      updatedAt: data.updated_at,
-    } as PersonalInfo;
+    if (error) throw error;
+    return data as PersonalInfo;
   } catch (error) {
     console.error("Error fetching personal info:", error);
     return null;
@@ -62,44 +41,14 @@ export async function getPersonalInfo(): Promise<PersonalInfo | null> {
 
 export async function updatePersonalInfo(data: Omit<PersonalInfo, "id">): Promise<void> {
   try {
-    // Transform camelCase to snake_case
-    const dbData:  any = {
-      name: data.name,
-      headline: data.headline,
-      short_bio: data.shortBio,
-      long_bio: data.longBio,
-      location: data.location,
-      email: data.email,
-      phone: data.phone || null,
-      current_status: data.currentStatus || null,
-      profile_image_url: data.profileImageUrl || null,
-      resume_url: data.resumeUrl || null,
-      social_links: data.socialLinks || [],
-      updated_at: new Date().toISOString(),
-    };
-
-    // Check if record exists
-    const { data: existing } = await supabase
+    const { error } = await supabase
       .from('personal_info')
-      .select('id')
-      .single();
-
-    if (existing) {
-      // Update existing record
-      const { error } = await supabase
-        .from('personal_info')
-        .update(dbData)
-        .eq('id', existing.id);
-      
-      if (error) throw error;
-    } else {
-      // Insert new record
-      const { error } = await supabase
-        .from('personal_info')
-        .insert(dbData);
-      
-      if (error) throw error;
-    }
+      .upsert({
+        ...data,
+        updated_at: new Date().toISOString(),
+      });
+    
+    if (error) throw error;
   } catch (error) {
     console.error("Error updating personal info:", error);
     throw error;
@@ -110,8 +59,7 @@ export async function updatePersonalInfo(data: Omit<PersonalInfo, "id">): Promis
 // SKILLS
 // ============================================================================
 
-// Get all skills (flat list from database)
-export async function getAllSkills(): Promise<any[]> {
+export async function getSkillCategories(): Promise<SkillCategory[]> {
   try {
     const { data, error } = await supabase
       .from('skills')
@@ -119,102 +67,10 @@ export async function getAllSkills(): Promise<any[]> {
       .order('order', { ascending: true });
     
     if (error) throw error;
-    return data || [];
+    return data as SkillCategory[];
   } catch (error) {
     console.error("Error fetching skills:", error);
     return [];
-  }
-}
-
-// Get skills grouped by category for display
-export async function getSkillCategories(): Promise<SkillCategory[]> {
-  try {
-    const { data, error } = await supabase
-      .from('skills')
-      .select('*')
-      .order('order', { ascending: true});
-    
-    if (error) throw error;
-    
-    // Group skills by category
-    const grouped = (data || []).reduce((acc: any, skill: any) => {
-      if (!acc[skill.category]) {
-        acc[skill.category] = [];
-      }
-      acc[skill.category].push({
-        id: skill.id,
-        name: skill.name,
-        level: skill.level,
-        icon: skill.icon,
-      });
-      return acc;
-    }, {});
-    
-    // Convert to SkillCategory array
-    return Object.keys(grouped).map((category, index) => ({
-      id: category.toLowerCase().replace(/\s+/g, '-'),
-      name: category,
-      skills: grouped[category],
-      order: index,
-    }));
-  } catch (error) {
-    console.error("Error fetching skills:", error);
-    return [];
-  }
-}
-
-// Create individual skill
-export async function createSkill(data: { category: string; name: string; level?: number; icon?: string }): Promise<string> {
-  try {
-    const { data: result, error } = await supabase
-      .from('skills')
-      .insert({
-        category: data.category,
-        name: data.name,
-        level: data.level || 50,
-        icon: data.icon || null,
-      })
-      .select()
-      .single();
-    
-    if (error) throw error;
-    return result.id;
-  } catch (error) {
-    console.error("Error creating skill:", error);
-    throw error;
-  }
-}
-
-// Update individual skill
-export async function updateSkill(id: string, data: Partial<{ category: string; name: string; level: number; icon: string }>): Promise<void> {
-  try {
-    const { error } = await supabase
-      .from('skills')
-      .update({
-        ...data,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', id);
-    
-    if (error) throw error;
-  } catch (error) {
-    console.error("Error updating skill:", error);
-    throw error;
-  }
-}
-
-// Delete individual skill
-export async function deleteSkill(id: string): Promise<void> {
-  try {
-    const { error } = await supabase
-      .from('skills')
-      .delete()
-      .eq('id', id);
-    
-    if (error) throw error;
-  } catch (error) {
-    console.error("Error deleting skill:", error);
-    throw error;
   }
 }
 
@@ -284,9 +140,6 @@ export async function getEducation(): Promise<EducationItem[]> {
   }
 }
 
-// Alias for admin pages
-export const getAllEducation = getEducation;
-
 export async function createEducationItem(data: Omit<EducationItem, "id">): Promise<string> {
   try {
     const { data: result, error } = await supabase
@@ -302,9 +155,6 @@ export async function createEducationItem(data: Omit<EducationItem, "id">): Prom
     throw error;
   }
 }
-
-// Alias for admin pages
-export const createEducation = createEducationItem;
 
 export async function updateEducationItem(id: string, data: Partial<EducationItem>): Promise<void> {
   try {
@@ -323,9 +173,6 @@ export async function updateEducationItem(id: string, data: Partial<EducationIte
   }
 }
 
-// Alias for admin pages
-export const updateEducation = updateEducationItem;
-
 export async function deleteEducationItem(id: string): Promise<void> {
   try {
     const { error } = await supabase
@@ -339,9 +186,6 @@ export async function deleteEducationItem(id: string): Promise<void> {
     throw error;
   }
 }
-
-// Alias for admin pages
-export const deleteEducation = deleteEducationItem;
 
 // ============================================================================
 // EXPERIENCE
@@ -362,9 +206,6 @@ export async function getExperience(): Promise<ExperienceItem[]> {
   }
 }
 
-// Alias for admin pages
-export const getAllExperience = getExperience;
-
 export async function createExperienceItem(data: Omit<ExperienceItem, "id">): Promise<string> {
   try {
     const { data: result, error } = await supabase
@@ -380,9 +221,6 @@ export async function createExperienceItem(data: Omit<ExperienceItem, "id">): Pr
     throw error;
   }
 }
-
-// Alias for admin pages
-export const createExperience = createExperienceItem;
 
 export async function updateExperienceItem(id: string, data: Partial<ExperienceItem>): Promise<void> {
   try {
@@ -401,9 +239,6 @@ export async function updateExperienceItem(id: string, data: Partial<ExperienceI
   }
 }
 
-// Alias for admin pages
-export const updateExperience = updateExperienceItem;
-
 export async function deleteExperienceItem(id: string): Promise<void> {
   try {
     const { error } = await supabase
@@ -417,9 +252,6 @@ export async function deleteExperienceItem(id: string): Promise<void> {
     throw error;
   }
 }
-
-// Alias for admin pages
-export const deleteExperience = deleteExperienceItem;
 
 // ============================================================================
 // PROJECTS
@@ -439,9 +271,6 @@ export async function getProjects(): Promise<Project[]> {
     return [];
   }
 }
-
-// Alias for admin pages
-export const getAllProjects = getProjects;
 
 export async function createProject(data: Omit<Project, "id">): Promise<string> {
   try {

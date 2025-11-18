@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import { Inter, Orbitron } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "@/styles/globals.css";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import AnimatedBackground from "@/components/ui/AnimatedBackground";
+import LayoutContent from "@/components/layout/LayoutContent";
 
 // Font configurations
 const inter = Inter({
@@ -64,13 +63,7 @@ export default function RootLayout({
           {/* Global Animated Background */}
           <AnimatedBackground variant="hero" />
           
-          <div className="relative flex min-h-screen flex-col">
-            <Navbar />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
-          </div>
+          <LayoutContent>{children}</LayoutContent>
         </ThemeProvider>
       </body>
     </html>
