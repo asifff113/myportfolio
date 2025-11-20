@@ -5,42 +5,30 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Edit2, Trash2, GraduationCap, X, Loader2, Calendar } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { getAllEducation, createEducation, updateEducation, deleteEducation } from "@/lib/firebase-queries";
+import { getAllEducation, createEducation, updateEducation, deleteEducation } from "@/lib/supabase-queries";
+import { EducationItem } from "@/lib/content-types";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
-
-interface Education {
-  id: string;
-  institution: string;
-  degree: string;
-  field: string;
-  start_date: string;
-  end_date?: string;
-  is_current?: boolean;
-  description?: string;
-  grade?: string;
-  achievements?: string[];
-}
 
 export default function EducationAdminPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const [education, setEducation] = useState<Education[]>([]);
+  const [education, setEducation] = useState<EducationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingEducation, setEditingEducation] = useState<Education | null>(null);
+  const [editingEducation, setEditingEducation] = useState<EducationItem | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Partial<EducationItem>>({
     institution: "",
     degree: "",
     field: "",
-    start_date: "",
-    end_date: "",
-    is_current: false,
+    startDate: "",
+    endDate: "",
+    isCurrent: false,
     description: "",
     grade: "",
-    achievements: [] as string[],
+    location: "",
+    logoUrl: "",
   });
-  const [achievementInput, setAchievementInput] = useState("");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -66,19 +54,20 @@ export default function EducationAdminPage() {
     }
   };
 
-  const handleOpenModal = (edu?: Education) => {
+  const handleOpenModal = (edu?: EducationItem) => {
     if (edu) {
       setEditingEducation(edu);
       setFormData({
         institution: edu.institution,
         degree: edu.degree,
-        field: edu.field,
-        start_date: edu.start_date,
-        end_date: edu.end_date || "",
-        is_current: edu.is_current || false,
+        field: edu.field || "",
+        startDate: typeof edu.startDate === 'string' ? edu.startDate : new Date(edu.startDate).toISOString().split('T')[0],
+        endDate: edu.endDate ? (typeof edu.endDate === 'string' ? edu.endDate : new Date(edu.endDate).toISOString().split('T')[0]) : "",
+        isCurrent: edu.isCurrent || false,
         description: edu.description || "",
         grade: edu.grade || "",
-        achievements: edu.achievements || [],
+        location: edu.location || "",
+        logoUrl: edu.logoUrl || "",
       });
     } else {
       setEditingEducation(null);
@@ -86,12 +75,13 @@ export default function EducationAdminPage() {
         institution: "",
         degree: "",
         field: "",
-        start_date: "",
-        end_date: "",
-        is_current: false,
+        startDate: "",
+        endDate: "",
+        isCurrent: false,
         description: "",
         grade: "",
-        achievements: [],
+        location: "",
+        logoUrl: "",
       });
     }
     setIsModalOpen(true);
@@ -100,24 +90,6 @@ export default function EducationAdminPage() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingEducation(null);
-    setAchievementInput("");
-  };
-
-  const handleAddAchievement = () => {
-    if (achievementInput.trim()) {
-      setFormData({
-        ...formData,
-        achievements: [...formData.achievements, achievementInput.trim()],
-      });
-      setAchievementInput("");
-    }
-  };
-
-  const handleRemoveAchievement = (index: number) => {
-    setFormData({
-      ...formData,
-      achievements: formData.achievements.filter((_, i) => i !== index),
-    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -127,10 +99,10 @@ export default function EducationAdminPage() {
 
       const submitData = {
         ...formData,
-        end_date: formData.is_current ? null : formData.end_date || null,
-      };
+        endDate: formData.isCurrent ? null : formData.endDate || null,
+      } as Omit<EducationItem, "id">;
 
-      if (editingEducation) {
+      if (editingEducation && editingEducation.id) {
         await updateEducation(editingEducation.id, submitData);
       } else {
         await createEducation(submitData);
@@ -214,8 +186,8 @@ export default function EducationAdminPage() {
                     <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-3">
                       <Calendar className="w-4 h-4" />
                       <span>
-                        {formatDate(edu.start_date)} -{" "}
-                        {edu.is_current ? "Present" : edu.end_date ? formatDate(edu.end_date) : "N/A"}
+                        {formatDate(edu.startDate as string)} -{" "}
+                        {edu.isCurrent ? "Present" : edu.endDate ? formatDate(edu.endDate as string) : "N/A"}
                       </span>
                       {edu.grade && (
                         <span className="ml-4 px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded">
@@ -228,23 +200,6 @@ export default function EducationAdminPage() {
                         {edu.description}
                       </p>
                     )}
-                    {edu.achievements && edu.achievements.length > 0 && (
-                      <div>
-                        <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                          Achievements:
-                        </p>
-                        <ul className="list-disc list-inside space-y-1">
-                          {edu.achievements.map((achievement, index) => (
-                            <li
-                              key={index}
-                              className="text-sm text-gray-600 dark:text-gray-400"
-                            >
-                              {achievement}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -255,7 +210,7 @@ export default function EducationAdminPage() {
                     <Edit2 className="w-5 h-5" />
                   </button>
                   <button
-                    onClick={() => handleDelete(edu.id)}
+                    onClick={() => edu.id && handleDelete(edu.id)}
                     className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
                   >
                     <Trash2 className="w-5 h-5" />
@@ -351,8 +306,8 @@ export default function EducationAdminPage() {
                     </label>
                     <input
                       type="date"
-                      value={formData.start_date}
-                      onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                      value={formData.startDate as string}
+                      onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                       required
                     />
@@ -364,9 +319,9 @@ export default function EducationAdminPage() {
                     </label>
                     <input
                       type="date"
-                      value={formData.end_date}
-                      onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
-                      disabled={formData.is_current}
+                      value={formData.endDate as string}
+                      onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                      disabled={formData.isCurrent}
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                     />
                   </div>
@@ -375,12 +330,12 @@ export default function EducationAdminPage() {
                 <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
-                    id="is_current"
-                    checked={formData.is_current}
-                    onChange={(e) => setFormData({ ...formData, is_current: e.target.checked, end_date: "" })}
+                    id="isCurrent"
+                    checked={formData.isCurrent}
+                    onChange={(e) => setFormData({ ...formData, isCurrent: e.target.checked, endDate: "" })}
                     className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
                   />
-                  <label htmlFor="is_current" className="text-sm text-gray-700 dark:text-gray-300">
+                  <label htmlFor="isCurrent" className="text-sm text-gray-700 dark:text-gray-300">
                     Currently studying here
                   </label>
                 </div>
@@ -408,50 +363,6 @@ export default function EducationAdminPage() {
                     rows={3}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                   />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Achievements
-                  </label>
-                  <div className="flex gap-2 mb-2">
-                    <input
-                      type="text"
-                      value={achievementInput}
-                      onChange={(e) => setAchievementInput(e.target.value)}
-                      onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddAchievement())}
-                      placeholder="Add an achievement..."
-                      className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleAddAchievement}
-                      className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-                    >
-                      Add
-                    </button>
-                  </div>
-                  {formData.achievements.length > 0 && (
-                    <ul className="space-y-2">
-                      {formData.achievements.map((achievement, index) => (
-                        <li
-                          key={index}
-                          className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-2 rounded"
-                        >
-                          <span className="text-sm text-gray-700 dark:text-gray-300">
-                            {achievement}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveAchievement(index)}
-                            className="text-red-600 hover:text-red-700"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
                 </div>
 
                 <div className="flex gap-3 pt-4">

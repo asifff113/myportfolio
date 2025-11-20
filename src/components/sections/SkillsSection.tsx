@@ -22,7 +22,10 @@ import {
   separateHardAndSoftSkills,
   getProficiencyBand,
   groupSkillsByProficiency,
+  getCategoryColor,
 } from "@/lib/skills-utils";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useTranslatedSkills, useTranslatedProjects } from "@/lib/i18n/useTranslatedContent";
 
 interface SkillsSectionProps {
   skillCategories: SkillCategory[];
@@ -36,8 +39,8 @@ interface SkillsSectionProps {
 }
 
 export default function SkillsSection({
-  skillCategories,
-  projects = [],
+  skillCategories: initialSkillCategories = [],
+  projects: initialProjects = [],
   defaultDisplayMode = "grid",
   showModeToggle = true,
   enableInteractions = true,
@@ -45,6 +48,12 @@ export default function SkillsSection({
   showSummary = true,
   showSearchFilter = true,
 }: SkillsSectionProps) {
+  const { t, locale } = useLanguage();
+  
+  // Use translated content if not English
+  const skillCategories = useTranslatedSkills(initialSkillCategories);
+  const projects = useTranslatedProjects(initialProjects);
+
   const [displayMode, setDisplayMode] = useState<DisplayMode>(defaultDisplayMode);
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -124,6 +133,17 @@ export default function SkillsSection({
     setTimeout(() => setSelectedSkill(null), 300);
   }, []);
 
+  // Flatten all skills with their category info
+  const allSkills = useMemo(() => {
+    return filteredCategories.flatMap(category =>
+      category.skills.map(skill => ({
+        ...skill,
+        categoryName: category.name,
+        categoryColor: getCategoryColor(category.name),
+      }))
+    );
+  }, [filteredCategories]);
+
   // Handle empty state
   if (!hasSkills) {
     return (
@@ -139,106 +159,94 @@ export default function SkillsSection({
     );
   }
 
-  // Flatten all skills with their category info
-  const allSkills = useMemo(() => {
-    return filteredCategories.flatMap(category =>
-      category.skills.map(skill => ({
-        ...skill,
-        categoryName: category.name,
-        categoryColor: getCategoryColor(category.name),
-      }))
-    );
-  }, [filteredCategories]);
-
   return (
-    <Section
-      id="skills"
-      className="relative bg-muted/20"
-    >
+    <Section id="skills" className="relative overflow-hidden">
       <SectionTitle
-        title="Skills & Expertise"
-        subtitle="Technologies and tools I work with"
+        title={t.sections.skills.title}
+        subtitle={t.sections.skills.subtitle}
       />
 
-      {/* Stats Overview - ENHANCED BEAUTIFUL STYLE */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16"
-      >
-        {/* Total Skills */}
+      {/* Skills Summary Stats */}
+      {showSummary && (
         <motion.div
-          whileHover={{ scale: 1.08, y: -8 }}
-          className="glass-ultra p-8 rounded-3xl text-center group relative overflow-hidden card-3d border-2 border-white/10 hover:border-white/20 shadow-xl"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16"
         >
-          <div className="absolute -top-16 -right-16 w-40 h-40 bg-gradient-to-br from-blue-500/20 via-cyan-500/20 to-teal-500/20 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700" />
-          <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-gradient-to-tr from-purple-500/15 via-pink-500/15 to-rose-500/15 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700" />
-          
-          <motion.div 
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="text-6xl md:text-7xl font-display font-black bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent mb-3 relative z-10 drop-shadow-[0_0_20px_rgba(34,211,238,0.5)]"
+          {/* Total Skills */}
+          <motion.div
+            whileHover={{ scale: 1.08, y: -8 }}
+            className="glass-ultra p-8 rounded-3xl text-center group relative overflow-hidden card-3d border-2 border-white/10 hover:border-white/20 shadow-xl"
           >
-            {allSkills.length}
+            <div className="absolute -top-16 -right-16 w-40 h-40 bg-gradient-to-br from-blue-500/20 via-cyan-500/20 to-teal-500/20 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700" />
+            <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-gradient-to-tr from-purple-500/15 via-pink-500/15 to-rose-500/15 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700" />
+            
+            <motion.div 
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="text-6xl md:text-7xl font-display font-black bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent mb-3 relative z-10 drop-shadow-[0_0_20px_rgba(34,211,238,0.5)]"
+            >
+              {allSkills.length}
+            </motion.div>
+            <div className="text-base font-bold text-gray-400 uppercase tracking-wide relative z-10">Total Skills</div>
           </motion.div>
-          <div className="text-base font-bold text-gray-400 uppercase tracking-wide relative z-10">Total Skills</div>
-        </motion.div>
 
-        {/* Categories */}
-        <motion.div
-          whileHover={{ scale: 1.08, y: -8 }}
-          className="glass-ultra p-8 rounded-3xl text-center group relative overflow-hidden card-3d border-2 border-white/10 hover:border-white/20 shadow-xl"
-        >
-          <div className="absolute -top-16 -right-16 w-40 h-40 bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-rose-500/20 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700" />
-          <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-gradient-to-tr from-indigo-500/15 via-purple-500/15 to-fuchsia-500/15 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700" />
-          
-          <motion.div 
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 2, repeat: Infinity, delay: 0.2 }}
-            className="text-6xl md:text-7xl font-display font-black bg-gradient-to-r from-purple-400 via-pink-400 to-rose-400 bg-clip-text text-transparent mb-3 relative z-10 drop-shadow-[0_0_20px_rgba(236,72,153,0.5)]"
+          {/* Categories */}
+          <motion.div
+            whileHover={{ scale: 1.08, y: -8 }}
+            className="glass-ultra p-8 rounded-3xl text-center group relative overflow-hidden card-3d border-2 border-white/10 hover:border-white/20 shadow-xl"
           >
-            {filteredCategories.length}
+            <div className="absolute -top-16 -right-16 w-40 h-40 bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-rose-500/20 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700" />
+            <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-gradient-to-tr from-indigo-500/15 via-purple-500/15 to-fuchsia-500/15 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700" />
+            
+            <motion.div 
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 2, repeat: Infinity, delay: 0.2 }}
+              className="text-6xl md:text-7xl font-display font-black bg-gradient-to-r from-purple-400 via-pink-400 to-rose-400 bg-clip-text text-transparent mb-3 relative z-10 drop-shadow-[0_0_20px_rgba(236,72,153,0.5)]"
+            >
+              {filteredCategories.length}
+            </motion.div>
+            <div className="text-base font-bold text-gray-400 uppercase tracking-wide relative z-10">Categories</div>
           </motion.div>
-          <div className="text-base font-bold text-gray-400 uppercase tracking-wide relative z-10">Categories</div>
-        </motion.div>
 
-        {/* Advanced+ */}
-        <motion.div
-          whileHover={{ scale: 1.08, y: -8 }}
-          className="glass-ultra p-8 rounded-3xl text-center group relative overflow-hidden card-3d border-2 border-white/10 hover:border-white/20 shadow-xl"
-        >
-          <div className="absolute -top-16 -right-16 w-40 h-40 bg-gradient-to-br from-green-500/20 via-emerald-500/20 to-teal-500/20 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700" />
-          <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-gradient-to-tr from-lime-500/15 via-green-500/15 to-emerald-500/15 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700" />
-          
-          <motion.div 
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 2, repeat: Infinity, delay: 0.4 }}
-            className="text-6xl md:text-7xl font-display font-black bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent mb-3 relative z-10 drop-shadow-[0_0_20px_rgba(52,211,153,0.5)]"
+          {/* Advanced+ */}
+          <motion.div
+            whileHover={{ scale: 1.08, y: -8 }}
+            className="glass-ultra p-8 rounded-3xl text-center group relative overflow-hidden card-3d border-2 border-white/10 hover:border-white/20 shadow-xl"
           >
-            {allSkills.filter(s => s.level && s.level >= 75).length}
+            <div className="absolute -top-16 -right-16 w-40 h-40 bg-gradient-to-br from-green-500/20 via-emerald-500/20 to-teal-500/20 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700" />
+            <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-gradient-to-tr from-lime-500/15 via-green-500/15 to-emerald-500/15 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700" />
+            
+            <motion.div 
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 2, repeat: Infinity, delay: 0.4 }}
+              className="text-6xl md:text-7xl font-display font-black bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent mb-3 relative z-10 drop-shadow-[0_0_20px_rgba(52,211,153,0.5)]"
+            >
+              {allSkills.filter(s => s.level && s.level >= 75).length}
+            </motion.div>
+            <div className="text-base font-bold text-gray-400 uppercase tracking-wide relative z-10">Advanced+</div>
           </motion.div>
-          <div className="text-base font-bold text-gray-400 uppercase tracking-wide relative z-10">Advanced+</div>
-        </motion.div>
 
-        {/* Core Stack */}
-        <motion.div
-          whileHover={{ scale: 1.08, y: -8 }}
-          className="glass-ultra p-8 rounded-3xl text-center group relative overflow-hidden card-3d border-2 border-white/10 hover:border-white/20 shadow-xl"
-        >
-          <div className="absolute -top-16 -right-16 w-40 h-40 bg-gradient-to-br from-orange-500/20 via-amber-500/20 to-yellow-500/20 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700" />
-          <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-gradient-to-tr from-red-500/15 via-orange-500/15 to-amber-500/15 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700" />
-          
-          <motion.div 
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 2, repeat: Infinity, delay: 0.6 }}
-            className="text-6xl md:text-7xl font-display font-black bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 bg-clip-text text-transparent mb-3 relative z-10 drop-shadow-[0_0_20px_rgba(251,191,36,0.5)]"
+          {/* Core Stack */}
+          <motion.div
+            whileHover={{ scale: 1.08, y: -8 }}
+            className="glass-ultra p-8 rounded-3xl text-center group relative overflow-hidden card-3d border-2 border-white/10 hover:border-white/20 shadow-xl"
           >
-            {allSkills.filter(s => s.isPrimary).length}
+            <div className="absolute -top-16 -right-16 w-40 h-40 bg-gradient-to-br from-orange-500/20 via-amber-500/20 to-yellow-500/20 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700" />
+            <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-gradient-to-tr from-red-500/15 via-orange-500/15 to-amber-500/15 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700" />
+            
+            <motion.div 
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 2, repeat: Infinity, delay: 0.6 }}
+              className="text-6xl md:text-7xl font-display font-black bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 bg-clip-text text-transparent mb-3 relative z-10 drop-shadow-[0_0_20px_rgba(251,191,36,0.5)]"
+            >
+              {allSkills.filter(s => s.isPrimary).length}
+            </motion.div>
+            <div className="text-base font-bold text-gray-400 uppercase tracking-wide relative z-10">Core Stack</div>
           </motion.div>
-          <div className="text-base font-bold text-gray-400 uppercase tracking-wide relative z-10">Core Stack</div>
         </motion.div>
-      </motion.div>
+      )}
 
       {/* Search & Filter */}
       {showSearchFilter && (
@@ -333,30 +341,7 @@ export default function SkillsSection({
   );
 }
 
-// Helper function to get category colors - VIBRANT LIKE KEY HIGHLIGHTS
-function getCategoryColor(categoryName: string): string {
-  const colorMap: Record<string, string> = {
-    "Core Technologies": "from-blue-500/90 via-cyan-500/90 to-teal-500/90",
-    "Frontend": "from-purple-500/90 via-pink-500/90 to-rose-500/90",
-    "Backend": "from-green-500/90 via-emerald-500/90 to-lime-500/90",
-    "Database": "from-orange-500/90 via-amber-500/90 to-yellow-500/90",
-    "DevOps": "from-red-500/90 via-pink-500/90 to-purple-500/90",
-    "Tools": "from-indigo-500/90 via-blue-500/90 to-cyan-500/90",
-    "Design": "from-fuchsia-500/90 via-purple-500/90 to-pink-500/90",
-    "Cloud": "from-sky-500/90 via-blue-500/90 to-indigo-500/90",
-    "Mobile": "from-violet-500/90 via-purple-500/90 to-fuchsia-500/90",
-    "Testing": "from-lime-500/90 via-green-500/90 to-emerald-500/90",
-    "Languages": "from-cyan-500/90 via-blue-500/90 to-purple-500/90",
-    "Frameworks": "from-pink-500/90 via-rose-500/90 to-red-500/90",
-    // Add variations for common names - BRIGHT & COLORFUL
-    "Frontend Development": "from-fuchsia-500/90 via-pink-500/90 to-rose-500/90",
-    "Backend Development": "from-emerald-500/90 via-green-500/90 to-lime-500/90",
-    "Tools & Technologies": "from-cyan-500/90 via-sky-500/90 to-blue-500/90",
-    "Soft Skills": "from-purple-500/90 via-violet-500/90 to-fuchsia-500/90",
-  };
 
-  return colorMap[categoryName] || "from-pink-500/90 via-purple-500/90 to-indigo-500/90";
-}
 
 // Array of unique vibrant color combinations for each card
 const uniqueCardColors = [

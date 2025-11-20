@@ -3,6 +3,7 @@
 import React from "react";
 import { Github, Linkedin, Mail, Twitter, ArrowUp } from "lucide-react";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 // TODO: Replace these with your actual social links
 const socialLinks = [
@@ -13,6 +14,7 @@ const socialLinks = [
 ];
 
 export default function Footer() {
+  const { t } = useLanguage();
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -28,32 +30,27 @@ export default function Footer() {
               YourName
             </h3>
             <p className="text-muted-foreground text-sm">
-              Building beautiful and functional web experiences with modern technologies.
+              {t.hero.description}
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
+            <h4 className="text-lg font-semibold mb-4">{t.sections.footer.quickLinks}</h4>
             <ul className="space-y-2">
               <li>
                 <a href="#about" className="text-muted-foreground hover:text-primary transition-colors text-sm">
-                  About Me
+                  {t.nav.about}
                 </a>
               </li>
               <li>
                 <a href="#projects" className="text-muted-foreground hover:text-primary transition-colors text-sm">
-                  Projects
+                  {t.nav.projects}
                 </a>
               </li>
               <li>
                 <a href="#contact" className="text-muted-foreground hover:text-primary transition-colors text-sm">
-                  Contact
-                </a>
-              </li>
-              <li>
-                <a href="#blog" className="text-muted-foreground hover:text-primary transition-colors text-sm">
-                  Blog
+                  {t.nav.contact}
                 </a>
               </li>
             </ul>
@@ -86,25 +83,14 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-muted-foreground text-sm">
-            © {new Date().getFullYear()} Your Name. All rights reserved.
+          <p className="text-muted-foreground text-sm text-center md:text-left">
+            © {new Date().getFullYear()} YourName. {t.sections.footer.rights}
           </p>
-          <p className="text-muted-foreground text-sm">
-            Built with Next.js, TypeScript, and Tailwind CSS
+          <p className="text-muted-foreground text-xs flex items-center gap-1">
+            {t.sections.footer.builtWith}
           </p>
         </div>
       </div>
-
-      {/* Back to Top Button */}
-      <motion.button
-        onClick={scrollToTop}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        className="fixed bottom-8 right-8 p-3 bg-primary text-primary-foreground rounded-full shadow-lg hover:shadow-xl transition-shadow neon-glow"
-        aria-label="Scroll to top"
-      >
-        <ArrowUp size={24} />
-      </motion.button>
     </footer>
   );
 }

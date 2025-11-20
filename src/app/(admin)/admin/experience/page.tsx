@@ -5,42 +5,28 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Edit2, Trash2, Briefcase, X, Loader2, Calendar, MapPin } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { getAllExperience, createExperience, updateExperience, deleteExperience } from "@/lib/firebase-queries";
+import { getAllExperience, createExperience, updateExperience, deleteExperience } from "@/lib/supabase-queries";
+import { ExperienceItem } from "@/lib/content-types";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
-
-interface Experience {
-  id: string;
-  company: string;
-  position: string;
-  location?: string;
-  start_date: string;
-  end_date?: string;
-  is_current?: boolean;
-  description?: string;
-  responsibilities?: string[];
-  technologies?: string[];
-}
 
 export default function ExperienceAdminPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const [experience, setExperience] = useState<Experience[]>([]);
+  const [experience, setExperience] = useState<ExperienceItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingExperience, setEditingExperience] = useState<Experience | null>(null);
+  const [editingExperience, setEditingExperience] = useState<ExperienceItem | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Partial<ExperienceItem>>({
     company: "",
-    position: "",
+    role: "",
     location: "",
-    start_date: "",
-    end_date: "",
-    is_current: false,
+    startDate: "",
+    endDate: "",
+    isCurrent: false,
     description: "",
-    responsibilities: [] as string[],
-    technologies: [] as string[],
+    technologies: [],
   });
-  const [responsibilityInput, setResponsibilityInput] = useState("");
   const [technologyInput, setTechnologyInput] = useState("");
 
   useEffect(() => {
@@ -67,31 +53,29 @@ export default function ExperienceAdminPage() {
     }
   };
 
-  const handleOpenModal = (exp?: Experience) => {
+  const handleOpenModal = (exp?: ExperienceItem) => {
     if (exp) {
       setEditingExperience(exp);
       setFormData({
         company: exp.company,
-        position: exp.position,
+        role: exp.role,
         location: exp.location || "",
-        start_date: exp.start_date,
-        end_date: exp.end_date || "",
-        is_current: exp.is_current || false,
+        startDate: typeof exp.startDate === 'string' ? exp.startDate : new Date(exp.startDate).toISOString().split('T')[0],
+        endDate: exp.endDate ? (typeof exp.endDate === 'string' ? exp.endDate : new Date(exp.endDate).toISOString().split('T')[0]) : "",
+        isCurrent: exp.isCurrent || false,
         description: exp.description || "",
-        responsibilities: exp.responsibilities || [],
         technologies: exp.technologies || [],
       });
     } else {
       setEditingExperience(null);
       setFormData({
         company: "",
-        position: "",
+        role: "",
         location: "",
-        start_date: "",
-        end_date: "",
-        is_current: false,
+        startDate: "",
+        endDate: "",
+        isCurrent: false,
         description: "",
-        responsibilities: [],
         technologies: [],
       });
     }
@@ -101,32 +85,14 @@ export default function ExperienceAdminPage() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingExperience(null);
-    setResponsibilityInput("");
     setTechnologyInput("");
-  };
-
-  const handleAddResponsibility = () => {
-    if (responsibilityInput.trim()) {
-      setFormData({
-        ...formData,
-        responsibilities: [...formData.responsibilities, responsibilityInput.trim()],
-      });
-      setResponsibilityInput("");
-    }
-  };
-
-  const handleRemoveResponsibility = (index: number) => {
-    setFormData({
-      ...formData,
-      responsibilities: formData.responsibilities.filter((_, i) => i !== index),
-    });
   };
 
   const handleAddTechnology = () => {
     if (technologyInput.trim()) {
       setFormData({
         ...formData,
-        technologies: [...formData.technologies, technologyInput.trim()],
+        technologies: [...(formData.technologies || []), technologyInput.trim()],
       });
       setTechnologyInput("");
     }
@@ -135,7 +101,7 @@ export default function ExperienceAdminPage() {
   const handleRemoveTechnology = (index: number) => {
     setFormData({
       ...formData,
-      technologies: formData.technologies.filter((_, i) => i !== index),
+      technologies: (formData.technologies || []).filter((_, i) => i !== index),
     });
   };
 
@@ -146,10 +112,10 @@ export default function ExperienceAdminPage() {
 
       const submitData = {
         ...formData,
-        end_date: formData.is_current ? null : formData.end_date || null,
-      };
+        endDate: formData.isCurrent ? null : formData.endDate || null,
+      } as Omit<ExperienceItem, "id">;
 
-      if (editingExperience) {
+      if (editingExperience && editingExperience.id) {
         await updateExperience(editingExperience.id, submitData);
       } else {
         await createExperience(submitData);
@@ -222,7 +188,7 @@ export default function ExperienceAdminPage() {
                   </div>
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
-                      {exp.position}
+                      {exp.role}
                     </h3>
                     <p className="text-lg text-purple-600 dark:text-purple-400 mb-2">
                       {exp.company}
@@ -231,8 +197,8 @@ export default function ExperienceAdminPage() {
                       <div className="flex items-center gap-1">
                         <Calendar className="w-4 h-4" />
                         <span>
-                          {formatDate(exp.start_date)} -{" "}
-                          {exp.is_current ? "Present" : exp.end_date ? formatDate(exp.end_date) : "N/A"}
+                          {formatDate(exp.startDate as string)} -{" "}
+                          {exp.isCurrent ? "Present" : exp.endDate ? formatDate(exp.endDate as string) : "N/A"}
                         </span>
                       </div>
                       {exp.location && (
@@ -246,23 +212,6 @@ export default function ExperienceAdminPage() {
                       <p className="text-gray-700 dark:text-gray-300 mb-3">
                         {exp.description}
                       </p>
-                    )}
-                    {exp.responsibilities && exp.responsibilities.length > 0 && (
-                      <div className="mb-3">
-                        <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                          Responsibilities:
-                        </p>
-                        <ul className="list-disc list-inside space-y-1">
-                          {exp.responsibilities.map((responsibility, index) => (
-                            <li
-                              key={index}
-                              className="text-sm text-gray-600 dark:text-gray-400"
-                            >
-                              {responsibility}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
                     )}
                     {exp.technologies && exp.technologies.length > 0 && (
                       <div className="flex flex-wrap gap-2">
@@ -286,7 +235,7 @@ export default function ExperienceAdminPage() {
                     <Edit2 className="w-5 h-5" />
                   </button>
                   <button
-                    onClick={() => handleDelete(exp.id)}
+                    onClick={() => exp.id && handleDelete(exp.id)}
                     className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
                   >
                     <Trash2 className="w-5 h-5" />
@@ -337,12 +286,12 @@ export default function ExperienceAdminPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Company *
+                      Role *
                     </label>
                     <input
                       type="text"
-                      value={formData.company}
-                      onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                      value={formData.role}
+                      onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                       required
                     />
@@ -350,12 +299,12 @@ export default function ExperienceAdminPage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Position *
+                      Company *
                     </label>
                     <input
                       type="text"
-                      value={formData.position}
-                      onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                      value={formData.company}
+                      onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                       required
                     />
@@ -382,8 +331,8 @@ export default function ExperienceAdminPage() {
                     </label>
                     <input
                       type="date"
-                      value={formData.start_date}
-                      onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                      value={formData.startDate as string}
+                      onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                       required
                     />
@@ -395,9 +344,9 @@ export default function ExperienceAdminPage() {
                     </label>
                     <input
                       type="date"
-                      value={formData.end_date}
-                      onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
-                      disabled={formData.is_current}
+                      value={formData.endDate as string}
+                      onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                      disabled={formData.isCurrent}
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                     />
                   </div>
@@ -406,12 +355,12 @@ export default function ExperienceAdminPage() {
                 <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
-                    id="is_current"
-                    checked={formData.is_current}
-                    onChange={(e) => setFormData({ ...formData, is_current: e.target.checked, end_date: "" })}
+                    id="isCurrent"
+                    checked={formData.isCurrent}
+                    onChange={(e) => setFormData({ ...formData, isCurrent: e.target.checked, endDate: "" })}
                     className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
                   />
-                  <label htmlFor="is_current" className="text-sm text-gray-700 dark:text-gray-300">
+                  <label htmlFor="isCurrent" className="text-sm text-gray-700 dark:text-gray-300">
                     Currently working here
                   </label>
                 </div>
@@ -426,50 +375,6 @@ export default function ExperienceAdminPage() {
                     rows={3}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                   />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Responsibilities
-                  </label>
-                  <div className="flex gap-2 mb-2">
-                    <input
-                      type="text"
-                      value={responsibilityInput}
-                      onChange={(e) => setResponsibilityInput(e.target.value)}
-                      onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddResponsibility())}
-                      placeholder="Add a responsibility..."
-                      className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleAddResponsibility}
-                      className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-                    >
-                      Add
-                    </button>
-                  </div>
-                  {formData.responsibilities.length > 0 && (
-                    <ul className="space-y-2">
-                      {formData.responsibilities.map((responsibility, index) => (
-                        <li
-                          key={index}
-                          className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-2 rounded"
-                        >
-                          <span className="text-sm text-gray-700 dark:text-gray-300">
-                            {responsibility}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveResponsibility(index)}
-                            className="text-red-600 hover:text-red-700"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
                 </div>
 
                 <div>
@@ -493,18 +398,18 @@ export default function ExperienceAdminPage() {
                       Add
                     </button>
                   </div>
-                  {formData.technologies.length > 0 && (
+                  {formData.technologies && formData.technologies.length > 0 && (
                     <div className="flex flex-wrap gap-2">
                       {formData.technologies.map((tech, index) => (
                         <span
                           key={index}
-                          className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm flex items-center gap-2"
+                          className="flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm"
                         >
                           {tech}
                           <button
                             type="button"
                             onClick={() => handleRemoveTechnology(index)}
-                            className="text-blue-700 dark:text-blue-300 hover:text-blue-900"
+                            className="hover:text-red-600"
                           >
                             <X className="w-3 h-3" />
                           </button>

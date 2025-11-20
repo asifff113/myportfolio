@@ -15,7 +15,7 @@ export default async function BlogPage() {
 
   // Sort posts by date (newest first)
   const sortedPosts = [...posts].sort((a, b) => {
-    return new Date(b.date).getTime() - new Date(a.date).getTime();
+    return new Date(b.publishedDate).getTime() - new Date(a.publishedDate).getTime();
   });
 
   return (
@@ -49,9 +49,9 @@ export default async function BlogPage() {
                 >
                   <article className="glass p-6 rounded-2xl hover:shadow-xl transition-all hover:scale-[1.02]">
                     {/* Category Badge */}
-                    {post.category && (
+                    {post.tags && post.tags.length > 0 && (
                       <span className="inline-block px-3 py-1 text-xs font-medium bg-primary/10 text-primary rounded-full mb-4">
-                        {post.category}
+                        {post.tags[0]}
                       </span>
                     )}
 
@@ -70,17 +70,17 @@ export default async function BlogPage() {
                       <div className="flex items-center gap-1">
                         <Calendar size={14} />
                         <span>
-                          {new Date(post.date).toLocaleDateString("en-US", {
+                          {new Date(post.publishedDate).toLocaleDateString("en-US", {
                             month: "short",
                             day: "numeric",
                             year: "numeric",
                           })}
                         </span>
                       </div>
-                      {post.readingTime && (
+                      {post.readTime && (
                         <div className="flex items-center gap-1">
                           <Clock size={14} />
-                          <span>{post.readingTime}</span>
+                          <span>{post.readTime} min read</span>
                         </div>
                       )}
                     </div>

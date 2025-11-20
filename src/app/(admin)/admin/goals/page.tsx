@@ -5,17 +5,9 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Plus, Edit2, Trash2, X, Loader2, Target } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { getFutureGoals, createFutureGoal, updateFutureGoal, deleteFutureGoal } from "@/lib/firebase-queries";
+import { getFutureGoals, createFutureGoal, updateFutureGoal, deleteFutureGoal } from "@/lib/supabase-queries";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
-
-interface Goal {
-  id: string;
-  title: string;
-  description: string;
-  target_date?: string;
-  category?: string;
-  status?: string;
-}
+import { FutureGoal } from "@/lib/content-types";
 
 const categories = ["Technical", "Career", "Personal", "Other"];
 const statuses = ["planned", "in_progress", "completed", "on_hold"];
@@ -23,12 +15,12 @@ const statuses = ["planned", "in_progress", "completed", "on_hold"];
 export default function GoalsAdminPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const [goals, setGoals] = useState<Goal[]>([]);
+  const [goals, setGoals] = useState<FutureGoal[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editing, setEditing] = useState<Goal | null>(null);
+  const [editing, setEditing] = useState<FutureGoal | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [formData, setFormData] = useState({ title: "", description: "", target_date: "", category: "Personal", status: "planned" });
+  const [formData, setFormData] = useState({ title: "", description: "", targetDate: "", category: "Personal", status: "planned" });
 
   useEffect(() => {
     if (!authLoading && !user) router.push("/login");
@@ -54,12 +46,16 @@ export default function GoalsAdminPage() {
     e.preventDefault();
     try {
       setSubmitting(true);
-      const submitData = { ...formData, target_date: formData.target_date || null };
-      editing ? await updateFutureGoal(editing.id, submitData) : await createFutureGoal(submitData);
+      const submitData = { ...formData, targetDate: formData.targetDate || undefined };
+      if (editing && editing.id) {
+        await updateFutureGoal(editing.id, submitData);
+      } else {
+        await createFutureGoal(submitData);
+      }
       await loadGoals();
       setIsModalOpen(false);
       setEditing(null);
-      setFormData({ title: "", description: "", target_date: "", category: "Personal", status: "planned" });
+      setFormData({ title: "", description: "", targetDate: "", category: "Personal", status: "planned" });
     } catch (error) {
       alert("Failed to save goal");
     } finally {
@@ -96,7 +92,7 @@ export default function GoalsAdminPage() {
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Future Goals</h1>
             <p className="text-gray-600 dark:text-gray-400">Track your aspirations and long-term objectives</p>
           </div>
-          <button onClick={() => { setEditing(null); setFormData({ title: "", description: "", target_date: "", category: "Personal", status: "planned" }); setIsModalOpen(true); }} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2">
+          <button onClick={() => { setEditing(null); setFormData({ title: "", description: "", targetDate: "", category: "Personal", status: "planned" }); setIsModalOpen(true); }} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2">
             <Plus className="w-5 h-5" /> Add Goal
           </button>
         </div>
@@ -115,15 +111,15 @@ export default function GoalsAdminPage() {
                     <div className="flex flex-wrap gap-2">
                       {goal.category && <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 text-xs rounded">{goal.category}</span>}
                       {goal.status && <span className={`px-2 py-1 text-xs rounded ${getStatusColor(goal.status)}`}>{goal.status.replace("_", " ")}</span>}
-                      {goal.target_date && <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded">{new Date(goal.target_date).toLocaleDateString()}</span>}
+                      {goal.targetDate && <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded">{new Date(goal.targetDate).toLocaleDateString()}</span>}
                     </div>
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => { setEditing(goal); setFormData({ title: goal.title, description: goal.description, target_date: goal.target_date || "", category: goal.category || "Personal", status: goal.status || "planned" }); setIsModalOpen(true); }} className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg">
+                  <button onClick={() => { setEditing(goal); setFormData({ title: goal.title, description: goal.description, targetDate: goal.targetDate || "", category: goal.category || "Personal", status: goal.status || "planned" }); setIsModalOpen(true); }} className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg">
                     <Edit2 className="w-4 h-4" />
                   </button>
-                  <button onClick={() => handleDelete(goal.id)} className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-gray-700 rounded-lg">
+                  <button onClick={() => goal.id && handleDelete(goal.id)} className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-gray-700 rounded-lg">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
@@ -174,7 +170,7 @@ export default function GoalsAdminPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Target Date (optional)</label>
-                <input type="date" value={formData.target_date} onChange={(e) => setFormData({ ...formData, target_date: e.target.value })} className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500" />
+                <input type="date" value={formData.targetDate} onChange={(e) => setFormData({ ...formData, targetDate: e.target.value })} className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500" />
               </div>
               <div className="flex gap-3 pt-4">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700" disabled={submitting}>Cancel</button>

@@ -5,17 +5,9 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Edit2, Trash2, Award, X, Loader2, Calendar, ExternalLink } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { getCertificates, createCertificate, updateCertificate, deleteCertificate } from "@/lib/firebase-queries";
+import { getCertificates, createCertificate, updateCertificate, deleteCertificate } from "@/lib/supabase-queries";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
-
-interface Certificate {
-  id: string;
-  title: string;
-  issuer: string;
-  date: string;
-  image_url?: string;
-  credential_url?: string;
-}
+import { Certificate } from "@/lib/content-types";
 
 export default function CertificatesAdminPage() {
   const { user, loading: authLoading } = useAuth();
@@ -28,9 +20,9 @@ export default function CertificatesAdminPage() {
   const [formData, setFormData] = useState({
     title: "",
     issuer: "",
-    date: "",
-    image_url: "",
-    credential_url: "",
+    issuedDate: "",
+    fileUrl: "",
+    credentialUrl: "",
   });
 
   useEffect(() => {
@@ -63,18 +55,18 @@ export default function CertificatesAdminPage() {
       setFormData({
         title: certificate.title,
         issuer: certificate.issuer,
-        date: certificate.date,
-        image_url: certificate.image_url || "",
-        credential_url: certificate.credential_url || "",
+        issuedDate: certificate.issuedDate instanceof Date ? certificate.issuedDate.toISOString().split('T')[0] : String(certificate.issuedDate),
+        fileUrl: certificate.fileUrl || "",
+        credentialUrl: certificate.credentialUrl || "",
       });
     } else {
       setEditingCertificate(null);
       setFormData({
         title: "",
         issuer: "",
-        date: "",
-        image_url: "",
-        credential_url: "",
+        issuedDate: "",
+        fileUrl: "",
+        credentialUrl: "",
       });
     }
     setIsModalOpen(true);
@@ -90,7 +82,7 @@ export default function CertificatesAdminPage() {
     try {
       setSubmitting(true);
 
-      if (editingCertificate) {
+      if (editingCertificate && editingCertificate.id) {
         await updateCertificate(editingCertificate.id, formData);
       } else {
         await createCertificate(formData);
@@ -106,7 +98,8 @@ export default function CertificatesAdminPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id?: string) => {
+    if (!id) return;
     if (!confirm("Are you sure you want to delete this certificate?")) return;
 
     try {
@@ -118,9 +111,9 @@ export default function CertificatesAdminPage() {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  const formatDate = (date: string | Date) => {
+    const d = new Date(date);
+    return d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
   };
 
   if (authLoading || loading) {
@@ -168,13 +161,13 @@ export default function CertificatesAdminPage() {
                     <p className="text-gray-600 dark:text-gray-400 mb-2">
                       {certificate.issuer}
                     </p>
-                    <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 mb-3">
-                      <Calendar className="w-4 h-4" />
-                      <span>{formatDate(certificate.date)}</span>
-                    </div>
-                    {certificate.credential_url && (
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-4">
+                    <Calendar className="w-4 h-4" />
+                    <span>{formatDate(certificate.issuedDate)}</span>
+                  </div>
+                    {certificate.credentialUrl && (
                       <a
-                        href={certificate.credential_url}
+                        href={certificate.credentialUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400 hover:underline"
@@ -272,8 +265,8 @@ export default function CertificatesAdminPage() {
                   </label>
                   <input
                     type="date"
-                    value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                    value={formData.issuedDate}
+                    onChange={(e) => setFormData({ ...formData, issuedDate: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                     required
                   />
@@ -285,8 +278,8 @@ export default function CertificatesAdminPage() {
                   </label>
                   <input
                     type="url"
-                    value={formData.image_url}
-                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                    value={formData.fileUrl}
+                    onChange={(e) => setFormData({ ...formData, fileUrl: e.target.value })}
                     placeholder="/certificates/cert.pdf"
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                   />
@@ -298,8 +291,8 @@ export default function CertificatesAdminPage() {
                   </label>
                   <input
                     type="url"
-                    value={formData.credential_url}
-                    onChange={(e) => setFormData({ ...formData, credential_url: e.target.value })}
+                    value={formData.credentialUrl}
+                    onChange={(e) => setFormData({ ...formData, credentialUrl: e.target.value })}
                     placeholder="https://verify.example.com/..."
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                   />

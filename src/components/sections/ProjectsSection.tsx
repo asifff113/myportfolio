@@ -3,11 +3,14 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Github, ExternalLink, Code2, Star, Calendar } from "lucide-react";
+import { Github, ExternalLink, Code2, Star, Calendar, ArrowRight } from "lucide-react";
 import { Project } from "@/lib/content-types";
 import Section from "@/components/ui/Section";
 import SectionTitle from "@/components/ui/SectionTitle";
 import { formatDate } from "@/lib/utils";
+import ProjectModal from "./ProjectModal";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useTranslatedProjects } from "@/lib/i18n/useTranslatedContent";
 
 interface ProjectsSectionProps {
   projects: Project[];
@@ -52,15 +55,29 @@ const statusColors: Record<string, string> = {
   Archived: "bg-gray-500/30 text-gray-300 border-gray-400/50 shadow-lg shadow-gray-500/20",
 };
 
-export default function ProjectsSection({ projects }: ProjectsSectionProps) {
+export default function ProjectsSection({ projects: initialProjects }: ProjectsSectionProps) {
+  const { t, locale } = useLanguage();
+  const projects = useTranslatedProjects(initialProjects);
   const [filter, setFilter] = useState<string>("All");
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   if (!projects || projects.length === 0) {
     return null;
   }
 
+  const handleProjectClick = (project: Project) => {
+    setSelectedProject(project);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setTimeout(() => setSelectedProject(null), 300);
+  };
+
   // Get unique project types
-  const types = ["All", ...Array.from(new Set(projects.map((p) => p.type)))];
+  const types = ["All", ...Array.from(new Set(projects.map((p) => p.type).filter((t): t is string => !!t)))];
 
   // Filter projects
   const filteredProjects = filter === "All" 
@@ -74,8 +91,8 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
   return (
     <Section id="projects" className="relative bg-muted/20">
       <SectionTitle
-        title="Projects"
-        subtitle="Some of my work and side projects"
+        title={t.sections.projects.title}
+        subtitle={t.sections.projects.subtitle}
       />
 
       {/* Filter Buttons */}
@@ -85,36 +102,19 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
         viewport={{ once: true }}
         className="flex flex-wrap justify-center gap-3 mb-12"
       >
-        {types.map((type, idx) => {
-          const filterColors = [
-            "from-blue-500 to-cyan-500",
-            "from-purple-500 to-pink-500",
-            "from-green-500 to-emerald-500",
-            "from-orange-500 to-red-500",
-            "from-indigo-500 to-purple-500",
-            "from-pink-500 to-rose-500",
-          ];
-          const filterColor = filterColors[idx % filterColors.length];
-          
-          return (
-            <motion.button
-              key={type}
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setFilter(type)}
-              className={`px-6 py-3 rounded-full font-bold transition-all ripple relative overflow-hidden ${
-                filter === type
-                  ? `bg-gradient-to-r ${filterColor} text-white shadow-lg border-2 border-white/30`
-                  : "glass-ultra hover:bg-primary/20 border-2 border-transparent hover:border-white/20"
-              }`}
-            >
-              <span className="relative z-10">{type}</span>
-              {filter === type && (
-                <div className="absolute inset-0 bg-white/20 animate-pulse" />
-              )}
-            </motion.button>
-          );
-        })}
+        {types.map((type) => (
+          <button
+            key={type}
+            onClick={() => setFilter(type)}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+              filter === type
+                ? "bg-primary text-primary-foreground shadow-lg scale-105"
+                : "bg-background/50 hover:bg-background hover:shadow-md text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {type === "All" ? t.sections.projects.filterAll : type}
+          </button>
+        ))}
       </motion.div>
 
       {/* Featured Projects */}
@@ -134,7 +134,12 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
               className="grid grid-cols-1 lg:grid-cols-2 gap-8"
             >
               {featuredProjects.map((project) => (
-                <ProjectCard key={project.id} project={project} featured />
+                <ProjectCard 
+                  key={project.id} 
+                  project={project} 
+                  featured 
+                  onClick={handleProjectClick}
+                />
               ))}
             </motion.div>
           </AnimatePresence>
@@ -153,7 +158,11 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
             {regularProjects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
+              <ProjectCard 
+                key={project.id} 
+                project={project} 
+                onClick={handleProjectClick}
+              />
             ))}
           </motion.div>
         </AnimatePresence>
@@ -171,6 +180,13 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
           </p>
         </motion.div>
       )}
+
+      {/* Project Detail Modal */}
+      <ProjectModal
+        project={selectedProject}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
     </Section>
   );
 }
@@ -179,18 +195,22 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
 interface ProjectCardProps {
   project: Project;
   featured?: boolean;
+  onClick: (project: Project) => void;
 }
 
-function ProjectCard({ project, featured = false }: ProjectCardProps) {
+function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
   const [imageError, setImageError] = useState(false);
+  const statusColor = statusColors[project.category || "Completed"] || statusColors["Completed"];
+  const typeColor = typeColors[project.category || "Personal"] || typeColors["Personal"];
 
   return (
     <motion.div
       variants={itemVariants}
       whileHover={{ y: -10, scale: 1.02 }}
-      className={`glass-ultra rounded-2xl overflow-hidden group relative card-3d ${
+      className={`glass-ultra rounded-2xl overflow-hidden group relative card-3d cursor-pointer ${
         featured ? "lg:col-span-1 neon-border" : ""
       }`}
+      onClick={() => onClick(project)}
     >
       {/* Featured Badge */}
       {featured && (
@@ -279,9 +299,11 @@ function ProjectCard({ project, featured = false }: ProjectCardProps) {
         {/* Badges */}
         <div className="flex flex-wrap gap-2 mb-4">
           {/* Type Badge */}
-          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border shimmer-hover ${typeColors[project.type] || typeColors.Personal}`}>
-            {project.type}
-          </span>
+          {project.type && (
+            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border shimmer-hover ${typeColors[project.type] || typeColors.Personal}`}>
+              {project.type}
+            </span>
+          )}
 
           {/* Status Badge */}
           {project.status && (
@@ -341,30 +363,42 @@ function ProjectCard({ project, featured = false }: ProjectCardProps) {
           </div>
         )}
 
-        {/* Links */}
-        <div className="flex gap-3 text-sm">
-          {project.githubUrl && (
-            <a
-              href={project.githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
-            >
-              <Github size={16} />
-              <span>Code</span>
-            </a>
-          )}
-          {project.liveUrl && (
-            <a
-              href={project.liveUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
-            >
-              <ExternalLink size={16} />
-              <span>Live Demo</span>
-            </a>
-          )}
+        {/* Links & Actions */}
+        <div className="flex items-center justify-between gap-3 text-sm mt-auto pt-4 border-t border-white/5">
+          <div className="flex gap-3">
+            {project.githubUrl && (
+              <a
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Github size={16} />
+                <span className="hidden sm:inline">Code</span>
+              </a>
+            )}
+            {project.liveUrl && (
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <ExternalLink size={16} />
+                <span className="hidden sm:inline">Live Demo</span>
+              </a>
+            )}
+          </div>
+          
+          <button
+            onClick={() => onClick(project)}
+            className="inline-flex items-center gap-1 text-primary font-bold hover:underline group/btn"
+          >
+            View Details
+            <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+          </button>
         </div>
       </div>
 

@@ -95,7 +95,6 @@ export default function GoalsSection({ goals }: GoalsSectionProps) {
             const isEven = index % 2 === 0;
             const StatusIcon = statusIcons[goal.status || "Planning"];
             const gradientColor = categoryColors[goal.category || "Other"];
-            const priorityStyle = priorityConfig[goal.priority || "Medium"];
 
             return (
               <motion.div
@@ -115,6 +114,37 @@ export default function GoalsSection({ goals }: GoalsSectionProps) {
                 >
                   {/* Category Gradient Bar */}
                   <div className={`absolute top-0 left-0 right-0 h-2 bg-gradient-to-r ${gradientColor} shimmer`} />
+
+                  {/* Progress Ring */}
+                  <div className="absolute top-6 right-6">
+                    <div className="relative w-12 h-12 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <svg className="w-full h-full transform -rotate-90">
+                        <circle
+                          cx="24"
+                          cy="24"
+                          r="20"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="transparent"
+                          className="text-muted/20"
+                        />
+                        <circle
+                          cx="24"
+                          cy="24"
+                          r="20"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="transparent"
+                          strokeDasharray={125.6}
+                          strokeDashoffset={125.6 - (125.6 * (goal.status === "Achieved" ? 100 : goal.status === "In Progress" ? 50 : 10)) / 100}
+                          className={`${goal.status === "Achieved" ? "text-green-500" : goal.status === "In Progress" ? "text-blue-500" : "text-gray-500"} transition-all duration-1000 ease-out drop-shadow-[0_0_5px_rgba(var(--primary-rgb),0.5)]`}
+                        />
+                      </svg>
+                      <span className="absolute text-[10px] font-bold">
+                        {goal.status === "Achieved" ? "100%" : goal.status === "In Progress" ? "50%" : "10%"}
+                      </span>
+                    </div>
+                  </div>
 
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
@@ -141,17 +171,14 @@ export default function GoalsSection({ goals }: GoalsSectionProps) {
                   {/* Metadata */}
                   <div className="flex flex-wrap gap-3 items-center">
                     {/* Timeframe */}
-                    <span className="inline-flex items-center gap-2 px-3 py-1 glass rounded-full text-xs font-medium">
-                      <Clock size={14} />
-                      {goal.timeframe}
-                    </span>
-
-                    {/* Priority */}
-                    {goal.priority && (
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${priorityStyle.color}`}>
-                        {priorityStyle.label}
+                    {goal.targetDate && (
+                      <span className="inline-flex items-center gap-2 px-3 py-1 glass rounded-full text-xs font-medium">
+                        <Clock size={14} />
+                        {new Date(goal.targetDate).toLocaleDateString()}
                       </span>
                     )}
+
+
 
                     {/* Status */}
                     {goal.status && StatusIcon && (

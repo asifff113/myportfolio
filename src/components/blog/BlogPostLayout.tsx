@@ -81,9 +81,9 @@ export default function BlogPostLayout({ post, relatedPosts }: BlogPostLayoutPro
           {/* Header */}
           <header className="mb-12">
             {/* Category Badge */}
-            {post.category && (
+            {post.tags && post.tags.length > 0 && (
               <span className="inline-block px-4 py-1.5 text-sm font-medium bg-primary/10 text-primary rounded-full mb-6">
-                {post.category}
+                {post.tags[0]}
               </span>
             )}
 
@@ -96,18 +96,18 @@ export default function BlogPostLayout({ post, relatedPosts }: BlogPostLayoutPro
             <div className="flex flex-wrap items-center gap-6 text-muted-foreground mb-6">
               <div className="flex items-center gap-2">
                 <Calendar size={18} />
-                <time dateTime={post.date}>
-                  {new Date(post.date).toLocaleDateString("en-US", {
+                <time dateTime={new Date(post.publishedDate).toISOString()}>
+                  {new Date(post.publishedDate).toLocaleDateString("en-US", {
                     month: "long",
                     day: "numeric",
                     year: "numeric",
                   })}
                 </time>
               </div>
-              {post.readingTime && (
+              {post.readTime && (
                 <div className="flex items-center gap-2">
                   <Clock size={18} />
-                  <span>{post.readingTime}</span>
+                  <span>{post.readTime} min read</span>
                 </div>
               )}
             </div>
@@ -227,9 +227,9 @@ export default function BlogPostLayout({ post, relatedPosts }: BlogPostLayoutPro
                     href={`/blog/${relatedPost.slug}`}
                     className="group glass p-4 rounded-xl hover:shadow-lg transition-all hover:scale-[1.02]"
                   >
-                    {relatedPost.category && (
+                    {relatedPost.tags && relatedPost.tags.length > 0 && (
                       <span className="inline-block text-xs px-2 py-1 bg-primary/10 text-primary rounded-full mb-2">
-                        {relatedPost.category}
+                        {relatedPost.tags[0]}
                       </span>
                     )}
                     <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">

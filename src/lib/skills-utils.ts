@@ -63,8 +63,13 @@ export function getProficiencyBand(level: number): ProficiencyBandInfo {
  * Get all primary/core skills across categories
  */
 export function getPrimarySkills(categories: SkillCategory[]): Skill[] {
-  const allSkills = categories.flatMap((cat) => cat.skills);
-  return allSkills.filter((skill) => skill.isPrimary);
+  // Safety check for undefined or null categories
+  if (!categories || !Array.isArray(categories)) {
+    return [];
+  }
+  
+  const allSkills = categories.flatMap((cat) => cat.skills || []);
+  return allSkills.filter((skill) => skill && skill.isPrimary);
 }
 
 /**
@@ -82,7 +87,8 @@ export function getProjectsForSkill(skillName: string, projects: Project[]): Pro
  * Calculate total years of experience across all skills
  */
 export function getTotalExperience(categories: SkillCategory[]): number {
-  const allSkills = categories.flatMap((cat) => cat.skills);
+  if (!categories || !Array.isArray(categories)) return 0;
+  const allSkills = categories.flatMap((cat) => cat.skills || []);
   const experiences = allSkills
     .map((skill) => skill.yearsOfExperience || 0)
     .filter((years) => years > 0);
@@ -94,7 +100,8 @@ export function getTotalExperience(categories: SkillCategory[]): number {
  * Get total skill count
  */
 export function getTotalSkillCount(categories: SkillCategory[]): number {
-  return categories.reduce((sum, cat) => sum + cat.skills.length, 0);
+  if (!categories || !Array.isArray(categories)) return 0;
+  return categories.reduce((sum, cat) => sum + (cat.skills?.length || 0), 0);
 }
 
 /**
@@ -103,8 +110,6 @@ export function getTotalSkillCount(categories: SkillCategory[]): number {
 export function groupSkillsByProficiency(
   categories: SkillCategory[]
 ): Record<ProficiencyBand, Skill[]> {
-  const allSkills = categories.flatMap((cat) => cat.skills);
-  
   const grouped: Record<string, Skill[]> = {
     Expert: [],
     Advanced: [],
@@ -112,8 +117,12 @@ export function groupSkillsByProficiency(
     Beginner: [],
   };
 
+  if (!categories || !Array.isArray(categories)) return grouped as Record<ProficiencyBand, Skill[]>;
+
+  const allSkills = categories.flatMap((cat) => cat.skills || []);
+
   allSkills.forEach((skill) => {
-    if (skill.level !== undefined) {
+    if (skill && skill.level !== undefined) {
       const band = getProficiencyBand(skill.level);
       grouped[band.label].push(skill);
     }
@@ -129,6 +138,7 @@ export function filterSkills(
   categories: SkillCategory[],
   searchQuery: string
 ): SkillCategory[] {
+  if (!categories || !Array.isArray(categories)) return [];
   if (!searchQuery.trim()) return categories;
 
   const query = searchQuery.toLowerCase();
@@ -136,7 +146,7 @@ export function filterSkills(
   return categories
     .map((category) => ({
       ...category,
-      skills: category.skills.filter(
+      skills: (category.skills || []).filter(
         (skill) =>
           skill.name.toLowerCase().includes(query) ||
           skill.description?.toLowerCase().includes(query)
@@ -152,13 +162,14 @@ export function filterByCategory(
   categories: SkillCategory[],
   categoryFilter: string | null
 ): SkillCategory[] {
+  if (!categories || !Array.isArray(categories)) return [];
   if (!categoryFilter || categoryFilter === "All") return categories;
   
   if (categoryFilter === "Core") {
     return categories
       .map((category) => ({
         ...category,
-        skills: category.skills.filter((skill) => skill.isPrimary),
+        skills: (category.skills || []).filter((skill) => skill.isPrimary),
       }))
       .filter((category) => category.skills.length > 0);
   }
@@ -175,6 +186,7 @@ export function separateHardAndSoftSkills(categories: SkillCategory[]): {
   hard: SkillCategory[];
   soft: SkillCategory[];
 } {
+  if (!categories || !Array.isArray(categories)) return { hard: [], soft: [] };
   const softSkillCategories = ["soft skills", "professional skills", "interpersonal"];
   
   const hard = categories.filter(
@@ -199,7 +211,18 @@ export function getSkillStats(categories: SkillCategory[]): {
   expertCount: number;
   advancedCount: number;
 } {
-  const allSkills = categories.flatMap((cat) => cat.skills);
+  if (!categories || !Array.isArray(categories)) {
+    return {
+      total: 0,
+      primary: 0,
+      categories: 0,
+      maxExperience: 0,
+      expertCount: 0,
+      advancedCount: 0,
+    };
+  }
+
+  const allSkills = categories.flatMap((cat) => cat.skills || []);
   const grouped = groupSkillsByProficiency(categories);
 
   return {

@@ -35,7 +35,7 @@ import {
   getFutureGoals,
   getTestimonials,
   getBlogPosts,
-} from "@/lib/firebase-queries";
+} from "@/lib/supabase-queries";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Overview", href: "/admin", active: true },
@@ -216,7 +216,7 @@ export default function AdminDashboard() {
           className="mb-8"
         >
           <h2 className="text-4xl font-display font-bold mb-2">
-            Welcome back, {user.displayName || user.email?.split('@')[0]}!
+            Welcome back, {user.user_metadata?.full_name || user.email?.split('@')[0]}!
           </h2>
           <p className="text-muted-foreground">
             Manage your portfolio content from this dashboard

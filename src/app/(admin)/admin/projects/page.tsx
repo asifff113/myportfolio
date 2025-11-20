@@ -5,23 +5,11 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Edit2, Trash2, FolderGit2, X, Loader2, Upload, ExternalLink, Github } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { getAllProjects, createProject, updateProject, deleteProject } from "@/lib/firebase-queries";
-import { uploadProjectImage } from "@/lib/firebase-storage";
+import { getAllProjects, createProject, updateProject, deleteProject } from "@/lib/supabase-queries";
+import { uploadProjectImage } from "@/lib/supabase-storage";
+import { Project } from "@/lib/content-types";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import Image from "next/image";
-
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  long_description?: string;
-  image_url?: string;
-  technologies?: string[];
-  category?: string;
-  github_url?: string;
-  demo_url?: string;
-  featured?: boolean;
-}
 
 export default function ProjectsAdminPage() {
   const { user, loading: authLoading } = useAuth();
@@ -32,16 +20,18 @@ export default function ProjectsAdminPage() {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Partial<Project>>({
     title: "",
+    slug: "",
+    summary: "",
     description: "",
-    long_description: "",
-    image_url: "",
-    technologies: [] as string[],
-    category: "Web Development",
-    github_url: "",
-    demo_url: "",
+    imageUrl: "",
+    techStack: [],
+    type: "Personal",
+    githubUrl: "",
+    liveUrl: "",
     featured: false,
+    status: "Completed",
   });
   const [technologyInput, setTechnologyInput] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -76,28 +66,32 @@ export default function ProjectsAdminPage() {
       setEditingProject(project);
       setFormData({
         title: project.title,
-        description: project.description,
-        long_description: project.long_description || "",
-        image_url: project.image_url || "",
-        technologies: project.technologies || [],
-        category: project.category || "Web Development",
-        github_url: project.github_url || "",
-        demo_url: project.demo_url || "",
+        slug: project.slug || "",
+        summary: project.summary || "",
+        description: project.description || "",
+        imageUrl: project.imageUrl || "",
+        techStack: project.techStack || [],
+        type: project.type || "Personal",
+        githubUrl: project.githubUrl || "",
+        liveUrl: project.liveUrl || "",
         featured: project.featured || false,
+        status: project.status || "Completed",
       });
-      setImagePreview(project.image_url || "");
+      setImagePreview(project.imageUrl || "");
     } else {
       setEditingProject(null);
       setFormData({
         title: "",
+        slug: "",
+        summary: "",
         description: "",
-        long_description: "",
-        image_url: "",
-        technologies: [],
-        category: "Web Development",
-        github_url: "",
-        demo_url: "",
+        imageUrl: "",
+        techStack: [],
+        type: "Personal",
+        githubUrl: "",
+        liveUrl: "",
         featured: false,
+        status: "Completed",
       });
       setImagePreview("");
     }
@@ -129,7 +123,7 @@ export default function ProjectsAdminPage() {
     if (technologyInput.trim()) {
       setFormData({
         ...formData,
-        technologies: [...formData.technologies, technologyInput.trim()],
+        techStack: [...(formData.techStack || []), technologyInput.trim()],
       });
       setTechnologyInput("");
     }
@@ -138,7 +132,7 @@ export default function ProjectsAdminPage() {
   const handleRemoveTechnology = (index: number) => {
     setFormData({
       ...formData,
-      technologies: formData.technologies.filter((_, i) => i !== index),
+      techStack: (formData.techStack || []).filter((_, i) => i !== index),
     });
   };
 
@@ -147,21 +141,22 @@ export default function ProjectsAdminPage() {
     try {
       setSubmitting(true);
 
-      let imageUrl = formData.image_url;
+      let imageUrl = formData.imageUrl;
 
       // Upload image if new file selected
       if (imageFile) {
         setUploading(true);
-        imageUrl = await uploadProjectImage(imageFile);
+        const result = await uploadProjectImage(imageFile);
+        imageUrl = result.url;
         setUploading(false);
       }
 
       const submitData = {
         ...formData,
-        image_url: imageUrl,
-      };
+        imageUrl,
+      } as Omit<Project, "id">;
 
-      if (editingProject) {
+      if (editingProject && editingProject.id) {
         await updateProject(editingProject.id, submitData);
       } else {
         await createProject(submitData);
@@ -223,10 +218,10 @@ export default function ProjectsAdminPage() {
               animate={{ opacity: 1, scale: 1 }}
               className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden group"
             >
-              {project.image_url && (
-                <div className="relative h-48 bg-gray-200 dark:bg-gray-700">
+              {project.imageUrl && (
+                <div className="relative h-48 w-full">
                   <Image
-                    src={project.image_url}
+                    src={project.imageUrl}
                     alt={project.title}
                     fill
                     className="object-cover"
@@ -247,9 +242,9 @@ export default function ProjectsAdminPage() {
                 <p className="text-gray-600 dark:text-gray-400 mb-3 text-sm">
                   {project.description}
                 </p>
-                {project.technologies && project.technologies.length > 0 && (
+                {project.techStack && project.techStack.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-3">
-                    {project.technologies.slice(0, 3).map((tech, index) => (
+                    {project.techStack.slice(0, 3).map((tech, index) => (
                       <span
                         key={index}
                         className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded text-xs"
@@ -257,17 +252,17 @@ export default function ProjectsAdminPage() {
                         {tech}
                       </span>
                     ))}
-                    {project.technologies.length > 3 && (
+                    {project.techStack.length > 3 && (
                       <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs">
-                        +{project.technologies.length - 3}
+                        +{project.techStack.length - 3}
                       </span>
                     )}
                   </div>
                 )}
                 <div className="flex gap-2 mt-4">
-                  {project.github_url && (
+                  {project.githubUrl && (
                     <a
-                      href={project.github_url}
+                      href={project.githubUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
@@ -275,9 +270,9 @@ export default function ProjectsAdminPage() {
                       <Github className="w-4 h-4" />
                     </a>
                   )}
-                  {project.demo_url && (
+                  {project.liveUrl && (
                     <a
-                      href={project.demo_url}
+                      href={project.liveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
@@ -293,7 +288,7 @@ export default function ProjectsAdminPage() {
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={() => handleDelete(project.id)}
+                    onClick={() => project.id && handleDelete(project.id)}
                     className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -382,8 +377,8 @@ export default function ProjectsAdminPage() {
                     Short Description *
                   </label>
                   <textarea
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    value={formData.summary}
+                    onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
                     rows={2}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                     required
@@ -395,8 +390,8 @@ export default function ProjectsAdminPage() {
                     Long Description
                   </label>
                   <textarea
-                    value={formData.long_description}
-                    onChange={(e) => setFormData({ ...formData, long_description: e.target.value })}
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows={4}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                   />
@@ -405,17 +400,19 @@ export default function ProjectsAdminPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Category
+                      Type
                     </label>
                     <select
-                      value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                      value={formData.type}
+                      onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                     >
-                      <option>Web Development</option>
-                      <option>Mobile App</option>
-                      <option>Desktop App</option>
-                      <option>Other</option>
+                      <option value="Personal">Personal</option>
+                      <option value="Professional">Professional</option>
+                      <option value="School">School</option>
+                      <option value="Freelance">Freelance</option>
+                      <option value="Open Source">Open Source</option>
+                      <option value="Practice">Practice</option>
                     </select>
                   </div>
 
@@ -439,8 +436,8 @@ export default function ProjectsAdminPage() {
                     </label>
                     <input
                       type="url"
-                      value={formData.github_url}
-                      onChange={(e) => setFormData({ ...formData, github_url: e.target.value })}
+                      value={formData.githubUrl}
+                      onChange={(e) => setFormData({ ...formData, githubUrl: e.target.value })}
                       placeholder="https://github.com/..."
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                     />
@@ -448,13 +445,13 @@ export default function ProjectsAdminPage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Demo URL
+                      Live URL
                     </label>
                     <input
                       type="url"
-                      value={formData.demo_url}
-                      onChange={(e) => setFormData({ ...formData, demo_url: e.target.value })}
-                      placeholder="https://demo.example.com"
+                      value={formData.liveUrl}
+                      onChange={(e) => setFormData({ ...formData, liveUrl: e.target.value })}
+                      placeholder="https://..."
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
@@ -481,9 +478,9 @@ export default function ProjectsAdminPage() {
                       Add
                     </button>
                   </div>
-                  {formData.technologies.length > 0 && (
+                  {formData.techStack && formData.techStack.length > 0 && (
                     <div className="flex flex-wrap gap-2">
-                      {formData.technologies.map((tech, index) => (
+                      {formData.techStack.map((tech, index) => (
                         <span
                           key={index}
                           className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm flex items-center gap-2"

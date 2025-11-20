@@ -83,9 +83,17 @@ function TestimonialCard({ testimonial }: TestimonialCardProps) {
           repeat: Infinity,
           ease: "easeInOut"
         }}
-        className="absolute top-6 right-6 opacity-10 group-hover:opacity-20 transition-opacity"
+        className="absolute top-6 right-6 opacity-20 group-hover:opacity-40 transition-opacity"
       >
-        <Quote size={56} className="text-primary" />
+        <div className="relative">
+           <Quote size={56} className="text-transparent stroke-[3px] bg-gradient-to-br from-neon-purple to-neon-pink bg-clip-text" style={{ stroke: "url(#quote-gradient)" }} />
+           <svg width="0" height="0">
+             <linearGradient id="quote-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+               <stop stopColor="#a855f7" offset="0%" />
+               <stop stopColor="#ec4899" offset="100%" />
+             </linearGradient>
+           </svg>
+        </div>
       </motion.div>
 
       {/* Rating */}

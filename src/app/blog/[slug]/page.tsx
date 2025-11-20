@@ -44,7 +44,6 @@ export default async function BlogPostPage({ params }: Props) {
   const relatedPosts = content.blogPosts
     ?.filter((p) => p.id !== post.id)
     .filter((p) => 
-      p.category === post.category ||
       (p.tags && post.tags && p.tags.some((tag) => post.tags?.includes(tag)))
     )
     .slice(0, 3);

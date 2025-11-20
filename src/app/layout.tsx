@@ -4,6 +4,15 @@ import { ThemeProvider } from "next-themes";
 import "@/styles/globals.css";
 import AnimatedBackground from "@/components/ui/AnimatedBackground";
 import LayoutContent from "@/components/layout/LayoutContent";
+import { LanguageProvider } from "@/lib/i18n/LanguageContext";
+import dynamic from "next/dynamic";
+
+const GoogleTranslateWidget = dynamic(
+  () => import("@/components/ui/GoogleTranslateWidget"),
+  { ssr: false }
+);
+
+import { getAllPublicContent } from "@/lib/content";
 
 // Font configurations
 const inter = Inter({
@@ -45,11 +54,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const portfolioContent = await getAllPublicContent();
+
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${orbitron.variable}`}>
       <body className="min-h-screen">
@@ -60,10 +71,13 @@ export default function RootLayout({
           forcedTheme="dark"
           disableTransitionOnChange={false}
         >
-          {/* Global Animated Background */}
-          <AnimatedBackground variant="hero" />
-          
-          <LayoutContent>{children}</LayoutContent>
+          <LanguageProvider>
+            {/* Global Animated Background */}
+            <AnimatedBackground variant="hero" />
+            
+            <LayoutContent portfolioContent={portfolioContent}>{children}</LayoutContent>
+            <GoogleTranslateWidget />
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

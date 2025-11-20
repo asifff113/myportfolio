@@ -5,17 +5,9 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Edit2, Trash2, Trophy, X, Loader2, Calendar } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { getAchievements, createAchievement, updateAchievement, deleteAchievement } from "@/lib/firebase-queries";
+import { getAchievements, createAchievement, updateAchievement, deleteAchievement } from "@/lib/supabase-queries";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
-
-interface Achievement {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  icon?: string;
-  category?: string;
-}
+import { Achievement } from "@/lib/content-types";
 
 const categories = ["Competition", "Academic", "Community", "Professional", "Other"];
 
@@ -29,9 +21,10 @@ export default function AchievementsAdminPage() {
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
+    organization: "",
     description: "",
     date: "",
-    icon: "",
+    iconUrl: "",
     category: "Professional",
   });
 
@@ -64,18 +57,20 @@ export default function AchievementsAdminPage() {
       setEditingAchievement(achievement);
       setFormData({
         title: achievement.title,
-        description: achievement.description,
-        date: achievement.date,
-        icon: achievement.icon || "",
+        organization: achievement.organization,
+        description: achievement.description || "",
+        date: achievement.date instanceof Date ? achievement.date.toISOString().split('T')[0] : String(achievement.date),
+        iconUrl: achievement.iconUrl || "",
         category: achievement.category || "Professional",
       });
     } else {
       setEditingAchievement(null);
       setFormData({
         title: "",
+        organization: "",
         description: "",
         date: "",
-        icon: "",
+        iconUrl: "",
         category: "Professional",
       });
     }
@@ -92,7 +87,7 @@ export default function AchievementsAdminPage() {
     try {
       setSubmitting(true);
 
-      if (editingAchievement) {
+      if (editingAchievement && editingAchievement.id) {
         await updateAchievement(editingAchievement.id, formData);
       } else {
         await createAchievement(formData);
@@ -108,7 +103,8 @@ export default function AchievementsAdminPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id?: string) => {
+    if (!id) return;
     if (!confirm("Are you sure you want to delete this achievement?")) return;
 
     try {
@@ -120,9 +116,9 @@ export default function AchievementsAdminPage() {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  const formatDate = (date: string | Date) => {
+    const d = new Date(date);
+    return d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
   };
 
   if (authLoading || loading) {
@@ -161,12 +157,15 @@ export default function AchievementsAdminPage() {
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="text-4xl">
-                    {achievement.icon || "🏆"}
+                    {achievement.iconUrl || "🏆"}
                   </div>
                   <div className="flex-1">
                     <h3 className="font-bold text-gray-900 dark:text-white mb-1">
                       {achievement.title}
                     </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                      {achievement.organization}
+                    </p>
                     {achievement.category && (
                       <span className="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded">
                         {achievement.category}
@@ -252,7 +251,20 @@ export default function AchievementsAdminPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Description *
+                    Organization *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.organization}
+                    onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Description
                   </label>
                   <textarea
                     value={formData.description}
@@ -283,8 +295,8 @@ export default function AchievementsAdminPage() {
                     </label>
                     <input
                       type="text"
-                      value={formData.icon}
-                      onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
+                      value={formData.iconUrl}
+                      onChange={(e) => setFormData({ ...formData, iconUrl: e.target.value })}
                       placeholder="🏆"
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                     />

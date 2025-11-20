@@ -5,16 +5,9 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Save, Loader2, Mail, Phone, MapPin, Clock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { getContactInfo, updateContactInfo } from "@/lib/firebase-queries";
+import { getContactInfo, updateContactInfo } from "@/lib/supabase-queries";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
-
-interface ContactInfo {
-  id?: string;
-  email: string;
-  phone: string;
-  address: string;
-  availability?: string;
-}
+import { ContactInfo } from "@/lib/content-types";
 
 export default function ContactAdminPage() {
   const { user, loading: authLoading } = useAuth();
@@ -25,7 +18,7 @@ export default function ContactAdminPage() {
   const [formData, setFormData] = useState({
     email: "",
     phone: "",
-    address: "",
+    location: "",
     availability: "",
   });
 
@@ -41,14 +34,13 @@ export default function ContactAdminPage() {
     try {
       setLoading(true);
       const data = await getContactInfo();
-      if (data && data.length > 0) {
-        const contact = data[0];
-        setContactId(contact.id || null);
+      if (data) {
+        setContactId(data.id || null);
         setFormData({
-          email: contact.email || "",
-          phone: contact.phone || "",
-          address: contact.address || "",
-          availability: contact.availability || "",
+          email: data.email || "",
+          phone: data.phone || "",
+          location: data.location || "",
+          availability: data.availability || "",
         });
       }
     } catch (error) {
@@ -66,7 +58,7 @@ export default function ContactAdminPage() {
     }
     try {
       setSubmitting(true);
-      await updateContactInfo(contactId, formData);
+      await updateContactInfo({ ...formData, id: contactId });
       alert("Contact info updated successfully");
     } catch (error) {
       alert("Failed to update contact info");
@@ -108,7 +100,7 @@ export default function ContactAdminPage() {
                 <MapPin className="w-4 h-4" />
                 Address *
               </label>
-              <textarea value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} rows={3} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500" required />
+              <textarea value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} rows={3} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500" required />
             </div>
 
             <div>

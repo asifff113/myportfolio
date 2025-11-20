@@ -5,15 +5,9 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Plus, Edit2, Trash2, X, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { getHobbies, createHobby, updateHobby, deleteHobby } from "@/lib/firebase-queries";
+import { getHobbies, createHobby, updateHobby, deleteHobby } from "@/lib/supabase-queries";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
-
-interface Hobby {
-  id: string;
-  name: string;
-  description: string;
-  icon?: string;
-}
+import { Hobby } from "@/lib/content-types";
 
 export default function HobbiesAdminPage() {
   const { user, loading: authLoading } = useAuth();
@@ -23,7 +17,7 @@ export default function HobbiesAdminPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editing, setEditing] = useState<Hobby | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [formData, setFormData] = useState({ name: "", description: "", icon: "" });
+  const [formData, setFormData] = useState({ title: "", description: "", icon: "" });
 
   useEffect(() => {
     if (!authLoading && !user) router.push("/login");
@@ -49,11 +43,15 @@ export default function HobbiesAdminPage() {
     e.preventDefault();
     try {
       setSubmitting(true);
-      editing ? await updateHobby(editing.id, formData) : await createHobby(formData);
+      if (editing && editing.id) {
+        await updateHobby(editing.id, formData);
+      } else {
+        await createHobby(formData);
+      }
       await loadHobbies();
       setIsModalOpen(false);
       setEditing(null);
-      setFormData({ name: "", description: "", icon: "" });
+      setFormData({ title: "", description: "", icon: "" });
     } catch (error) {
       alert("Failed to save hobby");
     } finally {
@@ -81,7 +79,7 @@ export default function HobbiesAdminPage() {
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Hobbies & Interests</h1>
             <p className="text-gray-600 dark:text-gray-400">Manage your hobbies and personal interests</p>
           </div>
-          <button onClick={() => { setEditing(null); setFormData({ name: "", description: "", icon: "" }); setIsModalOpen(true); }} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2">
+          <button onClick={() => { setEditing(null); setFormData({ title: "", description: "", icon: "" }); setIsModalOpen(true); }} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2">
             <Plus className="w-5 h-5" /> Add Hobby
           </button>
         </div>
@@ -93,15 +91,15 @@ export default function HobbiesAdminPage() {
                 <div className="flex gap-4 flex-1">
                   <div className="text-4xl">{hobby.icon || "🎯"}</div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{hobby.name}</h3>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{hobby.title}</h3>
                     <p className="text-gray-600 dark:text-gray-400 text-sm">{hobby.description}</p>
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => { setEditing(hobby); setFormData({ name: hobby.name, description: hobby.description, icon: hobby.icon || "" }); setIsModalOpen(true); }} className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg">
+                  <button onClick={() => { setEditing(hobby); setFormData({ title: hobby.title, description: hobby.description, icon: hobby.icon || "" }); setIsModalOpen(true); }} className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg">
                     <Edit2 className="w-4 h-4" />
                   </button>
-                  <button onClick={() => handleDelete(hobby.id)} className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-gray-700 rounded-lg">
+                  <button onClick={() => hobby.id && handleDelete(hobby.id)} className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-gray-700 rounded-lg">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
@@ -128,8 +126,8 @@ export default function HobbiesAdminPage() {
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Name *</label>
-                <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500" required />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Title *</label>
+                <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500" required />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description *</label>

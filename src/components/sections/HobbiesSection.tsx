@@ -113,6 +113,28 @@ export default function HobbiesSection({ hobbies }: HobbiesSectionProps) {
               </p>
             </div>
 
+              {/* Fun Particles on Hover */}
+              <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                {[...Array(5)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 0, x: 0 }}
+                    whileHover={{ 
+                      opacity: [0, 1, 0], 
+                      y: -100 - Math.random() * 50, 
+                      x: (Math.random() - 0.5) * 50 
+                    }}
+                    transition={{ 
+                      duration: 1 + Math.random(), 
+                      repeat: Infinity, 
+                      delay: Math.random() * 0.5 
+                    }}
+                    className={`absolute bottom-0 left-1/2 w-2 h-2 rounded-full bg-gradient-to-r ${hobbyColor} opacity-0`}
+                    style={{ left: `${20 + Math.random() * 60}%` }}
+                  />
+                ))}
+              </div>
+
               {/* Enhanced Hover Glow Effect */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl">
                 <div className={`absolute inset-0 bg-gradient-to-br ${hobbyColor} opacity-20 animate-pulse`} />

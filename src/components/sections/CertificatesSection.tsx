@@ -74,8 +74,15 @@ function CertificateCard({ certificate }: CertificateCardProps) {
     <motion.div
       variants={itemVariants}
       whileHover={{ y: -10, scale: 1.02 }}
-      className="glass-ultra rounded-2xl overflow-hidden group relative card-3d"
+      className="glass-ultra rounded-2xl overflow-hidden group relative card-3d border border-white/5 hover:border-primary/30 transition-colors duration-500"
     >
+      {/* Ribbon Corner Effect */}
+      <div className="absolute -top-[10px] -left-[10px] w-24 h-24 overflow-hidden z-20 pointer-events-none">
+        <div className="absolute top-[20px] left-[-32px] w-[120px] h-8 bg-gradient-to-r from-primary via-accent to-primary text-white text-[10px] font-bold uppercase tracking-wider flex items-center justify-center transform -rotate-45 shadow-lg z-20 animate-shimmer">
+          Certified
+        </div>
+      </div>
+
       {/* Preview Image or PDF Icon */}
       <div className="relative h-48 bg-gradient-to-br from-neon-blue/20 to-neon-cyan/20 overflow-hidden">
         {!imageError && certificate.previewImageUrl ? (

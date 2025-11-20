@@ -128,15 +128,19 @@ export interface Project {
   techStack: string[]; // Technologies used
   githubUrl?: string; // Link to GitHub repo
   liveUrl?: string; // Link to live demo/deployment
-  type: "Personal" | "Professional" | "School" | "Freelance" | "Open Source" | "Practice";
-  featured?: boolean; // Highlight on homepage
+  featured?: boolean; // Highlight on home page
   startDate?: Date | string;
   endDate?: Date | string;
-  status?: "In Progress" | "Completed" | "Maintained" | "Archived";
-  challenges?: string; // Key challenges faced
-  learnings?: string; // What you learned
+  category?: string; // e.g., "Web App", "Mobile App", "Library"
+  type?: string; // e.g., "Personal", "Professional", "Freelance"
+  status?: string; // e.g., "Completed", "In Progress", "Maintained"
   order?: number;
-  createdAt?: Date | string;
+
+  // Deep Dive Fields
+  problem?: string;
+  solution?: string;
+  challenges?: string;
+  stackDetails?: { name: string; usage: string }[];
 }
 
 // ============================================================================
@@ -224,10 +228,9 @@ export interface FutureGoal {
   id?: string;
   title: string;
   description: string;
-  timeframe: string; // e.g., "Short-term (1 year)", "Long-term (5+ years)"
-  category?: "Career" | "Education" | "Personal" | "Technical" | "Other";
-  priority?: "High" | "Medium" | "Low";
-  status?: "Planning" | "In Progress" | "Achieved";
+  targetDate?: string;
+  category?: string;
+  status?: string;
   order?: number;
 }
 
@@ -299,6 +302,19 @@ export interface ContactInfo {
 }
 
 // ============================================================================
+// GUESTBOOK
+// ============================================================================
+
+export interface GuestbookMessage {
+  id: string;
+  user_id?: string;
+  user_name: string;
+  user_avatar?: string;
+  message: string;
+  created_at: string;
+}
+
+// ============================================================================
 // UTILITY TYPES
 // ============================================================================
 
@@ -323,9 +339,9 @@ export interface PortfolioContent {
 }
 
 /**
- * Firebase document metadata
+ * Base document metadata
  */
-export interface FirebaseMetadata {
+export interface BaseMetadata {
   createdAt: Date | string;
   updatedAt: Date | string;
   createdBy?: string;

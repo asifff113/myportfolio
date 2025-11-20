@@ -5,21 +5,9 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Plus, Edit2, Trash2, X, Loader2, FileText, ExternalLink } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { getBlogPosts, createBlogPost, updateBlogPost, deleteBlogPost } from "@/lib/firebase-queries";
+import { getBlogPosts, createBlogPost, updateBlogPost, deleteBlogPost } from "@/lib/supabase-queries";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
-
-interface BlogPost {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  content: string;
-  cover_image_url?: string;
-  author: string;
-  published_at?: string;
-  tags?: string[];
-  published: boolean;
-}
+import { BlogPost } from "@/lib/content-types";
 
 export default function BlogAdminPage() {
   const { user, loading: authLoading } = useAuth();
@@ -34,9 +22,9 @@ export default function BlogAdminPage() {
     slug: "",
     excerpt: "",
     content: "",
-    cover_image_url: "",
+    coverImageUrl: "",
     author: "",
-    published_at: "",
+    publishedDate: "",
     tags: "",
     published: false,
   });
@@ -74,13 +62,19 @@ export default function BlogAdminPage() {
         ...formData,
         tags: tagsArray,
         slug: formData.slug || generateSlug(formData.title),
-        published_at: formData.published_at || new Date().toISOString(),
+        publishedDate: formData.publishedDate || new Date().toISOString(),
       };
-      editing ? await updateBlogPost(editing.id, submitData) : await createBlogPost(submitData);
+      
+      if (editing && editing.id) {
+        await updateBlogPost(editing.id, submitData);
+      } else {
+        await createBlogPost(submitData);
+      }
+      
       await loadPosts();
       setIsModalOpen(false);
       setEditing(null);
-      setFormData({ title: "", slug: "", excerpt: "", content: "", cover_image_url: "", author: "", published_at: "", tags: "", published: false });
+      setFormData({ title: "", slug: "", excerpt: "", content: "", coverImageUrl: "", author: "", publishedDate: "", tags: "", published: false });
     } catch (error) {
       alert("Failed to save blog post");
     } finally {
@@ -88,7 +82,8 @@ export default function BlogAdminPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id?: string) => {
+    if (!id) return;
     if (!confirm("Delete this blog post?")) return;
     try {
       await deleteBlogPost(id);
@@ -108,8 +103,8 @@ export default function BlogAdminPage() {
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Blog Posts</h1>
             <p className="text-gray-600 dark:text-gray-400">Create and manage your blog content</p>
           </div>
-          <button onClick={() => { setEditing(null); setFormData({ title: "", slug: "", excerpt: "", content: "", cover_image_url: "", author: "", published_at: "", tags: "", published: false }); setIsModalOpen(true); }} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2">
-            <Plus className="w-5 h-5" /> New Post
+          <button onClick={() => { setEditing(null); setFormData({ title: "", slug: "", excerpt: "", content: "", coverImageUrl: "", author: "", publishedDate: "", tags: "", published: false }); setIsModalOpen(true); }} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2">
+            <Plus className="w-5 h-5" /> Add Post
           </button>
         </div>
 
@@ -117,9 +112,9 @@ export default function BlogAdminPage() {
           {posts.map((post) => (
             <motion.div key={post.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
               <div className="flex gap-6">
-                {post.cover_image_url && (
+                {post.coverImageUrl && (
                   <div className="w-32 h-32 flex-shrink-0">
-                    <img src={post.cover_image_url} alt={post.title} className="w-full h-full object-cover rounded-lg" />
+                    <img src={post.coverImageUrl} alt={post.title} className="w-full h-full object-cover rounded-lg" />
                   </div>
                 )}
                 <div className="flex-1">
@@ -136,7 +131,7 @@ export default function BlogAdminPage() {
                       <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">{post.excerpt}</p>
                       <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
                         <span>By {post.author}</span>
-                        {post.published_at && <span>{new Date(post.published_at).toLocaleDateString()}</span>}
+                        {post.publishedDate && <span>{new Date(post.publishedDate).toLocaleDateString()}</span>}
                         <span className="text-blue-600 dark:text-blue-400">/{post.slug}</span>
                       </div>
                       {post.tags && post.tags.length > 0 && (
@@ -151,7 +146,7 @@ export default function BlogAdminPage() {
                       <button onClick={() => window.open(`/blog/${post.slug}`, "_blank")} className="p-2 text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                         <ExternalLink className="w-4 h-4" />
                       </button>
-                      <button onClick={() => { setEditing(post); setFormData({ title: post.title, slug: post.slug, excerpt: post.excerpt, content: post.content, cover_image_url: post.cover_image_url || "", author: post.author, published_at: post.published_at || "", tags: post.tags?.join(", ") || "", published: post.published }); setIsModalOpen(true); }} className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg">
+                      <button onClick={() => { setEditing(post); setFormData({ title: post.title, slug: post.slug, excerpt: post.excerpt, content: post.content, coverImageUrl: post.coverImageUrl || "", author: post.author || "", publishedDate: post.publishedDate instanceof Date ? post.publishedDate.toISOString() : String(post.publishedDate || ""), tags: post.tags?.join(", ") || "", published: post.published || false }); setIsModalOpen(true); }} className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg">
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button onClick={() => handleDelete(post.id)} className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-gray-700 rounded-lg">
@@ -206,7 +201,7 @@ export default function BlogAdminPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cover Image URL</label>
-                  <input type="url" value={formData.cover_image_url} onChange={(e) => setFormData({ ...formData, cover_image_url: e.target.value })} className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500" />
+                  <input type="url" value={formData.coverImageUrl} onChange={(e) => setFormData({ ...formData, coverImageUrl: e.target.value })} className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -215,8 +210,8 @@ export default function BlogAdminPage() {
                   <input type="text" value={formData.tags} onChange={(e) => setFormData({ ...formData, tags: e.target.value })} placeholder="react, nextjs, tutorial" className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Publish Date</label>
-                  <input type="date" value={formData.published_at} onChange={(e) => setFormData({ ...formData, published_at: e.target.value })} className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500" />
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Published Date</label>
+                  <input type="date" value={formData.publishedDate} onChange={(e) => setFormData({ ...formData, publishedDate: e.target.value })} className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
                 </div>
               </div>
               <div className="flex items-center gap-2">

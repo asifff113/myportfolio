@@ -3,9 +3,13 @@
 import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Download, Mail, ArrowDown } from "lucide-react";
-import { FaGithub, FaLinkedin, FaTwitter, FaEnvelope } from "react-icons/fa";
-import { PersonalInfo } from "@/lib/content-types";
+import { ArrowRight, Download, Github, Linkedin, Mail, Twitter, ArrowDown } from "lucide-react";
+import { PersonalInfo, SocialLink } from "@/lib/content-types";
+import Section from "@/components/ui/Section";
+import { Button } from "@/components/ui/button";
+import HeroCanvas from "@/components/3d/HeroCanvas";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useTranslatedContent, useTranslatedPersonalInfo } from "@/lib/i18n/useTranslatedContent";
 
 interface HeroSectionProps {
   personalInfo: PersonalInfo;
@@ -49,14 +53,20 @@ const imageVariants = {
 
 // Social icon mapping
 const socialIconMap: Record<string, React.ElementType> = {
-  GitHub: FaGithub,
-  LinkedIn: FaLinkedin,
-  Twitter: FaTwitter,
-  Email: FaEnvelope,
-  Mail: FaEnvelope,
+  GitHub: Github,
+  LinkedIn: Linkedin,
+  Twitter: Twitter,
+  Email: Mail,
+  Mail: Mail,
 };
 
-export default function HeroSection({ personalInfo }: HeroSectionProps) {
+export default function HeroSection({ personalInfo: initialPersonalInfo }: HeroSectionProps) {
+  const { t } = useLanguage();
+  
+  // Use the hook to ensure consistent behavior (which now returns initial content)
+  // or just use initialPersonalInfo directly since we are relying on Google Translate
+  const personalInfo = useTranslatedPersonalInfo(initialPersonalInfo);
+
   const scrollToContact = () => {
     const contactSection = document.getElementById("contact");
     contactSection?.scrollIntoView({ behavior: "smooth" });
@@ -68,7 +78,40 @@ export default function HeroSection({ personalInfo }: HeroSectionProps) {
   };
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
+      {/* 3D Background Element */}
+      <HeroCanvas />
+      
+      {/* Background Elements */}
+      <div className="absolute inset-0 z-0">
+        {/* Enhanced Decorative Elements with glow */}
+        <motion.div 
+          animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.8, 0.3] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="absolute top-20 left-10 w-3 h-3 bg-neon-cyan rounded-full neon-glow" 
+        />
+        <motion.div 
+          animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0.9, 0.4] }}
+          transition={{ duration: 2.5, repeat: Infinity }}
+          className="absolute top-1/4 right-20 w-4 h-4 bg-neon-pink rounded-full neon-glow" 
+        />
+        <motion.div 
+          animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0.7, 0.3] }}
+          transition={{ duration: 3, repeat: Infinity }}
+          className="absolute bottom-1/4 left-1/4 w-3 h-3 bg-neon-purple rounded-full neon-glow" 
+        />
+        {/* Additional floating orbs */}
+        <motion.div 
+          animate={{ y: [0, -30, 0], x: [0, 20, 0] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/3 right-1/4 w-2 h-2 bg-accent rounded-full neon-glow" 
+        />
+        <motion.div 
+          animate={{ y: [0, 30, 0], x: [0, -20, 0] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-1/3 left-1/3 w-2 h-2 bg-secondary rounded-full neon-glow" 
+        />
+      </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
@@ -82,7 +125,7 @@ export default function HeroSection({ personalInfo }: HeroSectionProps) {
             {/* Greeting */}
             <motion.div variants={itemVariants} className="mb-4">
               <span className="inline-block px-4 py-2 glass-ultra rounded-full text-sm font-medium neon-border shimmer">
-                👋 Welcome to my portfolio
+                👋 {t.hero.welcome}
               </span>
             </motion.div>
 
@@ -97,7 +140,7 @@ export default function HeroSection({ personalInfo }: HeroSectionProps) {
             {/* Headline */}
             <motion.h2
               variants={itemVariants}
-              className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-6 text-foreground/90 gradient-animated bg-clip-text text-transparent"
+              className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-6 gradient-animated bg-clip-text text-transparent"
               style={{
                 background: 'linear-gradient(90deg, currentColor 0%, var(--primary) 50%, var(--accent) 100%)',
                 WebkitBackgroundClip: 'text',
@@ -146,7 +189,7 @@ export default function HeroSection({ personalInfo }: HeroSectionProps) {
                   
                   {/* Content */}
                   <Download size={22} className="relative z-10 text-white" />
-                  <span className="relative z-10 text-white">Download CV</span>
+                  <span className="relative z-10 text-white">{t.hero.downloadCv}</span>
                   
                   {/* Shimmer Effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
@@ -167,7 +210,7 @@ export default function HeroSection({ personalInfo }: HeroSectionProps) {
                 
                 {/* Content */}
                 <Mail size={22} className="relative z-10 text-white" />
-                <span className="relative z-10 text-white">Contact Me</span>
+                <span className="relative z-10 text-white">{t.hero.contactMe}</span>
                 
                 {/* Shimmer Effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
@@ -177,8 +220,8 @@ export default function HeroSection({ personalInfo }: HeroSectionProps) {
             {/* Social Links */}
             {personalInfo.socialLinks && personalInfo.socialLinks.length > 0 && (
               <motion.div variants={itemVariants} className="flex gap-4 justify-center lg:justify-start">
-                {personalInfo.socialLinks.map((social) => {
-                  const Icon = socialIconMap[social.platform] || FaEnvelope;
+                {personalInfo.socialLinks.map((social: SocialLink) => {
+                  const Icon = socialIconMap[social.platform] || Mail;
                   return (
                     <motion.a
                       key={social.platform}
@@ -286,34 +329,6 @@ export default function HeroSection({ personalInfo }: HeroSectionProps) {
           </motion.button>
         </motion.div>
       </div>
-
-      {/* Enhanced Decorative Elements with glow */}
-      <motion.div 
-        animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.8, 0.3] }}
-        transition={{ duration: 2, repeat: Infinity }}
-        className="absolute top-20 left-10 w-3 h-3 bg-neon-cyan rounded-full neon-glow" 
-      />
-      <motion.div 
-        animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0.9, 0.4] }}
-        transition={{ duration: 2.5, repeat: Infinity }}
-        className="absolute top-1/4 right-20 w-4 h-4 bg-neon-pink rounded-full neon-glow" 
-      />
-      <motion.div 
-        animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0.7, 0.3] }}
-        transition={{ duration: 3, repeat: Infinity }}
-        className="absolute bottom-1/4 left-1/4 w-3 h-3 bg-neon-purple rounded-full neon-glow" 
-      />
-      {/* Additional floating orbs */}
-      <motion.div 
-        animate={{ y: [0, -30, 0], x: [0, 20, 0] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-1/3 right-1/4 w-2 h-2 bg-accent rounded-full neon-glow" 
-      />
-      <motion.div 
-        animate={{ y: [0, 30, 0], x: [0, -20, 0] }}
-        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute bottom-1/3 left-1/3 w-2 h-2 bg-secondary rounded-full neon-glow" 
-      />
     </section>
   );
 }

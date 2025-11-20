@@ -13,6 +13,7 @@ import HobbiesSection from "@/components/sections/HobbiesSection";
 import GoalsSection from "@/components/sections/GoalsSection";
 import BlogSection from "@/components/sections/BlogSection";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
+import GuestbookSection from "@/components/sections/GuestbookSection";
 import ContactSection from "@/components/sections/ContactSection";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
@@ -80,6 +81,9 @@ export default async function HomePage() {
 
       {/* Testimonials Section */}
       <TestimonialsSection testimonials={content.testimonials} />
+
+      {/* Guestbook Section */}
+      <GuestbookSection />
 
       {/* Contact Section */}
       {content.contactInfo && <ContactSection contactInfo={content.contactInfo} />}

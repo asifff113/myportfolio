@@ -5,18 +5,11 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Edit2, Trash2, Image as ImageIcon, X, Loader2, Upload } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { getGalleryItems, createGalleryItem, updateGalleryItem, deleteGalleryItem } from "@/lib/firebase-queries";
-import { uploadGalleryImage } from "@/lib/firebase-storage";
+import { getGalleryItems, createGalleryItem, updateGalleryItem, deleteGalleryItem } from "@/lib/supabase-queries";
+import { uploadGalleryImage } from "@/lib/supabase-storage";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import Image from "next/image";
-
-interface GalleryItem {
-  id: string;
-  title: string;
-  description?: string;
-  image_url: string;
-  category?: string;
-}
+import { GalleryItem } from "@/lib/content-types";
 
 const categories = ["Events", "Work", "Personal", "Other"];
 
@@ -32,7 +25,7 @@ export default function GalleryAdminPage() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    image_url: "",
+    imageUrl: "",
     category: "Personal",
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -68,16 +61,16 @@ export default function GalleryAdminPage() {
       setFormData({
         title: item.title,
         description: item.description || "",
-        image_url: item.image_url,
+        imageUrl: item.imageUrl,
         category: item.category || "Personal",
       });
-      setImagePreview(item.image_url);
+      setImagePreview(item.imageUrl);
     } else {
       setEditingItem(null);
       setFormData({
         title: "",
         description: "",
-        image_url: "",
+        imageUrl: "",
         category: "Personal",
       });
       setImagePreview("");
@@ -110,20 +103,21 @@ export default function GalleryAdminPage() {
     try {
       setSubmitting(true);
 
-      let imageUrl = formData.image_url;
+      let imageUrl = formData.imageUrl;
 
       if (imageFile) {
         setUploading(true);
-        imageUrl = await uploadGalleryImage(imageFile);
+        const result = await uploadGalleryImage(imageFile);
+        imageUrl = result.url;
         setUploading(false);
       }
 
       const submitData = {
         ...formData,
-        image_url: imageUrl,
+        imageUrl: imageUrl,
       };
 
-      if (editingItem) {
+      if (editingItem && editingItem.id) {
         await updateGalleryItem(editingItem.id, submitData);
       } else {
         await createGalleryItem(submitData);
@@ -186,9 +180,9 @@ export default function GalleryAdminPage() {
               className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden group"
             >
               <div className="relative h-64 bg-gray-200 dark:bg-gray-700">
-                {item.image_url && (
+                {item.imageUrl && (
                   <Image
-                    src={item.image_url}
+                    src={item.imageUrl}
                     alt={item.title}
                     fill
                     className="object-cover"
@@ -215,7 +209,7 @@ export default function GalleryAdminPage() {
                       <Edit2 className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={() => handleDelete(item.id)}
+                      onClick={() => item.id && handleDelete(item.id)}
                       className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />

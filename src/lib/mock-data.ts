@@ -33,8 +33,8 @@ export const mockPersonalInfo: PersonalInfo = {
     "I'm a passionate developer who loves building beautiful, functional web applications. With expertise in modern web technologies, I create solutions that make a difference.",
   longBio:
     "I'm a full-stack developer with a passion for creating elegant solutions to complex problems. My journey in tech started with curiosity and has evolved into a career focused on building impactful applications.\n\nI specialize in modern web technologies including React, Next.js, TypeScript, and Node.js. I believe in writing clean, maintainable code and creating user experiences that delight.\n\nWhen I'm not coding, you'll find me exploring new technologies, contributing to open source, or sharing knowledge with the developer community.",
-  profileImageUrl: "/images/profile.jpg", // TODO: Add your profile image
-  resumeUrl: "/resume.pdf", // TODO: Add your resume
+  profileImageUrl: "https://placehold.co/400x400/png?text=Profile", // TODO: Add your profile image
+  resumeUrl: "#", // TODO: Add your resume
   location: "Your City, Country",
   email: "your.email@example.com",
   phone: "+1 (555) 123-4567",
@@ -199,7 +199,7 @@ export const mockProjects: Project[] = [
     summary: "A full-featured online shopping platform with payment integration",
     description:
       "Built a complete e-commerce solution with product management, shopping cart, payment processing, and order tracking. Features include user authentication, admin dashboard, and responsive design.",
-    imageUrl: "/images/projects/ecommerce.jpg",
+    imageUrl: "https://placehold.co/600x400/png?text=E-Commerce",
     techStack: ["Next.js", "TypeScript", "PostgreSQL", "Stripe", "Tailwind CSS"],
     githubUrl: "https://github.com/yourusername/ecommerce",
     liveUrl: "https://ecommerce-demo.vercel.app",
@@ -217,7 +217,7 @@ export const mockProjects: Project[] = [
     summary: "Collaborative task management tool with real-time updates",
     description:
       "A productivity app for teams to manage tasks, set deadlines, and track progress. Includes real-time collaboration, file attachments, and email notifications.",
-    imageUrl: "/images/projects/taskmanager.jpg",
+    imageUrl: "https://placehold.co/600x400/png?text=Task+Manager",
     techStack: ["React", "Firebase", "Material-UI", "Node.js"],
     githubUrl: "https://github.com/yourusername/taskmanager",
     liveUrl: "https://taskmanager-demo.vercel.app",
@@ -234,7 +234,7 @@ export const mockProjects: Project[] = [
     summary: "Interactive weather forecasting application",
     description:
       "A beautiful weather app that displays current conditions and 7-day forecasts. Features location search, favorite locations, and weather alerts.",
-    imageUrl: "/images/projects/weather.jpg",
+    imageUrl: "https://placehold.co/600x400/png?text=Weather+App",
     techStack: ["React", "TypeScript", "OpenWeather API", "Chart.js"],
     githubUrl: "https://github.com/yourusername/weather",
     liveUrl: "https://weather-demo.vercel.app",
@@ -288,7 +288,7 @@ export const mockCertificates: Certificate[] = [
     title: "AWS Certified Developer - Associate",
     issuer: "Amazon Web Services",
     issuedDate: "2023-06-15",
-    fileUrl: "/certificates/aws-cert.pdf",
+    fileUrl: "#",
     credentialId: "ABC123XYZ",
     credentialUrl: "https://aws.amazon.com/verification",
     skills: ["AWS", "Cloud Computing", "Lambda", "DynamoDB"],
@@ -299,7 +299,7 @@ export const mockCertificates: Certificate[] = [
     title: "Meta Front-End Developer Professional Certificate",
     issuer: "Meta (via Coursera)",
     issuedDate: "2022-12-20",
-    fileUrl: "/certificates/meta-cert.pdf",
+    fileUrl: "#",
     skills: ["React", "JavaScript", "HTML/CSS", "UI/UX"],
     order: 2,
   },
@@ -314,7 +314,7 @@ export const mockGallery: GalleryItem[] = [
     id: "gal-1",
     title: "Tech Conference 2023",
     description: "Speaking at the annual developer conference",
-    imageUrl: "/images/gallery/conference.jpg",
+    imageUrl: "https://placehold.co/600x400/png?text=Conference",
     category: "Events",
     date: "2023-09-15",
     order: 1,
@@ -323,7 +323,7 @@ export const mockGallery: GalleryItem[] = [
     id: "gal-2",
     title: "Team Hackathon",
     description: "Winning team at the company hackathon",
-    imageUrl: "/images/gallery/hackathon.jpg",
+    imageUrl: "https://placehold.co/600x400/png?text=Hackathon",
     category: "Work",
     order: 2,
   },
@@ -331,7 +331,7 @@ export const mockGallery: GalleryItem[] = [
     id: "gal-3",
     title: "Office Workspace",
     description: "My productive coding setup",
-    imageUrl: "/images/gallery/workspace.jpg",
+    imageUrl: "https://placehold.co/600x400/png?text=Workspace",
     category: "Personal",
     order: 3,
   },
@@ -386,10 +386,9 @@ export const mockFutureGoals: FutureGoal[] = [
     title: "Master Cloud Architecture",
     description:
       "Gain deep expertise in cloud platforms (AWS, Azure, GCP) and become a certified solutions architect.",
-    timeframe: "Short-term (1 year)",
+    targetDate: "2025-12-31",
     category: "Technical",
-    priority: "High",
-    status: "In Progress",
+    status: "in_progress",
     order: 1,
   },
   {
@@ -397,10 +396,9 @@ export const mockFutureGoals: FutureGoal[] = [
     title: "Launch a SaaS Product",
     description:
       "Build and launch a successful software-as-a-service product that solves real problems for users.",
-    timeframe: "Medium-term (2-3 years)",
+    targetDate: "2026-06-30",
     category: "Career",
-    priority: "High",
-    status: "Planning",
+    status: "planned",
     order: 2,
   },
   {
@@ -408,10 +406,9 @@ export const mockFutureGoals: FutureGoal[] = [
     title: "Contribute to Major Open Source Projects",
     description:
       "Become a core contributor to major open source projects and give back to the community.",
-    timeframe: "Long-term (5+ years)",
+    targetDate: "2027-01-01",
     category: "Personal",
-    priority: "Medium",
-    status: "In Progress",
+    status: "in_progress",
     order: 3,
   },
   {
@@ -419,10 +416,9 @@ export const mockFutureGoals: FutureGoal[] = [
     title: "Mentor Aspiring Developers",
     description:
       "Help newcomers learn programming through mentorship programs and educational content.",
-    timeframe: "Ongoing",
+    targetDate: "2025-06-01",
     category: "Personal",
-    priority: "Medium",
-    status: "In Progress",
+    status: "in_progress",
     order: 4,
   },
 ];
@@ -480,7 +476,7 @@ export const mockBlogPosts: BlogPost[] = [
       "Learn best practices for structuring large React applications that scale with your team and business needs.",
     content:
       "Full blog post content here... (This would be markdown or HTML in production)",
-    coverImageUrl: "/images/blog/react-scalable.jpg",
+    coverImageUrl: "https://placehold.co/800x400/png?text=React+Scalable",
     author: "Your Name",
     publishedDate: "2023-09-01",
     tags: ["React", "JavaScript", "Architecture", "Best Practices"],
@@ -496,7 +492,7 @@ export const mockBlogPosts: BlogPost[] = [
     excerpt:
       "Getting started with TypeScript? Here are essential tips to make your journey smoother.",
     content: "Full blog post content here...",
-    coverImageUrl: "/images/blog/typescript-tips.jpg",
+    coverImageUrl: "https://placehold.co/800x400/png?text=TypeScript+Tips",
     author: "Your Name",
     publishedDate: "2023-08-15",
     tags: ["TypeScript", "JavaScript", "Tutorial"],

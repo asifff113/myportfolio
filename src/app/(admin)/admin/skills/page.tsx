@@ -13,7 +13,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { getAllSkills, createSkill, updateSkill, deleteSkill } from "@/lib/firebase-queries";
+import { getAllSkills, createSkill, updateSkill, deleteSkill } from "@/lib/supabase-queries";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 interface Skill {

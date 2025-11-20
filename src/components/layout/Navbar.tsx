@@ -7,6 +7,8 @@ import { Shield } from "lucide-react";
 import { Settings, ArrowUp, Moon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 
 const navLinks = [
   { name: "Home", href: "#home", id: "home", gradient: "from-blue-400 via-cyan-400 to-teal-400" },
@@ -32,6 +34,7 @@ export default function Navbar() {
   const [showBackToTop, setShowBackToTop] = useState(false);
   const { user } = useAuth();
   const isAdmin = useAdmin();
+  const { t } = useLanguage();
 
   // Scroll-spy effect
   useEffect(() => {
@@ -98,58 +101,49 @@ export default function Navbar() {
           <div className="flex items-center justify-between gap-2">
             {/* Logo/Home - Smaller */}
             <button
-              onClick={() => scrollToSection("#home")}
-              className="text-base sm:text-lg font-display font-bold text-gradient hover:opacity-80 transition-opacity flex-shrink-0"
+              onClick={() => scrollToSection("home")}
+              className="relative group flex items-center gap-2"
             >
-              Portfolio
+              <div className="relative w-8 h-8 sm:w-9 sm:h-9 overflow-hidden rounded-xl bg-gradient-to-br from-primary to-secondary p-[1px]">
+                <div className="absolute inset-0 bg-background/90 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                  <span className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+                    A
+                  </span>
+                </div>
+              </div>
             </button>
 
-            {/* Navigation Links - SOLID COLORFUL STYLE */}
-            <div className="flex items-center gap-0.5 sm:gap-1 flex-1 justify-center overflow-x-auto scrollbar-hide max-w-[calc(100vw-250px)]">
-              {navLinks.map((link, index) => (
-                <motion.button
-                  key={link.id}
+            {/* Desktop Navigation - Scrollable on small screens */}
+            <div className="flex-1 flex items-center justify-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar px-2 mask-fade-sides">
+              {navLinks.map((link) => {
+                const translationKey = (link.id === 'future-goals' ? 'goals' : link.id) as keyof typeof t.nav;
+                const name = t.nav[translationKey] || link.name;
+                
+                return (
+                <button
+                  key={link.name}
                   onClick={() => scrollToSection(link.href)}
-                  whileHover={{ scale: 1.08, y: -3 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`px-1.5 sm:px-2 py-1 text-[10px] sm:text-xs font-bold rounded-lg transition-all duration-300 whitespace-nowrap relative overflow-hidden group ${
+                  className={`relative px-2 sm:px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-medium transition-all duration-300 group whitespace-nowrap ${
                     activeSection === link.id
-                      ? "shadow-xl"
-                      : "shadow-md hover:shadow-lg"
+                      ? "text-white"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  {/* Solid Gradient Background - Always Visible */}
-                  <div 
-                    className={`absolute inset-0 bg-gradient-to-r ${link.gradient} transition-opacity duration-300 ${
-                      activeSection === link.id
-                        ? "opacity-100"
-                        : "opacity-70 group-hover:opacity-90"
-                    }`}
-                  />
-                  
-                  {/* Pulsing Glow Effect for Active */}
+                  {/* Active Background */}
                   {activeSection === link.id && (
                     <motion.div
-                      className={`absolute inset-0 bg-gradient-to-r ${link.gradient} blur-lg`}
-                      animate={{
-                        opacity: [0.5, 0.8, 0.5],
-                        scale: [1, 1.05, 1],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                      }}
+                      layoutId="activeSection"
+                      className={`absolute inset-0 bg-gradient-to-r ${link.gradient} rounded-full -z-10`}
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
                   
-                  {/* White Text - Always Visible */}
-                  <span className={`relative z-10 text-white font-black ${
-                    activeSection === link.id
-                      ? "drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
+                  <span className={`relative z-10 ${
+                    activeSection === link.id 
+                      ? "drop-shadow-md" 
                       : "drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)] group-hover:drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)]"
                   }`}>
-                    {link.name}
+                    {name}
                   </span>
                   
                   {/* Shimmer Effect on Hover */}
@@ -176,8 +170,8 @@ export default function Navbar() {
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
-                </motion.button>
-              ))}
+                </button>
+              )})}
               {isAdmin && (
                 <Link
                   href="/admin"
@@ -189,9 +183,8 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Dark Mode Indicator - Smaller */}
-            <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10 flex-shrink-0">
-              <Moon size={14} className="text-primary" />
+            <div className="flex items-center gap-2">
+              <LanguageSwitcher />
             </div>
           </div>
         </div>

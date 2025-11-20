@@ -17,6 +17,7 @@ interface AuthState {
 
 interface UseAuthReturn extends AuthState {
   login: (email: string, password: string) => Promise<void>;
+  loginWithGitHub: () => Promise<void>;
   logout: () => Promise<void>;
   clearError: () => void;
 }
@@ -26,7 +27,7 @@ interface UseAuthReturn extends AuthState {
  * 
  * Usage:
  * ```tsx
- * const { user, loading, error, login, logout } = useAuth();
+ * const { user, loading, error, login, loginWithGitHub, logout } = useAuth();
  * 
  * if (loading) return <Spinner />;
  * if (user) return <Dashboard />;
@@ -64,6 +65,29 @@ export function useAuth(): UseAuthReturn {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Login with GitHub
+  const loginWithGitHub = async (): Promise<void> => {
+    try {
+      setAuthState((prev) => ({ ...prev, loading: true, error: null }));
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'github',
+        options: {
+          redirectTo: `${window.location.origin}/`,
+        },
+      });
+
+      if (error) throw error;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to sign in with GitHub";
+      setAuthState((prev) => ({
+        ...prev,
+        loading: false,
+        error: errorMessage,
+      }));
+      throw error;
+    }
+  };
 
   // Login function
   const login = async (email: string, password: string): Promise<void> => {
@@ -128,6 +152,7 @@ export function useAuth(): UseAuthReturn {
     loading: authState.loading,
     error: authState.error,
     login,
+    loginWithGitHub,
     logout,
     clearError,
   };

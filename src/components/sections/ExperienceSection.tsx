@@ -7,6 +7,8 @@ import { ExperienceItem } from "@/lib/content-types";
 import Section from "@/components/ui/Section";
 import SectionTitle from "@/components/ui/SectionTitle";
 import { formatDateRange } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useTranslatedExperience } from "@/lib/i18n/useTranslatedContent";
 
 interface ExperienceSectionProps {
   experience: ExperienceItem[];
@@ -42,38 +44,21 @@ const typeColors: Record<string, string> = {
   "Contract": "bg-pink-500/10 text-pink-500 border-pink-500/20",
 };
 
-export default function ExperienceSection({ experience }: ExperienceSectionProps) {
+export default function ExperienceSection({ experience: initialExperience }: ExperienceSectionProps) {
+  const { t, locale } = useLanguage();
+  const experience = useTranslatedExperience(initialExperience);
+
   // If no experience, show a friendly message
   if (!experience || experience.length === 0) {
     return (
       <Section id="experience" className="bg-muted/20">
         <SectionTitle
-          title="Work Experience"
-          subtitle="Building skills through projects and learning"
+          title={t.sections.experience.title}
+          subtitle={t.sections.experience.subtitle}
         />
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-2xl mx-auto text-center"
-        >
-          <div className="glass p-12 rounded-2xl">
-            <div className="text-6xl mb-6">🚀</div>
-            <h3 className="text-2xl font-bold mb-4">
-              <span className="text-gradient">Just Getting Started</span>
-            </h3>
-            <p className="text-muted-foreground mb-6 leading-relaxed">
-              I'm actively learning and building projects to develop my skills. 
-              While I may not have formal work experience yet, I'm passionate 
-              about technology and eager to contribute to meaningful projects.
-            </p>
-            <div className="inline-flex items-center gap-2 px-6 py-3 bg-primary/10 border border-primary/20 rounded-full">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="font-semibold">Open to Opportunities</span>
-            </div>
-          </div>
-        </motion.div>
+        <div className="text-center py-12 text-muted-foreground">
+          No experience entries found.
+        </div>
       </Section>
     );
   }
@@ -81,17 +66,11 @@ export default function ExperienceSection({ experience }: ExperienceSectionProps
   return (
     <Section id="experience" className="bg-muted/20">
       <SectionTitle
-        title="Work Experience"
-        subtitle="My professional journey and contributions"
+        title={t.sections.experience.title}
+        subtitle={t.sections.experience.subtitle}
       />
 
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        className="relative"
-      >
+      <div className="relative max-w-4xl mx-auto">
         {/* Timeline Line */}
         <div className="hidden md:block absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-neon-cyan via-neon-pink to-neon-purple opacity-30" />
 
@@ -214,7 +193,7 @@ export default function ExperienceSection({ experience }: ExperienceSectionProps
                 {item.description && (
                   <div className="mb-4">
                     <div className="prose prose-sm dark:prose-invert max-w-none">
-                      {item.description.split("\n").map((line, i) => (
+                      {item.description.split("\n").map((line: string, i: number) => (
                         <p key={i} className="text-muted-foreground leading-relaxed mb-2">
                           {line}
                         </p>
@@ -256,7 +235,7 @@ export default function ExperienceSection({ experience }: ExperienceSectionProps
             </motion.div>
           ))}
         </div>
-      </motion.div>
+      </div>
     </Section>
   );
 }

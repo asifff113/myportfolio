@@ -136,37 +136,37 @@ Transform the portfolio from "clean and professional" to "**WOW, this is next-le
 #### 8. Certificates Section 📜
 **Current:** List/grid of certificates
 **Upgrades:**
-- [ ] Elevated certificate cards (3D)
-- [ ] Ribbon corner effects
-- [ ] Issuer logo with glow
-- [ ] Credential badge with shine
-- [ ] Hover: Slight rotate + enlarge
-- [ ] View button with neon glow
-- [ ] Category chips with colors
+- [x] Elevated certificate cards (3D)
+- [x] Ribbon corner effects
+- [x] Issuer logo with glow
+- [x] Credential badge with shine
+- [x] Hover: Slight rotate + enlarge
+- [x] View button with neon glow
+- [x] Category chips with colors
 
 #### 9. Gallery Section 📸
 **Current:** Image grid with lightbox
 **Upgrades:**
-- [ ] 3D image tiles
-- [ ] Hover: Image lift + glow
-- [ ] Masonry/Pinterest layout
-- [ ] Category filters with neon active state
-- [ ] Lightbox with frosted glass blur
-- [ ] Image zoom with smooth animation
-- [ ] Caption overlay with gradient
-- [ ] Lazy load with shimmer placeholder
+- [x] 3D image tiles
+- [x] Hover: Image lift + glow
+- [x] Masonry/Pinterest layout
+- [x] Category filters with neon active state
+- [x] Lightbox with frosted glass blur
+- [x] Image zoom with smooth animation
+- [x] Caption overlay with gradient
+- [x] Lazy load with shimmer placeholder
 
 #### 10. Testimonials Section 💬
 **Current:** Quote cards
 **Upgrades:**
-- [ ] Quote cards with depth shadow
-- [ ] Star ratings with glow animation
-- [ ] Avatar with neon ring
-- [ ] Glassmorphic background
-- [ ] Rotating testimonials (carousel)
-- [ ] Hover: Card lift
-- [ ] Quote marks with gradient
-- [ ] Company logo subtle display
+- [x] Quote cards with depth shadow
+- [x] Star ratings with glow animation
+- [x] Avatar with neon ring
+- [x] Glassmorphic background
+- [x] Rotating testimonials (carousel)
+- [x] Hover: Card lift
+- [x] Quote marks with gradient
+- [x] Company logo subtle display
 
 ---
 
@@ -175,24 +175,24 @@ Transform the portfolio from "clean and professional" to "**WOW, this is next-le
 #### 11. Hobbies Section 🎮
 **Current:** Icon cards with descriptions
 **Upgrades:**
-- [ ] Icon with colored glow (hobby-specific)
-- [ ] 3D card tilt
-- [ ] Playful hover animations (bounce, rotate)
-- [ ] Category-specific gradients
-- [ ] Image previews on hover
-- [ ] Fun particle effects
-- [ ] Better iconography
+- [x] Icon with colored glow (hobby-specific)
+- [x] 3D card tilt
+- [x] Playful hover animations (bounce, rotate)
+- [x] Category-specific gradients
+- [x] Image previews on hover
+- [x] Fun particle effects
+- [x] Better iconography
 
 #### 12. Goals Section 🎯
 **Current:** List/timeline of goals
 **Upgrades:**
-- [ ] Roadmap visualization
-- [ ] Progress rings (circular)
-- [ ] Milestone markers with glow
-- [ ] Timeframe badges
-- [ ] Animated connection lines
-- [ ] Priority indicators (color-coded)
-- [ ] Achievement unlock effects
+- [x] Roadmap visualization
+- [x] Progress rings (circular)
+- [x] Milestone markers with glow
+- [x] Timeframe badges
+- [x] Animated connection lines
+- [x] Priority indicators (color-coded)
+- [x] Achievement unlock effects
 
 #### 13. Blog Section 📝
 **Current:** Blog post cards

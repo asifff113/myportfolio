@@ -31,8 +31,29 @@ export async function getPersonalInfo(): Promise<PersonalInfo | null> {
       .select('*')
       .single();
     
-    if (error) throw error;
-    return data as PersonalInfo;
+    if (error) {
+      // If no data exists yet, return null without error
+      if (error.code === 'PGRST116') return null;
+      throw error;
+    }
+
+    // Transform snake_case to camelCase
+    return {
+      id: data.id,
+      name: data.name,
+      headline: data.headline,
+      shortBio: data.short_bio,
+      longBio: data.long_bio,
+      location: data.location,
+      email: data.email,
+      phone: data.phone,
+      currentStatus: data.current_status,
+      profileImageUrl: data.profile_image_url,
+      resumeUrl: data.resume_url,
+      socialLinks: data.social_links || [],
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+    } as PersonalInfo;
   } catch (error) {
     console.error("Error fetching personal info:", error);
     return null;
@@ -41,14 +62,44 @@ export async function getPersonalInfo(): Promise<PersonalInfo | null> {
 
 export async function updatePersonalInfo(data: Omit<PersonalInfo, "id">): Promise<void> {
   try {
-    const { error } = await supabase
+    // Transform camelCase to snake_case
+    const dbData:  any = {
+      name: data.name,
+      headline: data.headline,
+      short_bio: data.shortBio,
+      long_bio: data.longBio,
+      location: data.location,
+      email: data.email,
+      phone: data.phone || null,
+      current_status: data.currentStatus || null,
+      profile_image_url: data.profileImageUrl || null,
+      resume_url: data.resumeUrl || null,
+      social_links: data.socialLinks || [],
+      updated_at: new Date().toISOString(),
+    };
+
+    // Check if record exists
+    const { data: existing } = await supabase
       .from('personal_info')
-      .upsert({
-        ...data,
-        updated_at: new Date().toISOString(),
-      });
-    
-    if (error) throw error;
+      .select('id')
+      .single();
+
+    if (existing) {
+      // Update existing record
+      const { error } = await supabase
+        .from('personal_info')
+        .update(dbData)
+        .eq('id', existing.id);
+      
+      if (error) throw error;
+    } else {
+      // Insert new record
+      const { error } = await supabase
+        .from('personal_info')
+        .insert(dbData);
+      
+      if (error) throw error;
+    }
   } catch (error) {
     console.error("Error updating personal info:", error);
     throw error;
@@ -59,7 +110,8 @@ export async function updatePersonalInfo(data: Omit<PersonalInfo, "id">): Promis
 // SKILLS
 // ============================================================================
 
-export async function getSkillCategories(): Promise<SkillCategory[]> {
+// Get all skills (flat list from database)
+export async function getAllSkills(): Promise<any[]> {
   try {
     const { data, error } = await supabase
       .from('skills')
@@ -67,10 +119,104 @@ export async function getSkillCategories(): Promise<SkillCategory[]> {
       .order('order', { ascending: true });
     
     if (error) throw error;
-    return data as SkillCategory[];
+    return data || [];
   } catch (error) {
     console.error("Error fetching skills:", error);
     return [];
+  }
+}
+
+// Get skills grouped by category for display
+export async function getSkillCategories(): Promise<SkillCategory[]> {
+  try {
+    const { data, error } = await supabase
+      .from('skills')
+      .select('*')
+      .order('order', { ascending: true});
+    
+    if (error) throw error;
+    
+    // Group skills by category
+    const grouped = (data || []).reduce((acc: any, skill: any) => {
+      if (!acc[skill.category]) {
+        acc[skill.category] = [];
+      }
+      acc[skill.category].push({
+        id: skill.id,
+        name: skill.name,
+        level: skill.level,
+        icon: skill.icon,
+        isPrimary: skill.is_primary,
+        description: skill.description,
+      });
+      return acc;
+    }, {});
+    
+    // Convert to SkillCategory array
+    return Object.keys(grouped).map((category, index) => ({
+      id: category.toLowerCase().replace(/\s+/g, '-'),
+      name: category,
+      skills: grouped[category],
+      order: index,
+    }));
+  } catch (error) {
+    console.error("Error fetching skills:", error);
+    return [];
+  }
+}
+
+// Create individual skill
+export async function createSkill(data: { category: string; name: string; level?: number; icon?: string }): Promise<string> {
+  try {
+    const { data: result, error } = await supabase
+      .from('skills')
+      .insert({
+        category: data.category,
+        name: data.name,
+        level: data.level || 50,
+        icon: data.icon || null,
+      })
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return result.id;
+  } catch (error) {
+    console.error("Error creating skill:", error);
+    throw error;
+  }
+}
+
+// Update individual skill
+export async function updateSkill(id: string, data: Partial<{ category: string; name: string; level: number; icon: string }>): Promise<void> {
+  try {
+    const { error } = await supabase
+      .from('skills')
+      .update({
+        ...data,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id);
+    
+    if (error) throw error;
+  } catch (error) {
+    console.error("Error updating skill:", error);
+    throw error;
+  }
+}
+
+// Delete individual skill
+export async function deleteSkill(id: string): Promise<void> {
+  try {
+    const { error } = await supabase
+      .from('skills')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
+  } catch (error) {
+    console.error("Error deleting skill:", error);
+    throw error;
   }
 }
 
@@ -133,18 +279,43 @@ export async function getEducation(): Promise<EducationItem[]> {
       .order('order', { ascending: true });
     
     if (error) throw error;
-    return data as EducationItem[];
+    
+    return (data || []).map((item: any) => ({
+      id: item.id,
+      institution: item.institution,
+      degree: item.degree,
+      field: item.field,
+      startDate: item.start_date,
+      endDate: item.end_date,
+      isCurrent: !item.end_date,
+      description: item.description,
+      grade: item.grade,
+      order: item.order,
+    })) as EducationItem[];
   } catch (error) {
     console.error("Error fetching education:", error);
     return [];
   }
 }
 
+// Alias for admin pages
+export const getAllEducation = getEducation;
+
 export async function createEducationItem(data: Omit<EducationItem, "id">): Promise<string> {
   try {
+    const dbData = {
+      institution: data.institution,
+      degree: data.degree,
+      field: data.field,
+      start_date: data.startDate,
+      end_date: data.endDate,
+      description: data.description,
+      grade: data.grade,
+    };
+
     const { data: result, error } = await supabase
       .from('education')
-      .insert(data)
+      .insert(dbData)
       .select()
       .single();
     
@@ -156,14 +327,26 @@ export async function createEducationItem(data: Omit<EducationItem, "id">): Prom
   }
 }
 
+// Alias for admin pages
+export const createEducation = createEducationItem;
+
 export async function updateEducationItem(id: string, data: Partial<EducationItem>): Promise<void> {
   try {
+    const dbData: any = {
+      updated_at: new Date().toISOString(),
+    };
+    
+    if (data.institution !== undefined) dbData.institution = data.institution;
+    if (data.degree !== undefined) dbData.degree = data.degree;
+    if (data.field !== undefined) dbData.field = data.field;
+    if (data.startDate !== undefined) dbData.start_date = data.startDate;
+    if (data.endDate !== undefined) dbData.end_date = data.endDate;
+    if (data.description !== undefined) dbData.description = data.description;
+    if (data.grade !== undefined) dbData.grade = data.grade;
+
     const { error } = await supabase
       .from('education')
-      .update({
-        ...data,
-        updated_at: new Date().toISOString(),
-      })
+      .update(dbData)
       .eq('id', id);
     
     if (error) throw error;
@@ -172,6 +355,9 @@ export async function updateEducationItem(id: string, data: Partial<EducationIte
     throw error;
   }
 }
+
+// Alias for admin pages
+export const updateEducation = updateEducationItem;
 
 export async function deleteEducationItem(id: string): Promise<void> {
   try {
@@ -187,6 +373,9 @@ export async function deleteEducationItem(id: string): Promise<void> {
   }
 }
 
+// Alias for admin pages
+export const deleteEducation = deleteEducationItem;
+
 // ============================================================================
 // EXPERIENCE
 // ============================================================================
@@ -199,18 +388,41 @@ export async function getExperience(): Promise<ExperienceItem[]> {
       .order('order', { ascending: true });
     
     if (error) throw error;
-    return data as ExperienceItem[];
+    
+    return (data || []).map((item: any) => ({
+      id: item.id,
+      role: item.position,
+      company: item.company,
+      startDate: item.start_date,
+      endDate: item.end_date,
+      isCurrent: !item.end_date,
+      description: item.description,
+      technologies: item.technologies || [],
+      order: item.order,
+    })) as ExperienceItem[];
   } catch (error) {
     console.error("Error fetching experience:", error);
     return [];
   }
 }
 
+// Alias for admin pages
+export const getAllExperience = getExperience;
+
 export async function createExperienceItem(data: Omit<ExperienceItem, "id">): Promise<string> {
   try {
+    const dbData = {
+      position: data.role,
+      company: data.company,
+      start_date: data.startDate,
+      end_date: data.endDate,
+      description: data.description,
+      technologies: data.technologies,
+    };
+
     const { data: result, error } = await supabase
       .from('experience')
-      .insert(data)
+      .insert(dbData)
       .select()
       .single();
     
@@ -222,14 +434,25 @@ export async function createExperienceItem(data: Omit<ExperienceItem, "id">): Pr
   }
 }
 
+// Alias for admin pages
+export const createExperience = createExperienceItem;
+
 export async function updateExperienceItem(id: string, data: Partial<ExperienceItem>): Promise<void> {
   try {
+    const dbData: any = {
+      updated_at: new Date().toISOString(),
+    };
+    
+    if (data.role !== undefined) dbData.position = data.role;
+    if (data.company !== undefined) dbData.company = data.company;
+    if (data.startDate !== undefined) dbData.start_date = data.startDate;
+    if (data.endDate !== undefined) dbData.end_date = data.endDate;
+    if (data.description !== undefined) dbData.description = data.description;
+    if (data.technologies !== undefined) dbData.technologies = data.technologies;
+
     const { error } = await supabase
       .from('experience')
-      .update({
-        ...data,
-        updated_at: new Date().toISOString(),
-      })
+      .update(dbData)
       .eq('id', id);
     
     if (error) throw error;
@@ -238,6 +461,9 @@ export async function updateExperienceItem(id: string, data: Partial<ExperienceI
     throw error;
   }
 }
+
+// Alias for admin pages
+export const updateExperience = updateExperienceItem;
 
 export async function deleteExperienceItem(id: string): Promise<void> {
   try {
@@ -253,6 +479,9 @@ export async function deleteExperienceItem(id: string): Promise<void> {
   }
 }
 
+// Alias for admin pages
+export const deleteExperience = deleteExperienceItem;
+
 // ============================================================================
 // PROJECTS
 // ============================================================================
@@ -265,18 +494,49 @@ export async function getProjects(): Promise<Project[]> {
       .order('order', { ascending: true });
     
     if (error) throw error;
-    return data as Project[];
+    
+    return (data || []).map((item: any) => ({
+      id: item.id,
+      title: item.title,
+      slug: item.slug || '',
+      summary: item.description,
+      description: item.long_description || '',
+      imageUrl: item.image_url,
+      techStack: item.technologies || [],
+      githubUrl: item.github_url,
+      liveUrl: item.demo_url,
+      type: item.category,
+      featured: item.featured,
+      order: item.order,
+      createdAt: item.created_at
+    })) as Project[];
   } catch (error) {
     console.error("Error fetching projects:", error);
     return [];
   }
 }
 
+// Alias for admin pages
+export const getAllProjects = getProjects;
+
 export async function createProject(data: Omit<Project, "id">): Promise<string> {
   try {
+    const dbData = {
+      title: data.title,
+      description: data.summary,
+      long_description: data.description,
+      image_url: data.imageUrl,
+      technologies: data.techStack,
+      github_url: data.githubUrl,
+      demo_url: data.liveUrl,
+      category: data.type,
+      featured: data.featured,
+      slug: data.slug || data.title.toLowerCase().replace(/ /g, '-'),
+    };
+
     const { data: result, error } = await supabase
       .from('projects')
-      .insert(data)
+      .insert(dbData)
       .select()
       .single();
     
@@ -290,12 +550,24 @@ export async function createProject(data: Omit<Project, "id">): Promise<string> 
 
 export async function updateProject(id: string, data: Partial<Project>): Promise<void> {
   try {
+    const dbData: any = {
+      updated_at: new Date().toISOString(),
+    };
+    
+    if (data.title !== undefined) dbData.title = data.title;
+    if (data.summary !== undefined) dbData.description = data.summary;
+    if (data.description !== undefined) dbData.long_description = data.description;
+    if (data.imageUrl !== undefined) dbData.image_url = data.imageUrl;
+    if (data.techStack !== undefined) dbData.technologies = data.techStack;
+    if (data.githubUrl !== undefined) dbData.github_url = data.githubUrl;
+    if (data.liveUrl !== undefined) dbData.demo_url = data.liveUrl;
+    if (data.type !== undefined) dbData.category = data.type;
+    if (data.featured !== undefined) dbData.featured = data.featured;
+    if (data.slug !== undefined) dbData.slug = data.slug;
+
     const { error } = await supabase
       .from('projects')
-      .update({
-        ...data,
-        updated_at: new Date().toISOString(),
-      })
+      .update(dbData)
       .eq('id', id);
     
     if (error) throw error;
@@ -331,7 +603,17 @@ export async function getAchievements(): Promise<Achievement[]> {
       .order('order', { ascending: true });
     
     if (error) throw error;
-    return data as Achievement[];
+    
+    return (data || []).map((item: any) => ({
+      id: item.id,
+      title: item.title,
+      organization: "", // Default as DB missing it
+      date: item.date,
+      description: item.description,
+      category: item.category,
+      iconUrl: item.icon,
+      order: item.order,
+    })) as Achievement[];
   } catch (error) {
     console.error("Error fetching achievements:", error);
     return [];
@@ -340,9 +622,17 @@ export async function getAchievements(): Promise<Achievement[]> {
 
 export async function createAchievement(data: Omit<Achievement, "id">): Promise<string> {
   try {
+    const dbData = {
+      title: data.title,
+      description: data.description,
+      date: data.date,
+      icon: data.iconUrl,
+      category: data.category,
+    };
+
     const { data: result, error } = await supabase
       .from('achievements')
-      .insert(data)
+      .insert(dbData)
       .select()
       .single();
     
@@ -356,12 +646,19 @@ export async function createAchievement(data: Omit<Achievement, "id">): Promise<
 
 export async function updateAchievement(id: string, data: Partial<Achievement>): Promise<void> {
   try {
+    const dbData: any = {
+      updated_at: new Date().toISOString(),
+    };
+    
+    if (data.title !== undefined) dbData.title = data.title;
+    if (data.description !== undefined) dbData.description = data.description;
+    if (data.date !== undefined) dbData.date = data.date;
+    if (data.iconUrl !== undefined) dbData.icon = data.iconUrl;
+    if (data.category !== undefined) dbData.category = data.category;
+
     const { error } = await supabase
       .from('achievements')
-      .update({
-        ...data,
-        updated_at: new Date().toISOString(),
-      })
+      .update(dbData)
       .eq('id', id);
     
     if (error) throw error;
@@ -397,7 +694,18 @@ export async function getCertificates(): Promise<Certificate[]> {
       .order('order', { ascending: true });
     
     if (error) throw error;
-    return data as Certificate[];
+    
+    return (data || []).map((item: any) => ({
+      id: item.id,
+      title: item.title,
+      issuer: item.issuer,
+      issuedDate: item.date,
+      fileUrl: item.credential_url || '',
+      previewImageUrl: item.image_url,
+      credentialUrl: item.credential_url,
+      description: item.description,
+      order: item.order,
+    })) as Certificate[];
   } catch (error) {
     console.error("Error fetching certificates:", error);
     return [];
@@ -406,9 +714,18 @@ export async function getCertificates(): Promise<Certificate[]> {
 
 export async function createCertificate(data: Omit<Certificate, "id">): Promise<string> {
   try {
+    const dbData = {
+      title: data.title,
+      issuer: data.issuer,
+      date: data.issuedDate,
+      credential_url: data.credentialUrl || data.fileUrl,
+      image_url: data.previewImageUrl,
+      description: data.description,
+    };
+
     const { data: result, error } = await supabase
       .from('certificates')
-      .insert(data)
+      .insert(dbData)
       .select()
       .single();
     
@@ -422,12 +739,21 @@ export async function createCertificate(data: Omit<Certificate, "id">): Promise<
 
 export async function updateCertificate(id: string, data: Partial<Certificate>): Promise<void> {
   try {
+    const dbData: any = {
+      updated_at: new Date().toISOString(),
+    };
+    
+    if (data.title !== undefined) dbData.title = data.title;
+    if (data.issuer !== undefined) dbData.issuer = data.issuer;
+    if (data.issuedDate !== undefined) dbData.date = data.issuedDate;
+    if (data.credentialUrl !== undefined) dbData.credential_url = data.credentialUrl;
+    if (data.fileUrl !== undefined && data.credentialUrl === undefined) dbData.credential_url = data.fileUrl;
+    if (data.previewImageUrl !== undefined) dbData.image_url = data.previewImageUrl;
+    if (data.description !== undefined) dbData.description = data.description;
+
     const { error } = await supabase
       .from('certificates')
-      .update({
-        ...data,
-        updated_at: new Date().toISOString(),
-      })
+      .update(dbData)
       .eq('id', id);
     
     if (error) throw error;
@@ -463,7 +789,15 @@ export async function getGalleryItems(): Promise<GalleryItem[]> {
       .order('order', { ascending: true });
     
     if (error) throw error;
-    return data as GalleryItem[];
+    
+    return (data || []).map((item: any) => ({
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      imageUrl: item.image_url,
+      category: item.category,
+      order: item.order,
+    })) as GalleryItem[];
   } catch (error) {
     console.error("Error fetching gallery:", error);
     return [];
@@ -472,9 +806,17 @@ export async function getGalleryItems(): Promise<GalleryItem[]> {
 
 export async function createGalleryItem(data: Omit<GalleryItem, "id">): Promise<string> {
   try {
+    const dbData = {
+      title: data.title,
+      description: data.description,
+      image_url: data.imageUrl,
+      category: data.category,
+      // order?
+    };
+
     const { data: result, error } = await supabase
       .from('gallery')
-      .insert(data)
+      .insert(dbData)
       .select()
       .single();
     
@@ -488,12 +830,18 @@ export async function createGalleryItem(data: Omit<GalleryItem, "id">): Promise<
 
 export async function updateGalleryItem(id: string, data: Partial<GalleryItem>): Promise<void> {
   try {
+    const dbData: any = {
+      updated_at: new Date().toISOString(),
+    };
+    
+    if (data.title !== undefined) dbData.title = data.title;
+    if (data.description !== undefined) dbData.description = data.description;
+    if (data.imageUrl !== undefined) dbData.image_url = data.imageUrl;
+    if (data.category !== undefined) dbData.category = data.category;
+
     const { error } = await supabase
       .from('gallery')
-      .update({
-        ...data,
-        updated_at: new Date().toISOString(),
-      })
+      .update(dbData)
       .eq('id', id);
     
     if (error) throw error;
@@ -529,7 +877,15 @@ export async function getHobbies(): Promise<Hobby[]> {
       .order('order', { ascending: true });
     
     if (error) throw error;
-    return data as Hobby[];
+    
+    return (data || []).map((item: any) => ({
+      id: item.id,
+      title: item.name,
+      description: item.description,
+      icon: item.icon,
+      imageUrl: item.image_url,
+      order: item.order,
+    })) as Hobby[];
   } catch (error) {
     console.error("Error fetching hobbies:", error);
     return [];
@@ -538,9 +894,16 @@ export async function getHobbies(): Promise<Hobby[]> {
 
 export async function createHobby(data: Omit<Hobby, "id">): Promise<string> {
   try {
+    const dbData = {
+      name: data.title,
+      description: data.description,
+      icon: data.icon,
+      image_url: data.imageUrl,
+    };
+
     const { data: result, error } = await supabase
       .from('hobbies')
-      .insert(data)
+      .insert(dbData)
       .select()
       .single();
     
@@ -554,12 +917,18 @@ export async function createHobby(data: Omit<Hobby, "id">): Promise<string> {
 
 export async function updateHobby(id: string, data: Partial<Hobby>): Promise<void> {
   try {
+    const dbData: any = {
+      updated_at: new Date().toISOString(),
+    };
+    
+    if (data.title !== undefined) dbData.name = data.title;
+    if (data.description !== undefined) dbData.description = data.description;
+    if (data.icon !== undefined) dbData.icon = data.icon;
+    if (data.imageUrl !== undefined) dbData.image_url = data.imageUrl;
+
     const { error } = await supabase
       .from('hobbies')
-      .update({
-        ...data,
-        updated_at: new Date().toISOString(),
-      })
+      .update(dbData)
       .eq('id', id);
     
     if (error) throw error;
@@ -595,7 +964,16 @@ export async function getFutureGoals(): Promise<FutureGoal[]> {
       .order('order', { ascending: true });
     
     if (error) throw error;
-    return data as FutureGoal[];
+    
+    return (data || []).map((item: any) => ({
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      targetDate: item.target_date,
+      status: item.status,
+      category: item.category,
+      order: item.order,
+    })) as FutureGoal[];
   } catch (error) {
     console.error("Error fetching future goals:", error);
     return [];
@@ -604,9 +982,17 @@ export async function getFutureGoals(): Promise<FutureGoal[]> {
 
 export async function createFutureGoal(data: Omit<FutureGoal, "id">): Promise<string> {
   try {
+    const dbData = {
+      title: data.title,
+      description: data.description,
+      target_date: data.targetDate,
+      status: data.status,
+      category: data.category,
+    };
+
     const { data: result, error } = await supabase
       .from('future_goals')
-      .insert(data)
+      .insert(dbData)
       .select()
       .single();
     
@@ -620,12 +1006,19 @@ export async function createFutureGoal(data: Omit<FutureGoal, "id">): Promise<st
 
 export async function updateFutureGoal(id: string, data: Partial<FutureGoal>): Promise<void> {
   try {
+    const dbData: any = {
+      updated_at: new Date().toISOString(),
+    };
+    
+    if (data.title !== undefined) dbData.title = data.title;
+    if (data.description !== undefined) dbData.description = data.description;
+    if (data.targetDate !== undefined) dbData.target_date = data.targetDate;
+    if (data.status !== undefined) dbData.status = data.status;
+    if (data.category !== undefined) dbData.category = data.category;
+
     const { error } = await supabase
       .from('future_goals')
-      .update({
-        ...data,
-        updated_at: new Date().toISOString(),
-      })
+      .update(dbData)
       .eq('id', id);
     
     if (error) throw error;
@@ -661,7 +1054,17 @@ export async function getTestimonials(): Promise<Testimonial[]> {
       .order('order', { ascending: true });
     
     if (error) throw error;
-    return data as Testimonial[];
+    
+    return (data || []).map((item: any) => ({
+      id: item.id,
+      name: item.name,
+      role: item.position,
+      company: item.company,
+      avatarUrl: item.avatar_url,
+      quote: item.content,
+      rating: item.rating,
+      order: item.order,
+    })) as Testimonial[];
   } catch (error) {
     console.error("Error fetching testimonials:", error);
     return [];
@@ -670,9 +1073,18 @@ export async function getTestimonials(): Promise<Testimonial[]> {
 
 export async function createTestimonial(data: Omit<Testimonial, "id">): Promise<string> {
   try {
+    const dbData = {
+      name: data.name,
+      position: data.role,
+      company: data.company,
+      content: data.quote,
+      avatar_url: data.avatarUrl,
+      rating: data.rating,
+    };
+
     const { data: result, error } = await supabase
       .from('testimonials')
-      .insert(data)
+      .insert(dbData)
       .select()
       .single();
     
@@ -686,12 +1098,20 @@ export async function createTestimonial(data: Omit<Testimonial, "id">): Promise<
 
 export async function updateTestimonial(id: string, data: Partial<Testimonial>): Promise<void> {
   try {
+    const dbData: any = {
+      updated_at: new Date().toISOString(),
+    };
+    
+    if (data.name !== undefined) dbData.name = data.name;
+    if (data.role !== undefined) dbData.position = data.role;
+    if (data.company !== undefined) dbData.company = data.company;
+    if (data.quote !== undefined) dbData.content = data.quote;
+    if (data.avatarUrl !== undefined) dbData.avatar_url = data.avatarUrl;
+    if (data.rating !== undefined) dbData.rating = data.rating;
+
     const { error } = await supabase
       .from('testimonials')
-      .update({
-        ...data,
-        updated_at: new Date().toISOString(),
-      })
+      .update(dbData)
       .eq('id', id);
     
     if (error) throw error;
@@ -733,7 +1153,23 @@ export async function getBlogPosts(publishedOnly: boolean = false): Promise<Blog
     const { data, error } = await query;
     
     if (error) throw error;
-    return data as BlogPost[];
+    
+    return (data || []).map((item: any) => ({
+      id: item.id,
+      title: item.title,
+      slug: item.slug,
+      excerpt: item.excerpt,
+      content: item.content,
+      coverImageUrl: item.cover_image_url,
+      author: item.author,
+      publishedDate: item.published_at,
+      updatedDate: item.updated_at,
+      tags: item.tags || [],
+      readTime: item.reading_time,
+      published: item.published,
+      views: 0,
+      order: 0,
+    })) as BlogPost[];
   } catch (error) {
     console.error("Error fetching blog posts:", error);
     return [];
@@ -749,7 +1185,24 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> 
       .single();
     
     if (error) throw error;
-    return data as BlogPost;
+    
+    const item = data;
+    return {
+      id: item.id,
+      title: item.title,
+      slug: item.slug,
+      excerpt: item.excerpt,
+      content: item.content,
+      coverImageUrl: item.cover_image_url,
+      author: item.author,
+      publishedDate: item.published_at,
+      updatedDate: item.updated_at,
+      tags: item.tags || [],
+      readTime: item.reading_time,
+      published: item.published,
+      views: 0,
+      order: 0,
+    } as BlogPost;
   } catch (error) {
     console.error("Error fetching blog post:", error);
     return null;
@@ -758,9 +1211,22 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> 
 
 export async function createBlogPost(data: Omit<BlogPost, "id">): Promise<string> {
   try {
+    const dbData = {
+      title: data.title,
+      slug: data.slug,
+      excerpt: data.excerpt,
+      content: data.content,
+      cover_image_url: data.coverImageUrl,
+      author: data.author || "Admin",
+      published: data.published,
+      published_at: data.publishedDate,
+      tags: data.tags,
+      reading_time: data.readTime,
+    };
+
     const { data: result, error } = await supabase
       .from('blog_posts')
-      .insert(data)
+      .insert(dbData)
       .select()
       .single();
     
@@ -774,12 +1240,24 @@ export async function createBlogPost(data: Omit<BlogPost, "id">): Promise<string
 
 export async function updateBlogPost(id: string, data: Partial<BlogPost>): Promise<void> {
   try {
+    const dbData: any = {
+      updated_at: new Date().toISOString(),
+    };
+    
+    if (data.title !== undefined) dbData.title = data.title;
+    if (data.slug !== undefined) dbData.slug = data.slug;
+    if (data.excerpt !== undefined) dbData.excerpt = data.excerpt;
+    if (data.content !== undefined) dbData.content = data.content;
+    if (data.coverImageUrl !== undefined) dbData.cover_image_url = data.coverImageUrl;
+    if (data.author !== undefined) dbData.author = data.author;
+    if (data.published !== undefined) dbData.published = data.published;
+    if (data.publishedDate !== undefined) dbData.published_at = data.publishedDate;
+    if (data.tags !== undefined) dbData.tags = data.tags;
+    if (data.readTime !== undefined) dbData.reading_time = data.readTime;
+
     const { error } = await supabase
       .from('blog_posts')
-      .update({
-        ...data,
-        updated_at: new Date().toISOString(),
-      })
+      .update(dbData)
       .eq('id', id);
     
     if (error) throw error;
@@ -815,19 +1293,57 @@ export async function getContactInfo(): Promise<ContactInfo | null> {
       .single();
     
     if (error) throw error;
-    return data as ContactInfo;
+    if (!data) return null;
+
+    return {
+      id: data.id,
+      email: data.email,
+      phone: data.phone,
+      location: data.address, // Map address -> location
+      availability: data.availability,
+      socialLinks: data.social_links || [],
+      // Map other fields if they exist in DB, otherwise defaults
+      preferredContactMethod: data.preferred_contact_method,
+      responseTime: data.response_time,
+      enableContactForm: data.enable_contact_form,
+      formSubmitEndpoint: data.form_submit_endpoint,
+      formSuccessMessage: data.form_success_message,
+      formErrorMessage: data.form_error_message,
+    } as ContactInfo;
   } catch (error) {
     console.error("Error fetching contact info:", error);
     return null;
   }
 }
 
-export async function updateContactInfo(data: Omit<ContactInfo, "id">): Promise<void> {
+export async function updateContactInfo(data: Partial<ContactInfo>): Promise<void> {
   try {
+    const dbData: any = { ...data };
+    
+    // Map camelCase -> snake_case
+    if (data.location) dbData.address = data.location;
+    if (data.socialLinks) dbData.social_links = data.socialLinks;
+    if (data.preferredContactMethod) dbData.preferred_contact_method = data.preferredContactMethod;
+    if (data.responseTime) dbData.response_time = data.responseTime;
+    if (data.enableContactForm !== undefined) dbData.enable_contact_form = data.enableContactForm;
+    if (data.formSubmitEndpoint) dbData.form_submit_endpoint = data.formSubmitEndpoint;
+    if (data.formSuccessMessage) dbData.form_success_message = data.formSuccessMessage;
+    if (data.formErrorMessage) dbData.form_error_message = data.formErrorMessage;
+
+    // Remove camelCase keys
+    delete dbData.location;
+    delete dbData.socialLinks;
+    delete dbData.preferredContactMethod;
+    delete dbData.responseTime;
+    delete dbData.enableContactForm;
+    delete dbData.formSubmitEndpoint;
+    delete dbData.formSuccessMessage;
+    delete dbData.formErrorMessage;
+
     const { error } = await supabase
       .from('contact_info')
       .upsert({
-        ...data,
+        ...dbData,
         updated_at: new Date().toISOString(),
       });
     
@@ -876,7 +1392,7 @@ export async function getAllPortfolioContent(): Promise<any> {
 
     return {
       personalInfo,
-      skills,
+      skillCategories: skills,
       education,
       experience,
       projects,

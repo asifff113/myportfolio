@@ -69,17 +69,76 @@
     --accent-rgb: 34, 211, 238;
     --secondary-rgb: 167, 139, 250;
   }
+
+  /* --- THEME MOODS --- */
+  
+  /* Hacker Theme (Green) */
+  [data-theme='hacker'] {
+    --primary: 142 71% 45%; /* Green */
+    --primary-foreground: 144 100% 97%;
+    --secondary: 142 71% 10%;
+    --ring: 142 71% 45%;
+    --primary-rgb: 34, 197, 94;
+  }
+
+  /* Corporate Theme (Blue) */
+  [data-theme='corporate'] {
+    --primary: 221 83% 53%; /* Blue */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 217 91% 95%;
+    --ring: 221 83% 53%;
+    --primary-rgb: 59, 130, 246;
+  }
+
+  /* Sunset Theme (Orange) */
+  [data-theme='sunset'] {
+    --primary: 24 95% 53%; /* Orange */
+    --primary-foreground: 60 9.1% 97.8%;
+    --secondary: 20 14.3% 4.1%;
+    --ring: 24 95% 53%;
+    --primary-rgb: 249, 115, 22;
+  }
+}
+
+/* Google Translate Customization */
+.goog-te-banner-frame.skiptranslate,
+.goog-te-banner-frame,
+.skiptranslate > iframe {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    width: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+body {
+    top: 0px !important;
+    position: static !important;
+}
+
+.goog-te-gadget-simple {
+  display: none !important;
+}
+
+.goog-te-gadget-icon {
+  display: none !important;
+}
+
+#google_translate_element,
+.goog-te-gadget {
+    display: none !important;
+}
+
+.goog-text-highlight {
+    background-color: transparent !important;
+    box-shadow: none !important;
 }
 
 @layer base {
   * {
     @apply border-border;
   }
-  
-  html {
-    scroll-behavior: smooth;
-  }
-
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;

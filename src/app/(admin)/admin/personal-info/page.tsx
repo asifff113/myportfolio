@@ -8,8 +8,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Save, Upload, X, Plus, CheckCircle, AlertCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { getPersonalInfo, updatePersonalInfo } from "@/lib/firebase-queries";
-import { uploadProfileImage } from "@/lib/firebase-storage";
+import { getPersonalInfo, updatePersonalInfo } from "@/lib/supabase-queries";
+import { uploadProfileImage } from "@/lib/supabase-storage";
 import { PersonalInfo, SocialLink } from "@/lib/content-types";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 

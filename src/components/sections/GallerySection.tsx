@@ -42,7 +42,7 @@ export default function GallerySection({ gallery }: GallerySectionProps) {
   }
 
   // Get unique categories
-  const categories = ["All", ...Array.from(new Set(gallery.map((item) => item.category).filter(Boolean)))];
+  const categories = ["All", ...Array.from(new Set(gallery.map((item) => item.category).filter((c): c is string => !!c)))];
 
   // Filter gallery items
   const filteredGallery = filter === "All"
@@ -119,8 +119,8 @@ export default function GallerySection({ gallery }: GallerySectionProps) {
                 onClick={() => setFilter(category)}
                 className={`px-6 py-3 rounded-full font-bold transition-all ripple relative overflow-hidden ${
                   filter === category
-                    ? `bg-gradient-to-r ${catColor} text-white shadow-lg border-2 border-white/30`
-                    : "glass-ultra hover:bg-primary/20 border-2 border-transparent hover:border-white/20"
+                    ? `bg-gradient-to-r ${catColor} text-white shadow-[0_0_20px_rgba(var(--primary-rgb),0.5)] border-2 border-white/50 scale-105`
+                    : "glass-ultra hover:bg-primary/20 border-2 border-transparent hover:border-white/20 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]"
                 }`}
               >
                 <span className="relative z-10">{category}</span>

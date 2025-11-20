@@ -10,6 +10,7 @@ import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
 import { ContactInfo } from "@/lib/content-types";
 import Section from "@/components/ui/Section";
 import SectionTitle from "@/components/ui/SectionTitle";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface ContactSectionProps {
   contactInfo: ContactInfo;
@@ -54,6 +55,7 @@ const socialIconMap: Record<string, React.ElementType> = {
 };
 
 export default function ContactSection({ contactInfo }: ContactSectionProps) {
+  const { t } = useLanguage();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -104,21 +106,21 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
   };
 
   return (
-    <Section id="contact" className="relative">
+    <Section id="contact" className="relative overflow-hidden">
       <SectionTitle
-        title="Get In Touch"
-        subtitle="Have a question or want to work together?"
+        title={t.sections.contact.title}
+        subtitle={t.sections.contact.subtitle}
       />
 
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        className="grid grid-cols-1 lg:grid-cols-2 gap-12"
-      >
+      <div className="grid lg:grid-cols-2 gap-12 items-start">
         {/* Contact Info */}
-        <motion.div variants={itemVariants} className="space-y-8">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          className="space-y-8"
+        >
           <div>
             <h3 className="text-2xl font-display font-bold mb-6">
               <span className="text-gradient">Let's Connect</span>
@@ -259,151 +261,149 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
             {/* Name Field */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium mb-2">
-                Name *
+              <label htmlFor="name" className="block text-sm font-medium mb-2 ml-1">
+                {t.sections.contact.form.name}
               </label>
+              <div className="relative group">
                 <input
                   {...register("name")}
                   type="text"
                   id="name"
-                  className={`w-full px-4 py-3 glass-ultra border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary/50 transition-all neon-glow-hover relative z-10 ${
+                  className={`w-full bg-background/50 border ${
                     errors.name ? "border-red-500" : "border-border"
-                  }`}
-                  placeholder="Your name"
+                  } rounded-xl px-4 py-3 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all group-hover:bg-background/80`}
+                  placeholder={t.sections.contact.form.name}
                 />
+                {errors.name && (
+                  <span className="absolute right-3 top-3 text-red-500">
+                    <AlertCircle size={18} />
+                  </span>
+                )}
+              </div>
               {errors.name && (
-                <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
+                <p className="text-red-500 text-xs mt-1 ml-1">{errors.name.message}</p>
               )}
             </div>
 
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-2">
-                Email *
+              <label htmlFor="email" className="block text-sm font-medium mb-2 ml-1">
+                {t.sections.contact.form.email}
               </label>
-              <input
-                {...register("email")}
-                type="email"
-                id="email"
-                className={`w-full px-4 py-3 bg-background/50 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all ${
-                  errors.email ? "border-red-500" : "border-border"
-                }`}
-                placeholder="your.email@example.com"
-              />
+              <div className="relative group">
+                <input
+                  {...register("email")}
+                  type="email"
+                  id="email"
+                  className={`w-full bg-background/50 border ${
+                    errors.email ? "border-red-500" : "border-border"
+                  } rounded-xl px-4 py-3 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all group-hover:bg-background/80`}
+                  placeholder="john@example.com"
+                />
+                {errors.email && (
+                  <span className="absolute right-3 top-3 text-red-500">
+                    <AlertCircle size={18} />
+                  </span>
+                )}
+              </div>
               {errors.email && (
-                <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
+                <p className="text-red-500 text-xs mt-1 ml-1">{errors.email.message}</p>
               )}
             </div>
 
             {/* Subject Field */}
             <div>
-              <label htmlFor="subject" className="block text-sm font-medium mb-2">
-                Subject *
+              <label htmlFor="subject" className="block text-sm font-medium mb-2 ml-1">
+                {t.sections.contact.form.subject}
               </label>
-              <input
-                {...register("subject")}
-                type="text"
-                id="subject"
-                className={`w-full px-4 py-3 bg-background/50 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all ${
-                  errors.subject ? "border-red-500" : "border-border"
-                }`}
-                placeholder="What is this about?"
-              />
+              <div className="relative group">
+                <input
+                  {...register("subject")}
+                  type="text"
+                  id="subject"
+                  className={`w-full bg-background/50 border ${
+                    errors.subject ? "border-red-500" : "border-border"
+                  } rounded-xl px-4 py-3 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all group-hover:bg-background/80`}
+                  placeholder={t.sections.contact.form.subject}
+                />
+                {errors.subject && (
+                  <span className="absolute right-3 top-3 text-red-500">
+                    <AlertCircle size={18} />
+                  </span>
+                )}
+              </div>
               {errors.subject && (
-                <p className="mt-1 text-sm text-red-500">{errors.subject.message}</p>
+                <p className="text-red-500 text-xs mt-1 ml-1">{errors.subject.message}</p>
               )}
             </div>
 
             {/* Message Field */}
             <div>
-              <label htmlFor="message" className="block text-sm font-medium mb-2">
-                Message *
+              <label htmlFor="message" className="block text-sm font-medium mb-2 ml-1">
+                {t.sections.contact.form.message}
               </label>
+              <div className="relative group">
                 <textarea
                   {...register("message")}
                   id="message"
                   rows={5}
-                  className={`w-full px-4 py-3 glass-ultra border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary/50 transition-all resize-none neon-glow-hover relative z-10 ${
+                  className={`w-full bg-background/50 border ${
                     errors.message ? "border-red-500" : "border-border"
-                  }`}
-                  placeholder="Your message..."
+                  } rounded-xl px-4 py-3 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all resize-none group-hover:bg-background/80`}
+                  placeholder={t.sections.contact.form.message}
                 />
+                {errors.message && (
+                  <span className="absolute right-3 top-3 text-red-500">
+                    <AlertCircle size={18} />
+                  </span>
+                )}
+              </div>
               {errors.message && (
-                <p className="mt-1 text-sm text-red-500">{errors.message.message}</p>
+                <p className="text-red-500 text-xs mt-1 ml-1">{errors.message.message}</p>
               )}
             </div>
 
             {/* Submit Button */}
               <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 type="submit"
                 disabled={isSubmitting}
-                whileHover={{ scale: isSubmitting ? 1 : 1.02, y: isSubmitting ? 0 : -2 }}
-                whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
-                className={`w-full flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold transition-all relative z-10 ripple ${
-                  isSubmitting
-                    ? "bg-primary/50 cursor-not-allowed"
-                    : "button-futuristic hover:shadow-2xl"
-                }`}
+                className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/25 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
               >
               {isSubmitting ? (
                 <>
-                  <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                  <span>Sending...</span>
+                  <Clock className="animate-spin" size={20} />
+                  {t.sections.contact.form.sending}
                 </>
               ) : (
                 <>
                   <Send size={20} />
-                  <span>Send Message</span>
+                  {t.sections.contact.form.send}
                 </>
               )}
             </motion.button>
 
-            {/* Success/Error Messages */}
+            {/* Status Messages */}
             {submitStatus === "success" && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="p-6 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 bg-green-500/10 border border-green-500/20 rounded-xl flex items-center gap-3 text-green-500"
               >
-                <div className="flex items-start gap-3">
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1, rotate: 360 }}
-                    transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                  >
-                    <CheckCircle size={24} className="text-green-500 flex-shrink-0" />
-                  </motion.div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-green-500 mb-1">
-                      Message Sent! 🎉
-                    </h4>
-                    <p className="text-sm text-green-500/80">
-                      {contactInfo.formSuccessMessage || "Thanks for reaching out! I'll get back to you soon."}
-                    </p>
-                  </div>
-                </div>
+                <CheckCircle size={20} />
+                <p className="font-medium">{t.sections.contact.form.success}</p>
               </motion.div>
             )}
 
             {submitStatus === "error" && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="p-6 bg-red-500/10 border border-red-500/30 rounded-xl"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3 text-red-500"
               >
-                <div className="flex items-start gap-3">
-                  <AlertCircle size={24} className="text-red-500 flex-shrink-0" />
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-red-500 mb-1">
-                      Oops! Something went wrong
-                    </h4>
-                    <p className="text-sm text-red-500/80">
-                      {errorMessage || contactInfo.formErrorMessage || "Failed to send message. Please try again."}
-                    </p>
-                  </div>
-                </div>
+                <AlertCircle size={20} />
+                <p className="font-medium">{errorMessage || t.sections.contact.form.error}</p>
               </motion.div>
             )}
           </form>
@@ -449,7 +449,7 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
               )}
           </motion.div>
         </motion.div>
-      </motion.div>
+      </div>
     </Section>
   );
 }

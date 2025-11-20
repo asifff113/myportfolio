@@ -7,6 +7,8 @@ import { EducationItem } from "@/lib/content-types";
 import Section from "@/components/ui/Section";
 import SectionTitle from "@/components/ui/SectionTitle";
 import { formatDateRange } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useTranslatedEducation } from "@/lib/i18n/useTranslatedContent";
 
 interface EducationSectionProps {
   education: EducationItem[];
@@ -33,7 +35,10 @@ const itemVariants = {
   },
 };
 
-export default function EducationSection({ education }: EducationSectionProps) {
+export default function EducationSection({ education: initialEducation }: EducationSectionProps) {
+  const { t, locale } = useLanguage();
+  const education = useTranslatedEducation(initialEducation);
+
   if (!education || education.length === 0) {
     return null;
   }
@@ -41,8 +46,8 @@ export default function EducationSection({ education }: EducationSectionProps) {
   return (
     <Section id="education" className="relative">
       <SectionTitle
-        title="Education"
-        subtitle="My academic journey and qualifications"
+        title={t.sections.education.title}
+        subtitle={t.sections.education.subtitle}
       />
 
       <motion.div
