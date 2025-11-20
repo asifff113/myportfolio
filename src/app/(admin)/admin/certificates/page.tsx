@@ -3,12 +3,13 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Edit2, Trash2, Award, X, Loader2, Calendar, ExternalLink, Upload, FileText } from "lucide-react";
+import { Plus, Edit2, Trash2, Award, X, Loader2, Calendar, ExternalLink, Upload, FileText, ArrowUp, ArrowDown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { getCertificates, createCertificate, updateCertificate, deleteCertificate } from "@/lib/supabase-queries";
 import { uploadCertificateImage, uploadDocument } from "@/lib/supabase-storage";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { Certificate } from "@/lib/content-types";
+import { useReorder } from "@/hooks/useReorder";
 
 export default function CertificatesAdminPage() {
   const { user, loading: authLoading } = useAuth();
@@ -19,6 +20,14 @@ export default function CertificatesAdminPage() {
   const [editingCertificate, setEditingCertificate] = useState<Certificate | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [uploading, setUploading] = useState(false);
+  
+  const {
+    items: orderedCertificates,
+    handleMoveUp,
+    handleMoveDown,
+    loading: reorderLoading
+  } = useReorder<Certificate>(certificates, 'certificates', loadCertificates);
+
   const [formData, setFormData] = useState({
     title: "",
     issuer: "",
@@ -171,7 +180,7 @@ export default function CertificatesAdminPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {certificates.map((certificate) => (
+          {orderedCertificates.map((certificate, index) => (
             <motion.div
               key={certificate.id}
               initial={{ opacity: 0, y: 20 }}
@@ -207,6 +216,22 @@ export default function CertificatesAdminPage() {
                   </div>
                 </div>
                 <div className="flex gap-2">
+                  <button
+                    onClick={() => handleMoveUp(index)}
+                    disabled={index === 0 || reorderLoading}
+                    className="p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                    title="Move Up"
+                  >
+                    <ArrowUp className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleMoveDown(index)}
+                    disabled={index === orderedCertificates.length - 1 || reorderLoading}
+                    className="p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                    title="Move Down"
+                  >
+                    <ArrowDown className="w-4 h-4" />
+                  </button>
                   <button
                     onClick={() => handleOpenModal(certificate)}
                     className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg transition-colors"

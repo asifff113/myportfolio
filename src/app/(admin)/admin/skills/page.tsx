@@ -11,10 +11,13 @@ import {
   Code,
   X,
   Loader2,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { getAllSkills, createSkill, updateSkill, deleteSkill } from "@/lib/supabase-queries";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { useReorder } from "@/hooks/useReorder";
 
 interface Skill {
   id: string;
@@ -132,11 +135,20 @@ export default function SkillsAdminPage() {
     }
   };
 
-  const filteredSkills = skills.filter((skill) => {
+  const {
+    items: orderedSkills,
+    handleMoveUp,
+    handleMoveDown,
+    loading: reorderLoading
+  } = useReorder<Skill>(skills, 'skills', loadSkills);
+
+  const filteredSkills = orderedSkills.filter((skill) => {
     const matchesSearch = skill.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "All" || skill.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  const isReorderDisabled = searchQuery !== "" || selectedCategory !== "All";
 
   const uniqueCategories = ["All", ...Array.from(new Set(skills.map((s) => s.category)))];
 
@@ -199,7 +211,7 @@ export default function SkillsAdminPage() {
         {/* Skills Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <AnimatePresence>
-            {filteredSkills.map((skill) => (
+            {filteredSkills.map((skill, index) => (
               <motion.div
                 key={skill.id}
                 layout
@@ -225,6 +237,26 @@ export default function SkillsAdminPage() {
                     </div>
                   </div>
                   <div className="flex gap-2">
+                    {!isReorderDisabled && (
+                      <>
+                        <button
+                          onClick={() => handleMoveUp(index)}
+                          disabled={index === 0 || reorderLoading}
+                          className="p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                          title="Move Up"
+                        >
+                          <ArrowUp className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleMoveDown(index)}
+                          disabled={index === orderedSkills.length - 1 || reorderLoading}
+                          className="p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                          title="Move Down"
+                        >
+                          <ArrowDown className="w-4 h-4" />
+                        </button>
+                      </>
+                    )}
                     <button
                       onClick={() => handleOpenModal(skill)}
                       className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg transition-colors"

@@ -3,11 +3,12 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Plus, Edit2, Trash2, X, Loader2, Target } from "lucide-react";
+import { Plus, Edit2, Trash2, X, Loader2, Target, ArrowUp, ArrowDown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { getFutureGoals, createFutureGoal, updateFutureGoal, deleteFutureGoal } from "@/lib/supabase-queries";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { FutureGoal } from "@/lib/content-types";
+import { useReorder } from "@/hooks/useReorder";
 
 const categories = ["Technical", "Career", "Personal", "Other"];
 const statuses = ["planned", "in_progress", "completed", "on_hold"];
@@ -21,6 +22,13 @@ export default function GoalsAdminPage() {
   const [editing, setEditing] = useState<FutureGoal | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({ title: "", description: "", targetDate: "", category: "Personal", status: "planned" });
+
+  const {
+    items: orderedGoals,
+    handleMoveUp,
+    handleMoveDown,
+    loading: reorderLoading
+  } = useReorder<FutureGoal>(goals, 'future_goals', loadGoals);
 
   useEffect(() => {
     if (!authLoading && !user) router.push("/login");
@@ -98,7 +106,7 @@ export default function GoalsAdminPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {goals.map((goal) => (
+          {orderedGoals.map((goal, index) => (
             <motion.div key={goal.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex gap-3 flex-1">
@@ -116,6 +124,22 @@ export default function GoalsAdminPage() {
                   </div>
                 </div>
                 <div className="flex gap-2">
+                  <button
+                    onClick={() => handleMoveUp(index)}
+                    disabled={index === 0 || reorderLoading}
+                    className="p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                    title="Move Up"
+                  >
+                    <ArrowUp className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleMoveDown(index)}
+                    disabled={index === orderedGoals.length - 1 || reorderLoading}
+                    className="p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                    title="Move Down"
+                  >
+                    <ArrowDown className="w-4 h-4" />
+                  </button>
                   <button onClick={() => { setEditing(goal); setFormData({ title: goal.title, description: goal.description, targetDate: goal.targetDate || "", category: goal.category || "Personal", status: goal.status || "planned" }); setIsModalOpen(true); }} className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg">
                     <Edit2 className="w-4 h-4" />
                   </button>

@@ -3,13 +3,14 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Edit2, Trash2, Image as ImageIcon, X, Loader2, Upload } from "lucide-react";
+import { Plus, Edit2, Trash2, Image as ImageIcon, X, Loader2, Upload, ArrowUp, ArrowDown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { getGalleryItems, createGalleryItem, updateGalleryItem, deleteGalleryItem } from "@/lib/supabase-queries";
 import { uploadGalleryImage } from "@/lib/supabase-storage";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import Image from "next/image";
 import { GalleryItem } from "@/lib/content-types";
+import { useReorder } from "@/hooks/useReorder";
 
 const categories = ["Events", "Work", "Personal", "Other"];
 
@@ -22,6 +23,14 @@ export default function GalleryAdminPage() {
   const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [uploading, setUploading] = useState(false);
+  
+  const {
+    items: orderedGallery,
+    handleMoveUp,
+    handleMoveDown,
+    loading: reorderLoading
+  } = useReorder<GalleryItem>(gallery, 'gallery', loadGallery);
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -178,7 +187,7 @@ export default function GalleryAdminPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {gallery.map((item) => (
+          {orderedGallery.map((item, index) => (
             <motion.div
               key={item.id}
               initial={{ opacity: 0, scale: 0.9 }}
@@ -208,6 +217,22 @@ export default function GalleryAdminPage() {
                     )}
                   </div>
                   <div className="flex gap-2">
+                    <button
+                      onClick={() => handleMoveUp(index)}
+                      disabled={index === 0 || reorderLoading}
+                      className="p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                      title="Move Up"
+                    >
+                      <ArrowUp className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleMoveDown(index)}
+                      disabled={index === orderedGallery.length - 1 || reorderLoading}
+                      className="p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                      title="Move Down"
+                    >
+                      <ArrowDown className="w-4 h-4" />
+                    </button>
                     <button
                       onClick={() => handleOpenModal(item)}
                       className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg transition-colors"

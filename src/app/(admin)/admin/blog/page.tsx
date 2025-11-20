@@ -3,12 +3,13 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Plus, Edit2, Trash2, X, Loader2, FileText, ExternalLink, Upload } from "lucide-react";
+import { Plus, Edit2, Trash2, X, Loader2, FileText, ExternalLink, Upload, ArrowUp, ArrowDown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { getBlogPosts, createBlogPost, updateBlogPost, deleteBlogPost } from "@/lib/supabase-queries";
 import { uploadImage, STORAGE_PATHS } from "@/lib/supabase-storage";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { BlogPost } from "@/lib/content-types";
+import { useReorder } from "@/hooks/useReorder";
 
 export default function BlogAdminPage() {
   const { user, loading: authLoading } = useAuth();
@@ -30,6 +31,13 @@ export default function BlogAdminPage() {
     tags: "",
     published: false,
   });
+
+  const {
+    items: orderedPosts,
+    handleMoveUp,
+    handleMoveDown,
+    loading: reorderLoading
+  } = useReorder<BlogPost>(posts, 'blog_posts', loadPosts);
 
   useEffect(() => {
     if (!authLoading && !user) router.push("/login");
@@ -127,7 +135,7 @@ export default function BlogAdminPage() {
         </div>
 
         <div className="space-y-4">
-          {posts.map((post) => (
+          {orderedPosts.map((post, index) => (
             <motion.div key={post.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
               <div className="flex gap-6">
                 {post.coverImageUrl && (
@@ -161,6 +169,22 @@ export default function BlogAdminPage() {
                       )}
                     </div>
                     <div className="flex gap-2">
+                      <button
+                        onClick={() => handleMoveUp(index)}
+                        disabled={index === 0 || reorderLoading}
+                        className="p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                        title="Move Up"
+                      >
+                        <ArrowUp className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleMoveDown(index)}
+                        disabled={index === orderedPosts.length - 1 || reorderLoading}
+                        className="p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                        title="Move Down"
+                      >
+                        <ArrowDown className="w-4 h-4" />
+                      </button>
                       <button onClick={() => window.open(`/blog/${post.slug}`, "_blank")} className="p-2 text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                         <ExternalLink className="w-4 h-4" />
                       </button>

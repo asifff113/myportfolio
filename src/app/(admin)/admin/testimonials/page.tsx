@@ -3,11 +3,12 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Plus, Edit2, Trash2, X, Loader2, Star } from "lucide-react";
+import { Plus, Edit2, Trash2, X, Loader2, Star, ArrowUp, ArrowDown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { getTestimonials, createTestimonial, updateTestimonial, deleteTestimonial } from "@/lib/supabase-queries";
 import { Testimonial } from "@/lib/content-types";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { useReorder } from "@/hooks/useReorder";
 
 export default function TestimonialsAdminPage() {
   const { user, loading: authLoading } = useAuth();
@@ -18,6 +19,13 @@ export default function TestimonialsAdminPage() {
   const [editing, setEditing] = useState<Testimonial | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState<Partial<Testimonial>>({ name: "", role: "", company: "", quote: "", rating: 5 });
+
+  const {
+    items: orderedTestimonials,
+    handleMoveUp,
+    handleMoveDown,
+    loading: reorderLoading
+  } = useReorder<Testimonial>(testimonials, 'testimonials', loadTestimonials);
 
   useEffect(() => {
     if (!authLoading && !user) router.push("/login");
@@ -92,7 +100,7 @@ export default function TestimonialsAdminPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {testimonials.map((testimonial) => (
+          {orderedTestimonials.map((testimonial, index) => (
             <motion.div key={testimonial.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
@@ -101,6 +109,22 @@ export default function TestimonialsAdminPage() {
                   <div className="mt-2">{renderStars(testimonial.rating || 5)}</div>
                 </div>
                 <div className="flex gap-2">
+                  <button
+                    onClick={() => handleMoveUp(index)}
+                    disabled={index === 0 || reorderLoading}
+                    className="p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                    title="Move Up"
+                  >
+                    <ArrowUp className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleMoveDown(index)}
+                    disabled={index === orderedTestimonials.length - 1 || reorderLoading}
+                    className="p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                    title="Move Down"
+                  >
+                    <ArrowDown className="w-4 h-4" />
+                  </button>
                   <button onClick={() => { setEditing(testimonial); setFormData({ name: testimonial.name, role: testimonial.role, company: testimonial.company || "", quote: testimonial.quote, rating: testimonial.rating || 5 }); setIsModalOpen(true); }} className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg">
                     <Edit2 className="w-4 h-4" />
                   </button>

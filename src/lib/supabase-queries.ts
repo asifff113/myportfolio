@@ -1558,3 +1558,25 @@ export async function getAllPortfolioContent(): Promise<any> {
     throw error;
   }
 }
+
+// ============================================================================
+// REORDER ITEMS
+// ============================================================================
+
+export async function reorderItems(table: string, items: { id: string; order: number }[]): Promise<void> {
+  try {
+    // We use Promise.all to update all items in parallel
+    // In a production app with many items, an RPC function would be better
+    const updates = items.map((item) => 
+      supabase
+        .from(table)
+        .update({ order: item.order, updated_at: new Date().toISOString() })
+        .eq('id', item.id)
+    );
+    
+    await Promise.all(updates);
+  } catch (error) {
+    console.error(`Error reordering ${table}:`, error);
+    throw error;
+  }
+}

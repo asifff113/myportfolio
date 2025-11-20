@@ -3,8 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Edit2, Trash2, GraduationCap, X, Loader2, Calendar } from "lucide-react";
+import { Plus, Edit2, Trash2, GraduationCap, X, Loader2, Calendar, ArrowUp, ArrowDown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useReorder } from "@/hooks/useReorder";
 import { getAllEducation, createEducation, updateEducation, deleteEducation } from "@/lib/supabase-queries";
 import { EducationItem } from "@/lib/content-types";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -30,18 +31,6 @@ export default function EducationAdminPage() {
     logoUrl: "",
   });
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push("/login");
-    }
-  }, [user, authLoading, router]);
-
-  useEffect(() => {
-    if (user) {
-      loadEducation();
-    }
-  }, [user]);
-
   const loadEducation = async () => {
     try {
       setLoading(true);
@@ -53,6 +42,25 @@ export default function EducationAdminPage() {
       setLoading(false);
     }
   };
+
+  const { 
+    items: orderedEducation, 
+    handleMoveUp, 
+    handleMoveDown, 
+    loading: reorderLoading 
+  } = useReorder<EducationItem>(education, 'education', loadEducation);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, authLoading, router]);
+
+  useEffect(() => {
+    if (user) {
+      loadEducation();
+    }
+  }, [user]);
 
   const handleOpenModal = (edu?: EducationItem) => {
     if (edu) {
@@ -161,17 +169,35 @@ export default function EducationAdminPage() {
         </div>
 
         <div className="space-y-4">
-          {education.map((edu) => (
+          {orderedEducation.map((edu, index) => (
             <motion.div
               key={edu.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6"
+              className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-100 dark:border-gray-700"
             >
-              <div className="flex items-start justify-between">
-                <div className="flex gap-4 flex-1">
-                  <div className="bg-blue-100 dark:bg-blue-900 p-3 rounded-lg">
-                    <GraduationCap className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+              <div className="flex justify-between items-start">
+                <div className="flex gap-4">
+                  <div className="flex flex-col gap-1 mr-2 justify-center">
+                    <button
+                      onClick={() => handleMoveUp(index)}
+                      disabled={index === 0 || reorderLoading}
+                      className="p-1 text-gray-500 hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-700 rounded disabled:opacity-30 transition-colors"
+                      title="Move Up"
+                    >
+                      <ArrowUp className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleMoveDown(index)}
+                      disabled={index === orderedEducation.length - 1 || reorderLoading}
+                      className="p-1 text-gray-500 hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-700 rounded disabled:opacity-30 transition-colors"
+                      title="Move Down"
+                    >
+                      <ArrowDown className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg h-fit">
+                    <GraduationCap className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">

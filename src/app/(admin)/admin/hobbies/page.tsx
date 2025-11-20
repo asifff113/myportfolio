@@ -3,11 +3,12 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Plus, Edit2, Trash2, X, Loader2 } from "lucide-react";
+import { Plus, Edit2, Trash2, X, Loader2, ArrowUp, ArrowDown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { getHobbies, createHobby, updateHobby, deleteHobby } from "@/lib/supabase-queries";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { Hobby } from "@/lib/content-types";
+import { useReorder } from "@/hooks/useReorder";
 
 export default function HobbiesAdminPage() {
   const { user, loading: authLoading } = useAuth();
@@ -18,6 +19,13 @@ export default function HobbiesAdminPage() {
   const [editing, setEditing] = useState<Hobby | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({ title: "", description: "", icon: "" });
+
+  const {
+    items: orderedHobbies,
+    handleMoveUp,
+    handleMoveDown,
+    loading: reorderLoading
+  } = useReorder<Hobby>(hobbies, 'hobbies', loadHobbies);
 
   useEffect(() => {
     if (!authLoading && !user) router.push("/login");
@@ -85,7 +93,7 @@ export default function HobbiesAdminPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {hobbies.map((hobby) => (
+          {orderedHobbies.map((hobby, index) => (
             <motion.div key={hobby.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
               <div className="flex items-start justify-between">
                 <div className="flex gap-4 flex-1">
@@ -96,6 +104,22 @@ export default function HobbiesAdminPage() {
                   </div>
                 </div>
                 <div className="flex gap-2">
+                  <button
+                    onClick={() => handleMoveUp(index)}
+                    disabled={index === 0 || reorderLoading}
+                    className="p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                    title="Move Up"
+                  >
+                    <ArrowUp className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleMoveDown(index)}
+                    disabled={index === orderedHobbies.length - 1 || reorderLoading}
+                    className="p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                    title="Move Down"
+                  >
+                    <ArrowDown className="w-4 h-4" />
+                  </button>
                   <button onClick={() => { setEditing(hobby); setFormData({ title: hobby.title, description: hobby.description, icon: hobby.icon || "" }); setIsModalOpen(true); }} className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg">
                     <Edit2 className="w-4 h-4" />
                   </button>

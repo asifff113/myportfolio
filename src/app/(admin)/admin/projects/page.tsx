@@ -3,8 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Edit2, Trash2, FolderGit2, X, Loader2, Upload, ExternalLink, Github } from "lucide-react";
+import { Plus, Edit2, Trash2, FolderGit2, X, Loader2, Upload, ExternalLink, Github, ArrowUp, ArrowDown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useReorder } from "@/hooks/useReorder";
 import { getAllProjects, createProject, updateProject, deleteProject } from "@/lib/supabase-queries";
 import { uploadProjectImage } from "@/lib/supabase-storage";
 import { Project } from "@/lib/content-types";
@@ -37,18 +38,6 @@ export default function ProjectsAdminPage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push("/login");
-    }
-  }, [user, authLoading, router]);
-
-  useEffect(() => {
-    if (user) {
-      loadProjects();
-    }
-  }, [user]);
-
   const loadProjects = async () => {
     try {
       setLoading(true);
@@ -60,6 +49,25 @@ export default function ProjectsAdminPage() {
       setLoading(false);
     }
   };
+
+  const { 
+    items: orderedProjects, 
+    handleMoveUp, 
+    handleMoveDown, 
+    loading: reorderLoading 
+  } = useReorder<Project>(projects, 'projects', loadProjects);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, authLoading, router]);
+
+  useEffect(() => {
+    if (user) {
+      loadProjects();
+    }
+  }, [user]);
 
   const handleOpenModal = (project?: Project) => {
     if (project) {
@@ -217,7 +225,7 @@ export default function ProjectsAdminPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((project) => (
+          {orderedProjects.map((project, index) => (
             <motion.div
               key={project.id}
               initial={{ opacity: 0, scale: 0.9 }}
@@ -232,7 +240,47 @@ export default function ProjectsAdminPage() {
                     fill
                     className="object-cover"
                   />
+                  <div className="absolute top-2 left-2 flex gap-1">
+                    <button
+                      onClick={() => handleMoveUp(index)}
+                      disabled={index === 0 || reorderLoading}
+                      className="p-1.5 bg-white/80 dark:bg-black/50 text-gray-700 dark:text-white hover:text-primary rounded-full disabled:opacity-30 backdrop-blur-sm transition-colors"
+                      title="Move Up"
+                    >
+                      <ArrowUp className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleMoveDown(index)}
+                      disabled={index === orderedProjects.length - 1 || reorderLoading}
+                      className="p-1.5 bg-white/80 dark:bg-black/50 text-gray-700 dark:text-white hover:text-primary rounded-full disabled:opacity-30 backdrop-blur-sm transition-colors"
+                      title="Move Down"
+                    >
+                      <ArrowDown className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
+              )}
+              {!project.imageUrl && (
+                 <div className="relative h-12 w-full bg-gray-100 dark:bg-gray-700 flex items-center px-4">
+                    <div className="flex gap-1">
+                    <button
+                      onClick={() => handleMoveUp(index)}
+                      disabled={index === 0 || reorderLoading}
+                      className="p-1 text-gray-500 hover:text-primary hover:bg-gray-200 dark:hover:bg-gray-600 rounded disabled:opacity-30 transition-colors"
+                      title="Move Up"
+                    >
+                      <ArrowUp className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleMoveDown(index)}
+                      disabled={index === orderedProjects.length - 1 || reorderLoading}
+                      className="p-1 text-gray-500 hover:text-primary hover:bg-gray-200 dark:hover:bg-gray-600 rounded disabled:opacity-30 transition-colors"
+                      title="Move Down"
+                    >
+                      <ArrowDown className="w-4 h-4" />
+                    </button>
+                  </div>
+                 </div>
               )}
               <div className="p-6">
                 <div className="flex items-start justify-between mb-2">

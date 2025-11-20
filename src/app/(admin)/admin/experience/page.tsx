@@ -3,8 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Edit2, Trash2, Briefcase, X, Loader2, Calendar, MapPin } from "lucide-react";
+import { Plus, Edit2, Trash2, Briefcase, X, Loader2, Calendar, MapPin, ArrowUp, ArrowDown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useReorder } from "@/hooks/useReorder";
 import { getAllExperience, createExperience, updateExperience, deleteExperience } from "@/lib/supabase-queries";
 import { ExperienceItem } from "@/lib/content-types";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -29,18 +30,6 @@ export default function ExperienceAdminPage() {
   });
   const [technologyInput, setTechnologyInput] = useState("");
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push("/login");
-    }
-  }, [user, authLoading, router]);
-
-  useEffect(() => {
-    if (user) {
-      loadExperience();
-    }
-  }, [user]);
-
   const loadExperience = async () => {
     try {
       setLoading(true);
@@ -52,6 +41,25 @@ export default function ExperienceAdminPage() {
       setLoading(false);
     }
   };
+
+  const { 
+    items: orderedExperience, 
+    handleMoveUp, 
+    handleMoveDown, 
+    loading: reorderLoading 
+  } = useReorder<ExperienceItem>(experience, 'experience', loadExperience);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, authLoading, router]);
+
+  useEffect(() => {
+    if (user) {
+      loadExperience();
+    }
+  }, [user]);
 
   const handleOpenModal = (exp?: ExperienceItem) => {
     if (exp) {
@@ -174,7 +182,7 @@ export default function ExperienceAdminPage() {
         </div>
 
         <div className="space-y-4">
-          {experience.map((exp) => (
+          {orderedExperience.map((exp, index) => (
             <motion.div
               key={exp.id}
               initial={{ opacity: 0, y: 20 }}
@@ -183,6 +191,24 @@ export default function ExperienceAdminPage() {
             >
               <div className="flex items-start justify-between">
                 <div className="flex gap-4 flex-1">
+                  <div className="flex flex-col gap-1 mr-2 justify-center">
+                    <button
+                      onClick={() => handleMoveUp(index)}
+                      disabled={index === 0 || reorderLoading}
+                      className="p-1 text-gray-500 hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-700 rounded disabled:opacity-30 transition-colors"
+                      title="Move Up"
+                    >
+                      <ArrowUp className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleMoveDown(index)}
+                      disabled={index === orderedExperience.length - 1 || reorderLoading}
+                      className="p-1 text-gray-500 hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-700 rounded disabled:opacity-30 transition-colors"
+                      title="Move Down"
+                    >
+                      <ArrowDown className="w-4 h-4" />
+                    </button>
+                  </div>
                   <div className="bg-purple-100 dark:bg-purple-900 p-3 rounded-lg">
                     <Briefcase className="w-8 h-8 text-purple-600 dark:text-purple-400" />
                   </div>

@@ -3,11 +3,12 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Edit2, Trash2, Trophy, X, Loader2, Calendar } from "lucide-react";
+import { Plus, Edit2, Trash2, Trophy, X, Loader2, Calendar, ArrowUp, ArrowDown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { getAchievements, createAchievement, updateAchievement, deleteAchievement } from "@/lib/supabase-queries";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { Achievement } from "@/lib/content-types";
+import { useReorder } from "@/hooks/useReorder";
 
 const categories = ["Competition", "Academic", "Community", "Professional", "Other"];
 
@@ -19,6 +20,14 @@ export default function AchievementsAdminPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAchievement, setEditingAchievement] = useState<Achievement | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  
+  const {
+    items: orderedAchievements,
+    handleMoveUp,
+    handleMoveDown,
+    loading: reorderLoading
+  } = useReorder<Achievement>(achievements, 'achievements', loadAchievements);
+
   const [formData, setFormData] = useState({
     title: "",
     organization: "",
@@ -147,7 +156,7 @@ export default function AchievementsAdminPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {achievements.map((achievement) => (
+          {orderedAchievements.map((achievement, index) => (
             <motion.div
               key={achievement.id}
               initial={{ opacity: 0, scale: 0.9 }}
@@ -174,6 +183,22 @@ export default function AchievementsAdminPage() {
                   </div>
                 </div>
                 <div className="flex gap-2">
+                  <button
+                    onClick={() => handleMoveUp(index)}
+                    disabled={index === 0 || reorderLoading}
+                    className="p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                    title="Move Up"
+                  >
+                    <ArrowUp className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleMoveDown(index)}
+                    disabled={index === orderedAchievements.length - 1 || reorderLoading}
+                    className="p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                    title="Move Down"
+                  >
+                    <ArrowDown className="w-4 h-4" />
+                  </button>
                   <button
                     onClick={() => handleOpenModal(achievement)}
                     className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
