@@ -263,6 +263,24 @@ export function getPublicUrl(path: string): string {
 }
 
 /**
+ * Extract storage path from public URL
+ */
+export function getStoragePathFromUrl(url: string): string | null {
+  if (!url) return null;
+  
+  // Handle Supabase Storage URLs
+  // Format: https://<project>.supabase.co/storage/v1/object/public/portfolio/<path>
+  if (url.includes('/storage/v1/object/public/portfolio/')) {
+    const parts = url.split('/storage/v1/object/public/portfolio/');
+    if (parts.length === 2) {
+      return parts[1];
+    }
+  }
+  
+  return null;
+}
+
+/**
  * List files in a directory
  */
 export async function listFiles(path: string): Promise<any[]> {

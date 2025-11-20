@@ -36,7 +36,7 @@ export default function LoginPage() {
   useEffect(() => {
     if (user && !authLoading) {
       console.log("User authenticated, redirecting to admin dashboard...");
-      router.replace("/admin/dashboard");
+      router.replace("/admin");
     }
   }, [user, authLoading, router]);
 

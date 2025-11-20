@@ -3,9 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Edit2, Trash2, Award, X, Loader2, Calendar, ExternalLink } from "lucide-react";
+import { Plus, Edit2, Trash2, Award, X, Loader2, Calendar, ExternalLink, Upload, FileText } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { getCertificates, createCertificate, updateCertificate, deleteCertificate } from "@/lib/supabase-queries";
+import { uploadCertificateImage, uploadDocument } from "@/lib/supabase-storage";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { Certificate } from "@/lib/content-types";
 
@@ -17,11 +18,13 @@ export default function CertificatesAdminPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCertificate, setEditingCertificate] = useState<Certificate | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     issuer: "",
     issuedDate: "",
     fileUrl: "",
+    previewImageUrl: "",
     credentialUrl: "",
   });
 
@@ -57,6 +60,7 @@ export default function CertificatesAdminPage() {
         issuer: certificate.issuer,
         issuedDate: certificate.issuedDate instanceof Date ? certificate.issuedDate.toISOString().split('T')[0] : String(certificate.issuedDate),
         fileUrl: certificate.fileUrl || "",
+        previewImageUrl: certificate.previewImageUrl || "",
         credentialUrl: certificate.credentialUrl || "",
       });
     } else {
@@ -66,6 +70,7 @@ export default function CertificatesAdminPage() {
         issuer: "",
         issuedDate: "",
         fileUrl: "",
+        previewImageUrl: "",
         credentialUrl: "",
       });
     }
@@ -75,6 +80,30 @@ export default function CertificatesAdminPage() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingCertificate(null);
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'image' | 'pdf', field: 'fileUrl' | 'previewImageUrl' = 'fileUrl') => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    
+    try {
+      setUploading(true);
+      const file = e.target.files[0];
+      let result;
+      
+      if (type === 'image') {
+        result = await uploadCertificateImage(file);
+      } else {
+        // For PDFs, we use the generic document upload but store in certificates path
+        result = await uploadDocument(file, 'certificates');
+      }
+      
+      setFormData(prev => ({ ...prev, [field]: result.url }));
+    } catch (error: any) {
+      console.error("Upload failed:", error);
+      alert(`Failed to upload file: ${error.message}`);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -217,7 +246,7 @@ export default function CertificatesAdminPage() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full"
+              className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-center mb-6">
@@ -232,7 +261,7 @@ export default function CertificatesAdminPage() {
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4 notranslate">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Certificate Title *
@@ -274,15 +303,86 @@ export default function CertificatesAdminPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Certificate Image/PDF URL
+                    Certificate File (Main Document)
                   </label>
-                  <input
-                    type="url"
-                    value={formData.fileUrl}
-                    onChange={(e) => setFormData({ ...formData, fileUrl: e.target.value })}
-                    placeholder="/certificates/cert.pdf"
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                  />
+                  <div className="space-y-3">
+                    <div className="flex gap-2">
+                      <label className="flex-1 cursor-pointer px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg flex items-center justify-center gap-2 transition-colors">
+                        <input 
+                          type="file" 
+                          className="hidden" 
+                          accept="image/*" 
+                          onChange={(e) => handleFileUpload(e, 'image', 'fileUrl')} 
+                          disabled={uploading} 
+                        />
+                        {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                        <span className="text-sm">Upload Image</span>
+                      </label>
+                      
+                      <label className="flex-1 cursor-pointer px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg flex items-center justify-center gap-2 transition-colors">
+                        <input 
+                          type="file" 
+                          className="hidden" 
+                          accept="application/pdf" 
+                          onChange={(e) => handleFileUpload(e, 'pdf', 'fileUrl')} 
+                          disabled={uploading} 
+                        />
+                        {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
+                        <span className="text-sm">Upload PDF</span>
+                      </label>
+                    </div>
+
+                    {formData.fileUrl && (
+                      <div className="relative w-full p-2 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                        <span className="text-xs text-gray-500 truncate max-w-[80%]">
+                          {formData.fileUrl.split('/').pop()}
+                        </span>
+                        <button 
+                          type="button"
+                          onClick={() => setFormData({ ...formData, fileUrl: "" })}
+                          className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-gray-800 rounded"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Preview Image (Optional - for PDF thumbnails)
+                  </label>
+                  <div className="space-y-3">
+                    <div className="flex gap-2">
+                      <label className="flex-1 cursor-pointer px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg flex items-center justify-center gap-2 transition-colors">
+                        <input 
+                          type="file" 
+                          className="hidden" 
+                          accept="image/*" 
+                          onChange={(e) => handleFileUpload(e, 'image', 'previewImageUrl')} 
+                          disabled={uploading} 
+                        />
+                        {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                        <span className="text-sm">Upload Preview Image</span>
+                      </label>
+                    </div>
+
+                    {formData.previewImageUrl && (
+                      <div className="relative w-full p-2 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                        <span className="text-xs text-gray-500 truncate max-w-[80%]">
+                          {formData.previewImageUrl.split('/').pop()}
+                        </span>
+                        <button 
+                          type="button"
+                          onClick={() => setFormData({ ...formData, previewImageUrl: "" })}
+                          className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-gray-800 rounded"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div>

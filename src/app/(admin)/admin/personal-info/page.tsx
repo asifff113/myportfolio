@@ -6,10 +6,10 @@ import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Save, Upload, X, Plus, CheckCircle, AlertCircle } from "lucide-react";
+import { Save, Upload, X, Plus, CheckCircle, AlertCircle, Trash2, FileText } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { getPersonalInfo, updatePersonalInfo } from "@/lib/supabase-queries";
-import { uploadProfileImage } from "@/lib/supabase-storage";
+import { uploadProfileImage, uploadResume } from "@/lib/supabase-storage";
 import { PersonalInfo, SocialLink } from "@/lib/content-types";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
@@ -33,11 +33,13 @@ export default function PersonalInfoPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingResume, setUploadingResume] = useState(false);
   const [saveStatus, setSaveStatus] = useState<"idle" | "success" | "error">("idle");
   const [profileImageUrl, setProfileImageUrl] = useState<string>("");
   const [resumeUrl, setResumeUrl] = useState<string>("");
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [resumeUploadProgress, setResumeUploadProgress] = useState(0);
 
   const {
     register,
@@ -106,6 +108,28 @@ export default function PersonalInfoPage() {
     } finally {
       setUploadingImage(false);
       setUploadProgress(0);
+    }
+  };
+
+  const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingResume(true);
+    setResumeUploadProgress(0);
+
+    try {
+      const result = await uploadResume(file, (progress) => {
+        setResumeUploadProgress(progress);
+      });
+      setResumeUrl(result.url);
+      setSaveStatus("idle");
+    } catch (error) {
+      console.error("Error uploading resume:", error);
+      alert("Failed to upload resume. Please try again.");
+    } finally {
+      setUploadingResume(false);
+      setResumeUploadProgress(0);
     }
   };
 
@@ -206,20 +230,84 @@ export default function PersonalInfoPage() {
 
               {/* Upload Button */}
               <div className="flex-1">
-                <label className="inline-flex items-center gap-2 px-6 py-3 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors cursor-pointer">
-                  <Upload size={20} />
-                  <span>{uploadingImage ? `Uploading... ${uploadProgress}%` : "Upload Image"}</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                    disabled={uploadingImage}
-                  />
-                </label>
+                <div className="flex gap-2 items-center">
+                  <label className="inline-flex items-center gap-2 px-6 py-3 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors cursor-pointer">
+                    <Upload size={20} />
+                    <span>{uploadingImage ? `Uploading... ${uploadProgress}%` : "Upload Image"}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      disabled={uploadingImage}
+                    />
+                  </label>
+                  {profileImageUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setProfileImageUrl("")}
+                      className="p-3 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+                      title="Remove Image"
+                    >
+                      <Trash2 size={20} />
+                    </button>
+                  )}
+                </div>
                 <p className="text-xs text-muted-foreground mt-2">
                   Recommended: Square image, at least 400x400px, max 5MB
                 </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Resume / CV */}
+          <div className="glass p-6 rounded-xl">
+            <h3 className="text-lg font-semibold mb-4">Resume / CV</h3>
+            <div className="flex flex-col md:flex-row gap-6 items-start">
+              <div className="flex-1">
+                <div className="flex gap-2 items-center">
+                  <label className="inline-flex items-center gap-2 px-6 py-3 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors cursor-pointer">
+                    <Upload size={20} />
+                    <span>{uploadingResume ? `Uploading... ${resumeUploadProgress}%` : "Upload Resume (PDF)"}</span>
+                    <input
+                      type="file"
+                      accept="application/pdf"
+                      onChange={handleResumeUpload}
+                      className="hidden"
+                      disabled={uploadingResume}
+                    />
+                  </label>
+                  {resumeUrl && (
+                    <>
+                      <a 
+                        href={resumeUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="p-3 text-blue-500 hover:bg-blue-500/10 rounded-lg transition-colors"
+                        title="View Resume"
+                      >
+                        <FileText size={20} />
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => setResumeUrl("")}
+                        className="p-3 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+                        title="Remove Resume"
+                      >
+                        <Trash2 size={20} />
+                      </button>
+                    </>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Recommended: PDF format, max 10MB
+                </p>
+                {resumeUrl && (
+                  <p className="text-sm text-green-600 mt-2 flex items-center gap-1">
+                    <CheckCircle size={14} />
+                    Resume uploaded
+                  </p>
+                )}
               </div>
             </div>
           </div>

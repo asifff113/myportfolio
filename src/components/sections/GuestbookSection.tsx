@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Github, MessageSquare, User as UserIcon, Loader2 } from "lucide-react";
+import { Send, Github, MessageSquare, User as UserIcon, Loader2, Trash2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
+import { useAdmin } from "@/hooks/useAdmin";
 import Section from "@/components/ui/Section";
 import SectionTitle from "@/components/ui/SectionTitle";
 import Avatar from "@/components/ui/Avatar";
@@ -12,8 +13,10 @@ import { GuestbookMessage } from "@/lib/content-types";
 
 export default function GuestbookSection() {
   const { user, loginWithGitHub, loading: authLoading } = useAuth();
+  const isAdmin = useAdmin();
   const [messages, setMessages] = useState<GuestbookMessage[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [customName, setCustomName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(true);
 
@@ -25,7 +28,10 @@ export default function GuestbookSection() {
     const channel = supabase
       .channel('guestbook_changes')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'guestbook_messages' }, (payload) => {
-        setMessages((prev) => [payload.new as GuestbookMessage, ...prev]);
+        // Only add if not hidden (default is visible)
+        if (!(payload.new as any).is_hidden) {
+          setMessages((prev) => [payload.new as GuestbookMessage, ...prev].slice(0, 5));
+        }
       })
       .subscribe();
 
@@ -39,8 +45,9 @@ export default function GuestbookSection() {
       const { data, error } = await supabase
         .from("guestbook_messages")
         .select("*")
+        .eq("is_hidden", false)
         .order("created_at", { ascending: false })
-        .limit(50);
+        .limit(5);
 
       if (error) throw error;
       setMessages(data || []);
@@ -51,21 +58,43 @@ export default function GuestbookSection() {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this message?")) return;
+
+    try {
+      const { error } = await supabase.from("guestbook_messages").delete().eq("id", id);
+      if (error) throw error;
+      
+      setMessages((prev) => prev.filter((msg) => msg.id !== id));
+    } catch (error) {
+      console.error("Error deleting message:", error);
+      alert("Failed to delete message.");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !newMessage.trim()) return;
+    if (!newMessage.trim()) return;
 
     setIsSubmitting(true);
     try {
+      const userName = user 
+        ? (user.user_metadata.full_name || user.user_metadata.name || "Anonymous")
+        : (customName.trim() || "Anonymous");
+
       const { error } = await supabase.from("guestbook_messages").insert({
-        user_id: user.id,
-        user_name: user.user_metadata.full_name || user.user_metadata.name || "Anonymous",
-        user_avatar: user.user_metadata.avatar_url,
+        user_id: user?.id || null,
+        user_name: userName,
+        user_avatar: user?.user_metadata.avatar_url || null,
         message: newMessage.trim(),
       });
 
       if (error) throw error;
       setNewMessage("");
+      setCustomName("");
+      
+      // Refresh to show the new message immediately
+      fetchMessages();
     } catch (error) {
       console.error("Error submitting message:", error);
       alert("Failed to send message. Please try again.");
@@ -98,72 +127,88 @@ export default function GuestbookSection() {
           <div className="glass-ultra p-6 md:p-8 rounded-2xl border border-white/10 shadow-xl relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-accent to-secondary" />
             
-            {!user ? (
-              <div className="text-center py-8">
-                <MessageSquare size={48} className="mx-auto mb-4 text-primary opacity-80" />
-                <h3 className="text-2xl font-bold mb-2">Sign the Guestbook</h3>
-                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                  Share a message, feedback, or just say hello! Sign in with GitHub to leave your mark.
-                </p>
-                <button
-                  onClick={loginWithGitHub}
-                  disabled={authLoading}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-[#24292e] hover:bg-[#2f363d] text-white rounded-full font-bold transition-all hover:scale-105 shadow-lg hover:shadow-xl"
-                >
-                  {authLoading ? <Loader2 className="animate-spin" size={20} /> : <Github size={20} />}
-                  Sign in with GitHub
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="relative z-10">
-                <div className="flex items-start gap-4">
-                  <div className="hidden sm:block">
-                    <Avatar
-                      src={user.user_metadata.avatar_url}
-                      alt={user.user_metadata.full_name || "User"}
-                      size="md"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <label htmlFor="message" className="block text-sm font-medium mb-2 text-muted-foreground">
-                      Posting as <span className="text-primary font-bold">{user.user_metadata.full_name || "Anonymous"}</span>
+            <form onSubmit={handleSubmit} className="relative z-10">
+              <div className="flex flex-col md:flex-row items-start gap-4">
+                <div className="hidden md:block">
+                  <Avatar
+                    src={user?.user_metadata.avatar_url}
+                    alt={user?.user_metadata.full_name || "Guest"}
+                    size="md"
+                    fallbackText={user ? undefined : "?"}
+                  />
+                </div>
+                <div className="flex-1 w-full">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 gap-2">
+                    <label htmlFor="message" className="text-sm font-medium text-muted-foreground">
+                      {user ? (
+                        <>Posting as <span className="text-primary font-bold">{user.user_metadata.full_name || "Anonymous"}</span></>
+                      ) : (
+                        "Leave a message"
+                      )}
                     </label>
-                    <div className="relative">
-                      <textarea
-                        id="message"
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        placeholder="Write a message..."
-                        className="w-full bg-background/50 border border-white/10 rounded-xl p-4 min-h-[100px] focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all resize-none"
-                        maxLength={500}
+                    
+                    {!user && (
+                      <input
+                        type="text"
+                        placeholder="Your Name (Optional)"
+                        value={customName}
+                        onChange={(e) => setCustomName(e.target.value)}
+                        className="bg-background/50 border border-white/10 rounded-lg px-3 py-1 text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all w-full sm:w-auto"
+                        maxLength={50}
                       />
-                      <div className="absolute bottom-3 right-3 text-xs text-muted-foreground">
-                        {newMessage.length}/500
-                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="relative">
+                    <textarea
+                      id="message"
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      placeholder={user ? "Write a message..." : "Write a message... (Sign in with GitHub to add your avatar)"}
+                      className="w-full bg-background/50 border border-white/10 rounded-xl p-4 min-h-[100px] focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all resize-none"
+                      maxLength={500}
+                    />
+                    <div className="absolute bottom-3 right-3 text-xs text-muted-foreground">
+                      {newMessage.length}/500
                     </div>
-                    <div className="mt-4 flex justify-end">
+                  </div>
+                  
+                  <div className="mt-4 flex flex-wrap justify-between items-center gap-4">
+                    {!user ? (
                       <button
-                        type="submit"
-                        disabled={isSubmitting || !newMessage.trim()}
-                        className="inline-flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-primary to-accent text-white rounded-full font-bold shadow-lg hover:shadow-primary/25 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 transition-all"
+                        type="button"
+                        onClick={loginWithGitHub}
+                        disabled={authLoading}
+                        className="text-xs flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors"
                       >
-                        {isSubmitting ? (
-                          <>
-                            <Loader2 className="animate-spin" size={18} />
-                            Sending...
-                          </>
-                        ) : (
-                          <>
-                            <Send size={18} />
-                            Sign Guestbook
-                          </>
-                        )}
+                        <Github size={14} />
+                        Sign in with GitHub
                       </button>
-                    </div>
+                    ) : (
+                      <div /> /* Spacer */
+                    )}
+                    
+                    <button
+                      type="submit"
+                      disabled={isSubmitting || !newMessage.trim()}
+                      className="inline-flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-primary to-accent text-white rounded-full font-bold shadow-lg hover:shadow-primary/25 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 transition-all ml-auto"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="animate-spin" size={18} />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Send size={18} />
+                          Sign Guestbook
+                        </>
+                      )}
+                    </button>
                   </div>
                 </div>
-              </form>
-            )}
+              </div>
+            </form>
           </div>
         </motion.div>
 
@@ -204,12 +249,23 @@ export default function GuestbookSection() {
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start mb-1">
                           <h4 className="font-bold text-sm truncate pr-2">{msg.user_name}</h4>
-                          <span className="text-xs text-muted-foreground whitespace-nowrap">
-                            {new Date(msg.created_at).toLocaleDateString(undefined, {
-                              month: 'short',
-                              day: 'numeric'
-                            })}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground whitespace-nowrap">
+                              {new Date(msg.created_at).toLocaleDateString(undefined, {
+                                month: 'short',
+                                day: 'numeric'
+                              })}
+                            </span>
+                            {(user?.id === msg.user_id || isAdmin) && (
+                              <button
+                                onClick={() => handleDelete(msg.id)}
+                                className="text-muted-foreground hover:text-red-500 transition-colors p-1 rounded-md hover:bg-red-500/10 opacity-0 group-hover:opacity-100"
+                                title="Delete message"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            )}
+                          </div>
                         </div>
                         <p className="text-sm text-muted-foreground leading-relaxed break-words">
                           {msg.message}

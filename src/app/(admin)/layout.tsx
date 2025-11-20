@@ -41,5 +41,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   // Just render children - each admin page has its own layout
-  return <>{children}</>;
+  // We add 'notranslate' class to prevent Google Translate from interfering with the Admin UI and causing React errors
+  return <div className="notranslate">{children}</div>;
 }

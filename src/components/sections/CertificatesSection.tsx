@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { FileText, Download, ExternalLink, Award, Calendar, CheckCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FileText, Download, ExternalLink, Award, Calendar, CheckCircle, Eye, Globe, X } from "lucide-react";
 import { Certificate } from "@/lib/content-types";
 import Section from "@/components/ui/Section";
 import SectionTitle from "@/components/ui/SectionTitle";
@@ -35,9 +35,32 @@ const itemVariants = {
 };
 
 export default function CertificatesSection({ certificates }: CertificatesSectionProps) {
+  const [selectedCertificate, setSelectedCertificate] = useState<Certificate | null>(null);
+
   if (!certificates || certificates.length === 0) {
     return null;
   }
+
+  // Helper to check if URL is likely an image
+  const isImage = (url?: string) => {
+    if (!url) return false;
+    const lower = url.toLowerCase();
+    if (lower.endsWith('.pdf')) return false;
+    
+    return lower.match(/\.(jpeg|jpg|gif|png|webp|svg)$/) != null || 
+           url.includes('images.unsplash.com') || 
+           ((url.includes('supabase.co') || url.includes('firebasestorage')) && !lower.includes('.pdf'));
+  };
+
+  // Helper to check if URL is a file (PDF or Image) from storage
+  const isFile = (url?: string) => {
+    if (!url) return false;
+    const lower = url.toLowerCase();
+    return lower.includes('supabase.co') || 
+           lower.includes('firebasestorage') || 
+           lower.endsWith('.pdf') || 
+           lower.match(/\.(jpeg|jpg|gif|png|webp|svg)$/) != null;
+  };
 
   return (
     <Section id="certificates">
@@ -54,9 +77,104 @@ export default function CertificatesSection({ certificates }: CertificatesSectio
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
       >
         {certificates.map((certificate, index) => (
-          <CertificateCard key={certificate.id || index} certificate={certificate} />
+          <CertificateCard 
+            key={certificate.id || index} 
+            certificate={certificate} 
+            onView={(cert) => setSelectedCertificate(cert)}
+          />
         ))}
       </motion.div>
+
+      {/* Image Modal */}
+      <AnimatePresence>
+        {selectedCertificate && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
+            onClick={() => setSelectedCertificate(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative max-w-5xl w-full max-h-[90vh] bg-gray-900 rounded-xl overflow-hidden shadow-2xl border border-white/10 flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setSelectedCertificate(null)}
+                className="absolute top-4 right-4 p-2 bg-black/50 text-white rounded-full hover:bg-red-500/80 transition-colors z-10"
+              >
+                <X size={24} />
+              </button>
+              
+              <div className="flex-1 w-full relative bg-black/50 flex items-center justify-center p-4 overflow-hidden">
+                {selectedCertificate.previewImageUrl || (isFile(selectedCertificate.fileUrl) && isImage(selectedCertificate.fileUrl)) ? (
+                  <div className="relative w-full h-full min-h-[50vh]">
+                    <Image
+                      src={selectedCertificate.previewImageUrl || selectedCertificate.fileUrl}
+                      alt={selectedCertificate.title}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center text-white gap-4">
+                    <FileText size={64} className="text-primary" />
+                    <p className="text-lg font-medium">Document Preview Not Available</p>
+                    <p className="text-sm text-gray-400">
+                      {isFile(selectedCertificate.fileUrl) 
+                        ? 'Click "View Certificate" to open the file' 
+                        : 'No certificate file uploaded'}
+                    </p>
+                  </div>
+                )}
+              </div>
+              
+              <div className="p-6 bg-gray-900 border-t border-white/10">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                  <div>
+                    <h3 className="text-2xl font-bold text-white mb-1">{selectedCertificate.title}</h3>
+                    <p className="text-gray-400">{selectedCertificate.issuer} • {formatDate(selectedCertificate.issuedDate)}</p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-4">
+                  {isFile(selectedCertificate.fileUrl) ? (
+                    <a
+                      href={selectedCertificate.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors font-bold text-lg"
+                    >
+                      <Eye size={20} />
+                      View Certificate
+                    </a>
+                  ) : (
+                    <div className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-800 text-gray-400 rounded-lg border border-gray-700 font-medium text-lg cursor-not-allowed">
+                      <FileText size={20} />
+                      No certificate pdf at the moment
+                    </div>
+                  )}
+
+                  {selectedCertificate.credentialUrl && (
+                    <a
+                      href={selectedCertificate.credentialUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors font-bold text-lg border border-white/10"
+                    >
+                      <Globe size={20} />
+                      Visit Website
+                    </a>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Section>
   );
 }
@@ -64,17 +182,36 @@ export default function CertificatesSection({ certificates }: CertificatesSectio
 // Certificate Card Component
 interface CertificateCardProps {
   certificate: Certificate;
+  onView: (certificate: Certificate) => void;
 }
 
-function CertificateCard({ certificate }: CertificateCardProps) {
+function CertificateCard({ certificate, onView }: CertificateCardProps) {
   const [imageError, setImageError] = useState(false);
   const isPDF = certificate.fileUrl?.toLowerCase().endsWith('.pdf');
+  
+  // Helper to check if URL is likely an image
+  const isImage = (url?: string) => {
+    if (!url) return false;
+    const lower = url.toLowerCase();
+    if (lower.endsWith('.pdf')) return false;
+    
+    return lower.match(/\.(jpeg|jpg|gif|png|webp|svg)$/) != null || 
+           url.includes('images.unsplash.com') || 
+           ((url.includes('supabase.co') || url.includes('firebasestorage')) && !lower.includes('.pdf'));
+  };
+
+  const shouldShowImage = !imageError && (certificate.previewImageUrl || (certificate.fileUrl && !isPDF && isImage(certificate.fileUrl)));
+
+  const handleView = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onView(certificate);
+  };
 
   return (
     <motion.div
       variants={itemVariants}
       whileHover={{ y: -10, scale: 1.02 }}
-      className="glass-ultra rounded-2xl overflow-hidden group relative card-3d border border-white/5 hover:border-primary/30 transition-colors duration-500"
+      className="glass-ultra rounded-2xl overflow-hidden group relative card-3d border border-white/5 hover:border-primary/30 transition-colors duration-500 flex flex-col h-full"
     >
       {/* Ribbon Corner Effect */}
       <div className="absolute -top-[10px] -left-[10px] w-24 h-24 overflow-hidden z-20 pointer-events-none">
@@ -84,10 +221,10 @@ function CertificateCard({ certificate }: CertificateCardProps) {
       </div>
 
       {/* Preview Image or PDF Icon */}
-      <div className="relative h-48 bg-gradient-to-br from-neon-blue/20 to-neon-cyan/20 overflow-hidden">
-        {!imageError && certificate.previewImageUrl ? (
+      <div className="relative h-48 bg-gradient-to-br from-neon-blue/20 to-neon-cyan/20 overflow-hidden cursor-pointer" onClick={handleView}>
+        {shouldShowImage ? (
           <Image
-            src={certificate.previewImageUrl}
+            src={certificate.previewImageUrl || certificate.fileUrl}
             alt={certificate.title}
             fill
             className="object-cover transition-all duration-500 group-hover:scale-110 group-hover:rotate-1"
@@ -116,10 +253,8 @@ function CertificateCard({ certificate }: CertificateCardProps) {
         {/* Hover Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/60 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center pb-6 gap-4">
           {/* View Button */}
-          <motion.a
-            href={certificate.fileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+          <motion.button
+            onClick={(e) => { e.stopPropagation(); handleView(e); }}
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             whileHover={{ scale: 1.15, y: -4 }}
@@ -128,46 +263,13 @@ function CertificateCard({ certificate }: CertificateCardProps) {
             className="p-4 glass-ultra rounded-full shadow-2xl hover:bg-primary hover:text-primary-foreground transition-colors neon-glow-hover magnetic"
             aria-label="View Certificate"
           >
-            <ExternalLink size={22} />
-          </motion.a>
-
-          {/* Download Button */}
-          <motion.a
-            href={certificate.fileUrl}
-            download
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            whileHover={{ scale: 1.15, y: -4 }}
-            whileTap={{ scale: 0.9 }}
-            transition={{ delay: 0.15 }}
-            className="p-4 glass-ultra rounded-full shadow-2xl hover:bg-primary hover:text-primary-foreground transition-colors neon-glow-hover magnetic"
-            aria-label="Download Certificate"
-          >
-            <Download size={22} />
-          </motion.a>
+            <Eye size={22} />
+          </motion.button>
         </div>
-
-        {/* Verified Badge */}
-        {certificate.credentialUrl && (
-          <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: "spring", delay: 0.3 }}
-            className="absolute top-3 right-3"
-          >
-            <motion.div 
-              whileHover={{ scale: 1.2, rotate: 10 }}
-              className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full shadow-lg glow-pulse" 
-              title="Verified Credential"
-            >
-              <CheckCircle size={20} className="text-white" />
-            </motion.div>
-          </motion.div>
-        )}
       </div>
 
       {/* Content */}
-      <div className="p-6">
+      <div className="p-6 flex-1 flex flex-col">
         {/* Icon & Title */}
         <div className="flex items-start gap-3 mb-3">
           <motion.div 
@@ -201,7 +303,7 @@ function CertificateCard({ certificate }: CertificateCardProps) {
 
         {/* Description */}
         {certificate.description && (
-          <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+          <p className="text-sm text-muted-foreground mb-4 line-clamp-2 flex-1">
             {certificate.description}
           </p>
         )}
@@ -251,28 +353,14 @@ function CertificateCard({ certificate }: CertificateCardProps) {
         )}
 
         {/* Action Links */}
-        <div className="flex flex-col sm:flex-row gap-2 text-sm">
-          <a
-            href={certificate.fileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors font-medium"
+        <div className="mt-auto">
+          <button
+            onClick={handleView}
+            className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors font-bold"
           >
-            <ExternalLink size={14} />
+            <Eye size={16} />
             View
-          </a>
-
-          {certificate.credentialUrl && (
-            <a
-              href={certificate.credentialUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 glass hover:bg-primary/10 rounded-lg transition-colors font-medium"
-            >
-              <CheckCircle size={14} />
-              Verify
-            </a>
-          )}
+          </button>
         </div>
       </div>
 

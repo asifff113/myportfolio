@@ -12,6 +12,7 @@ const GoogleTranslateWidget = dynamic(
   { ssr: false }
 );
 
+import GoogleTranslateFix from "@/components/ui/GoogleTranslateFix";
 import { getAllPublicContent } from "@/lib/content";
 
 // Font configurations
@@ -72,6 +73,7 @@ export default async function RootLayout({
           disableTransitionOnChange={false}
         >
           <LanguageProvider>
+            <GoogleTranslateFix />
             {/* Global Animated Background */}
             <AnimatedBackground variant="hero" />
             

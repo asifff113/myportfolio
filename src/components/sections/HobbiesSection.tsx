@@ -121,16 +121,16 @@ export default function HobbiesSection({ hobbies }: HobbiesSectionProps) {
                     initial={{ opacity: 0, y: 0, x: 0 }}
                     whileHover={{ 
                       opacity: [0, 1, 0], 
-                      y: -100 - Math.random() * 50, 
-                      x: (Math.random() - 0.5) * 50 
+                      y: -100 - ((i * 15) % 50), 
+                      x: ((i * 20) % 50) - 25 
                     }}
                     transition={{ 
-                      duration: 1 + Math.random(), 
+                      duration: 1 + (i * 0.2), 
                       repeat: Infinity, 
-                      delay: Math.random() * 0.5 
+                      delay: i * 0.1 
                     }}
                     className={`absolute bottom-0 left-1/2 w-2 h-2 rounded-full bg-gradient-to-r ${hobbyColor} opacity-0`}
-                    style={{ left: `${20 + Math.random() * 60}%` }}
+                    style={{ left: `${20 + (i * 15) % 60}%` }}
                   />
                 ))}
               </div>

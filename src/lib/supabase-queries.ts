@@ -4,6 +4,7 @@
  */
 
 import { supabase } from "./supabase";
+import { deleteFile, getStoragePathFromUrl } from "./supabase-storage";
 import {
   PersonalInfo,
   SkillCategory,
@@ -62,6 +63,23 @@ export async function getPersonalInfo(): Promise<PersonalInfo | null> {
 
 export async function updatePersonalInfo(data: Omit<PersonalInfo, "id">): Promise<void> {
   try {
+    // Check for file changes to delete old files
+    const { data: existing } = await supabase
+      .from('personal_info')
+      .select('id, profile_image_url, resume_url')
+      .single();
+
+    if (existing) {
+      if (data.profileImageUrl !== undefined && existing.profile_image_url && existing.profile_image_url !== data.profileImageUrl) {
+        const oldPath = getStoragePathFromUrl(existing.profile_image_url);
+        if (oldPath) await deleteFile(oldPath).catch(console.error);
+      }
+      if (data.resumeUrl !== undefined && existing.resume_url && existing.resume_url !== data.resumeUrl) {
+        const oldPath = getStoragePathFromUrl(existing.resume_url);
+        if (oldPath) await deleteFile(oldPath).catch(console.error);
+      }
+    }
+
     // Transform camelCase to snake_case
     const dbData:  any = {
       name: data.name,
@@ -79,17 +97,17 @@ export async function updatePersonalInfo(data: Omit<PersonalInfo, "id">): Promis
     };
 
     // Check if record exists
-    const { data: existing } = await supabase
+    const { data: existingRecord } = await supabase
       .from('personal_info')
       .select('id')
       .single();
 
-    if (existing) {
+    if (existingRecord) {
       // Update existing record
       const { error } = await supabase
         .from('personal_info')
         .update(dbData)
-        .eq('id', existing.id);
+        .eq('id', existingRecord.id);
       
       if (error) throw error;
     } else {
@@ -550,6 +568,20 @@ export async function createProject(data: Omit<Project, "id">): Promise<string> 
 
 export async function updateProject(id: string, data: Partial<Project>): Promise<void> {
   try {
+    // Check for file changes to delete old files
+    if (data.imageUrl !== undefined) {
+      const { data: existing } = await supabase
+        .from('projects')
+        .select('image_url')
+        .eq('id', id)
+        .single();
+      
+      if (existing && existing.image_url && existing.image_url !== data.imageUrl) {
+        const oldPath = getStoragePathFromUrl(existing.image_url);
+        if (oldPath) await deleteFile(oldPath).catch(console.error);
+      }
+    }
+
     const dbData: any = {
       updated_at: new Date().toISOString(),
     };
@@ -579,6 +611,18 @@ export async function updateProject(id: string, data: Partial<Project>): Promise
 
 export async function deleteProject(id: string): Promise<void> {
   try {
+    // Get project details first to delete image
+    const { data: project } = await supabase
+      .from('projects')
+      .select('image_url')
+      .eq('id', id)
+      .single();
+
+    if (project) {
+      const imagePath = getStoragePathFromUrl(project.image_url);
+      if (imagePath) await deleteFile(imagePath).catch(console.error);
+    }
+
     const { error } = await supabase
       .from('projects')
       .delete()
@@ -700,7 +744,7 @@ export async function getCertificates(): Promise<Certificate[]> {
       title: item.title,
       issuer: item.issuer,
       issuedDate: item.date,
-      fileUrl: item.credential_url || '',
+      fileUrl: item.file_url || item.credential_url || '',
       previewImageUrl: item.image_url,
       credentialUrl: item.credential_url,
       description: item.description,
@@ -718,7 +762,8 @@ export async function createCertificate(data: Omit<Certificate, "id">): Promise<
       title: data.title,
       issuer: data.issuer,
       date: data.issuedDate,
-      credential_url: data.credentialUrl || data.fileUrl,
+      credential_url: data.credentialUrl,
+      file_url: data.fileUrl,
       image_url: data.previewImageUrl,
       description: data.description,
     };
@@ -739,6 +784,26 @@ export async function createCertificate(data: Omit<Certificate, "id">): Promise<
 
 export async function updateCertificate(id: string, data: Partial<Certificate>): Promise<void> {
   try {
+    // Check for file changes to delete old files
+    if (data.fileUrl !== undefined || data.previewImageUrl !== undefined) {
+      const { data: existing } = await supabase
+        .from('certificates')
+        .select('file_url, image_url')
+        .eq('id', id)
+        .single();
+      
+      if (existing) {
+        if (data.fileUrl !== undefined && existing.file_url && existing.file_url !== data.fileUrl) {
+          const oldPath = getStoragePathFromUrl(existing.file_url);
+          if (oldPath) await deleteFile(oldPath).catch(console.error);
+        }
+        if (data.previewImageUrl !== undefined && existing.image_url && existing.image_url !== data.previewImageUrl) {
+          const oldPath = getStoragePathFromUrl(existing.image_url);
+          if (oldPath) await deleteFile(oldPath).catch(console.error);
+        }
+      }
+    }
+
     const dbData: any = {
       updated_at: new Date().toISOString(),
     };
@@ -747,7 +812,7 @@ export async function updateCertificate(id: string, data: Partial<Certificate>):
     if (data.issuer !== undefined) dbData.issuer = data.issuer;
     if (data.issuedDate !== undefined) dbData.date = data.issuedDate;
     if (data.credentialUrl !== undefined) dbData.credential_url = data.credentialUrl;
-    if (data.fileUrl !== undefined && data.credentialUrl === undefined) dbData.credential_url = data.fileUrl;
+    if (data.fileUrl !== undefined) dbData.file_url = data.fileUrl;
     if (data.previewImageUrl !== undefined) dbData.image_url = data.previewImageUrl;
     if (data.description !== undefined) dbData.description = data.description;
 
@@ -765,6 +830,23 @@ export async function updateCertificate(id: string, data: Partial<Certificate>):
 
 export async function deleteCertificate(id: string): Promise<void> {
   try {
+    // Get certificate details first to delete files
+    const { data: certificate } = await supabase
+      .from('certificates')
+      .select('file_url, image_url')
+      .eq('id', id)
+      .single();
+
+    if (certificate) {
+      // Delete file if exists
+      const filePath = getStoragePathFromUrl(certificate.file_url);
+      if (filePath) await deleteFile(filePath).catch(console.error);
+
+      // Delete preview image if exists
+      const imagePath = getStoragePathFromUrl(certificate.image_url);
+      if (imagePath) await deleteFile(imagePath).catch(console.error);
+    }
+
     const { error } = await supabase
       .from('certificates')
       .delete()
@@ -830,6 +912,20 @@ export async function createGalleryItem(data: Omit<GalleryItem, "id">): Promise<
 
 export async function updateGalleryItem(id: string, data: Partial<GalleryItem>): Promise<void> {
   try {
+    // Check for file changes to delete old files
+    if (data.imageUrl !== undefined) {
+      const { data: existing } = await supabase
+        .from('gallery')
+        .select('image_url')
+        .eq('id', id)
+        .single();
+      
+      if (existing && existing.image_url && existing.image_url !== data.imageUrl) {
+        const oldPath = getStoragePathFromUrl(existing.image_url);
+        if (oldPath) await deleteFile(oldPath).catch(console.error);
+      }
+    }
+
     const dbData: any = {
       updated_at: new Date().toISOString(),
     };
@@ -853,6 +949,18 @@ export async function updateGalleryItem(id: string, data: Partial<GalleryItem>):
 
 export async function deleteGalleryItem(id: string): Promise<void> {
   try {
+    // Get gallery item details first to delete image
+    const { data: item } = await supabase
+      .from('gallery')
+      .select('image_url')
+      .eq('id', id)
+      .single();
+
+    if (item) {
+      const imagePath = getStoragePathFromUrl(item.image_url);
+      if (imagePath) await deleteFile(imagePath).catch(console.error);
+    }
+
     const { error } = await supabase
       .from('gallery')
       .delete()
@@ -917,6 +1025,20 @@ export async function createHobby(data: Omit<Hobby, "id">): Promise<string> {
 
 export async function updateHobby(id: string, data: Partial<Hobby>): Promise<void> {
   try {
+    // Check for file changes to delete old files
+    if (data.imageUrl !== undefined) {
+      const { data: existing } = await supabase
+        .from('hobbies')
+        .select('image_url')
+        .eq('id', id)
+        .single();
+      
+      if (existing && existing.image_url && existing.image_url !== data.imageUrl) {
+        const oldPath = getStoragePathFromUrl(existing.image_url);
+        if (oldPath) await deleteFile(oldPath).catch(console.error);
+      }
+    }
+
     const dbData: any = {
       updated_at: new Date().toISOString(),
     };
@@ -1240,6 +1362,20 @@ export async function createBlogPost(data: Omit<BlogPost, "id">): Promise<string
 
 export async function updateBlogPost(id: string, data: Partial<BlogPost>): Promise<void> {
   try {
+    // Check for file changes to delete old files
+    if (data.coverImageUrl !== undefined) {
+      const { data: existing } = await supabase
+        .from('blog_posts')
+        .select('cover_image_url')
+        .eq('id', id)
+        .single();
+      
+      if (existing && existing.cover_image_url && existing.cover_image_url !== data.coverImageUrl) {
+        const oldPath = getStoragePathFromUrl(existing.cover_image_url);
+        if (oldPath) await deleteFile(oldPath).catch(console.error);
+      }
+    }
+
     const dbData: any = {
       updated_at: new Date().toISOString(),
     };
@@ -1269,6 +1405,18 @@ export async function updateBlogPost(id: string, data: Partial<BlogPost>): Promi
 
 export async function deleteBlogPost(id: string): Promise<void> {
   try {
+    // Get blog post details first to delete cover image
+    const { data: post } = await supabase
+      .from('blog_posts')
+      .select('cover_image_url')
+      .eq('id', id)
+      .single();
+
+    if (post) {
+      const imagePath = getStoragePathFromUrl(post.cover_image_url);
+      if (imagePath) await deleteFile(imagePath).catch(console.error);
+    }
+
     const { error } = await supabase
       .from('blog_posts')
       .delete()

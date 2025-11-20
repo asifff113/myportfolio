@@ -98,6 +98,12 @@ export default function GalleryAdminPage() {
     }
   };
 
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview("");
+    setFormData({ ...formData, imageUrl: "" });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -269,8 +275,16 @@ export default function GalleryAdminPage() {
                   </label>
                   <div className="flex flex-col gap-4">
                     {imagePreview && (
-                      <div className="relative w-full h-48 rounded-lg overflow-hidden">
+                      <div className="relative w-full h-48 rounded-lg overflow-hidden group">
                         <Image src={imagePreview} alt="Preview" fill className="object-cover" />
+                        <button
+                          type="button"
+                          onClick={handleRemoveImage}
+                          className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg z-10"
+                          title="Remove Image"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
                       </div>
                     )}
                     <label className="cursor-pointer px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center justify-center gap-2">

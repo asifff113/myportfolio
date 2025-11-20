@@ -20,6 +20,7 @@ import {
   Mail,
   TrendingUp,
   LogOut,
+  ScrollText,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -50,6 +51,7 @@ const menuItems = [
   { icon: Heart, label: "Hobbies", href: "/admin/hobbies" },
   { icon: Target, label: "Future Goals", href: "/admin/goals" },
   { icon: MessageSquare, label: "Testimonials", href: "/admin/testimonials" },
+  { icon: ScrollText, label: "Guestbook", href: "/admin/guestbook" },
   { icon: BookOpen, label: "Blog Posts", href: "/admin/blog" },
   { icon: Mail, label: "Contact Info", href: "/admin/contact" },
 ];
