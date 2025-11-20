@@ -20,6 +20,18 @@ export default function TestimonialsAdminPage() {
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState<Partial<Testimonial>>({ name: "", role: "", company: "", quote: "", rating: 5 });
 
+  const loadTestimonials = async () => {
+    try {
+      setLoading(true);
+      const data = await getTestimonials();
+      setTestimonials(data);
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const {
     items: orderedTestimonials,
     handleMoveUp,
@@ -34,18 +46,6 @@ export default function TestimonialsAdminPage() {
   useEffect(() => {
     if (user) loadTestimonials();
   }, [user]);
-
-  const loadTestimonials = async () => {
-    try {
-      setLoading(true);
-      const data = await getTestimonials();
-      setTestimonials(data);
-    } catch (error) {
-      console.error("Error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

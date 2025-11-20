@@ -23,6 +23,18 @@ export default function GoalsAdminPage() {
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({ title: "", description: "", targetDate: "", category: "Personal", status: "planned" });
 
+  const loadGoals = async () => {
+    try {
+      setLoading(true);
+      const data = await getFutureGoals();
+      setGoals(data);
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const {
     items: orderedGoals,
     handleMoveUp,
@@ -37,18 +49,6 @@ export default function GoalsAdminPage() {
   useEffect(() => {
     if (user) loadGoals();
   }, [user]);
-
-  const loadGoals = async () => {
-    try {
-      setLoading(true);
-      const data = await getFutureGoals();
-      setGoals(data);
-    } catch (error) {
-      console.error("Error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -20,6 +20,18 @@ export default function HobbiesAdminPage() {
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({ title: "", description: "", icon: "" });
 
+  const loadHobbies = async () => {
+    try {
+      setLoading(true);
+      const data = await getHobbies();
+      setHobbies(data);
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const {
     items: orderedHobbies,
     handleMoveUp,
@@ -34,18 +46,6 @@ export default function HobbiesAdminPage() {
   useEffect(() => {
     if (user) loadHobbies();
   }, [user]);
-
-  const loadHobbies = async () => {
-    try {
-      setLoading(true);
-      const data = await getHobbies();
-      setHobbies(data);
-    } catch (error) {
-      console.error("Error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

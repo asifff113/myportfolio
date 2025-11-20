@@ -21,6 +21,18 @@ export default function AchievementsAdminPage() {
   const [editingAchievement, setEditingAchievement] = useState<Achievement | null>(null);
   const [submitting, setSubmitting] = useState(false);
   
+  const loadAchievements = async () => {
+    try {
+      setLoading(true);
+      const data = await getAchievements();
+      setAchievements(data);
+    } catch (error) {
+      console.error("Error loading achievements:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const {
     items: orderedAchievements,
     handleMoveUp,
@@ -48,18 +60,6 @@ export default function AchievementsAdminPage() {
       loadAchievements();
     }
   }, [user]);
-
-  const loadAchievements = async () => {
-    try {
-      setLoading(true);
-      const data = await getAchievements();
-      setAchievements(data);
-    } catch (error) {
-      console.error("Error loading achievements:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleOpenModal = (achievement?: Achievement) => {
     if (achievement) {

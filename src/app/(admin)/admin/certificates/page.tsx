@@ -21,6 +21,18 @@ export default function CertificatesAdminPage() {
   const [submitting, setSubmitting] = useState(false);
   const [uploading, setUploading] = useState(false);
   
+  const loadCertificates = async () => {
+    try {
+      setLoading(true);
+      const data = await getCertificates();
+      setCertificates(data);
+    } catch (error) {
+      console.error("Error loading certificates:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const {
     items: orderedCertificates,
     handleMoveUp,
@@ -48,18 +60,6 @@ export default function CertificatesAdminPage() {
       loadCertificates();
     }
   }, [user]);
-
-  const loadCertificates = async () => {
-    try {
-      setLoading(true);
-      const data = await getCertificates();
-      setCertificates(data);
-    } catch (error) {
-      console.error("Error loading certificates:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleOpenModal = (certificate?: Certificate) => {
     if (certificate) {

@@ -32,6 +32,18 @@ export default function BlogAdminPage() {
     published: false,
   });
 
+  const loadPosts = async () => {
+    try {
+      setLoading(true);
+      const data = await getBlogPosts();
+      setPosts(data);
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const {
     items: orderedPosts,
     handleMoveUp,
@@ -46,18 +58,6 @@ export default function BlogAdminPage() {
   useEffect(() => {
     if (user) loadPosts();
   }, [user]);
-
-  const loadPosts = async () => {
-    try {
-      setLoading(true);
-      const data = await getBlogPosts();
-      setPosts(data);
-    } catch (error) {
-      console.error("Error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const generateSlug = (title: string) => {
     return title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");

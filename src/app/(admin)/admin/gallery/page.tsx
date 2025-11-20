@@ -24,6 +24,18 @@ export default function GalleryAdminPage() {
   const [submitting, setSubmitting] = useState(false);
   const [uploading, setUploading] = useState(false);
   
+  const loadGallery = async () => {
+    try {
+      setLoading(true);
+      const data = await getGalleryItems();
+      setGallery(data);
+    } catch (error) {
+      console.error("Error loading gallery:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const {
     items: orderedGallery,
     handleMoveUp,
@@ -51,18 +63,6 @@ export default function GalleryAdminPage() {
       loadGallery();
     }
   }, [user]);
-
-  const loadGallery = async () => {
-    try {
-      setLoading(true);
-      const data = await getGalleryItems();
-      setGallery(data);
-    } catch (error) {
-      console.error("Error loading gallery:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleOpenModal = (item?: GalleryItem) => {
     if (item) {
