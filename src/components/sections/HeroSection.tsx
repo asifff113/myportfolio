@@ -174,27 +174,25 @@ export default function HeroSection({ personalInfo: initialPersonalInfo }: HeroS
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8"
             >
               {/* Download CV Button - RAINBOW GRADIENT */}
-              {personalInfo.resumeUrl && (
-                <motion.a
-                  href={personalInfo.resumeUrl}
-                  download
-                  whileHover={{ scale: 1.08, y: -4 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="relative inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold shadow-2xl transition-all ripple overflow-hidden group"
-                >
-                  {/* Animated Rainbow Background */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 opacity-90 group-hover:opacity-100 transition-opacity" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 animate-gradient transition-opacity" />
-                  <div className="absolute inset-0 bg-white/20 group-hover:bg-white/30 transition-colors" />
-                  
-                  {/* Content */}
-                  <Download size={22} className="relative z-10 text-white" />
-                  <span className="relative z-10 text-white">{t.hero.downloadCv}</span>
-                  
-                  {/* Shimmer Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                </motion.a>
-              )}
+              <motion.a
+                href="/api/generate-cv"
+                download
+                whileHover={{ scale: 1.08, y: -4 }}
+                whileTap={{ scale: 0.95 }}
+                className="relative inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold shadow-2xl transition-all ripple overflow-hidden group"
+              >
+                {/* Animated Rainbow Background */}
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 opacity-90 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 animate-gradient transition-opacity" />
+                <div className="absolute inset-0 bg-white/20 group-hover:bg-white/30 transition-colors" />
+                
+                {/* Content */}
+                <Download size={22} className="relative z-10 text-white" />
+                <span className="relative z-10 text-white">{t.hero.downloadCv}</span>
+                
+                {/* Shimmer Effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+              </motion.a>
 
               {/* Contact Me Button - COLORFUL GRADIENT */}
               <motion.button

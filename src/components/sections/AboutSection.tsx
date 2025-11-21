@@ -23,25 +23,25 @@ export default function AboutSection({ personalInfo: initialPersonalInfo }: Abou
     {
       title: t.sections.about.highlights.learner.title,
       description: t.sections.about.highlights.learner.desc,
-      icon: "🚀",
+      icon: "🧭",
       color: "from-blue-500 via-cyan-500 to-teal-500",
     },
     {
       title: t.sections.about.highlights.team.title,
       description: t.sections.about.highlights.team.desc,
-      icon: "🤝",
+      icon: "👥",
       color: "from-purple-500 via-pink-500 to-rose-500",
     },
     {
       title: t.sections.about.highlights.problem.title,
       description: t.sections.about.highlights.problem.desc,
-      icon: "💡",
+      icon: "🚀",
       color: "from-orange-500 via-amber-500 to-yellow-500",
     },
     {
       title: t.sections.about.highlights.detail.title,
       description: t.sections.about.highlights.detail.desc,
-      icon: "✨",
+      icon: "🌐",
       color: "from-green-500 via-emerald-500 to-teal-500",
     },
   ];

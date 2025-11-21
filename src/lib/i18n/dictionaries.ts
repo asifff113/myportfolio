@@ -38,10 +38,10 @@ export const dictionaries = {
         title: "About Me",
         subtitle: "Get to know more about who I am and what I do",
         highlights: {
-          learner: { title: "Quick Learner", desc: "Adaptable to new technologies and frameworks" },
-          team: { title: "Team Player", desc: "Collaborative mindset with strong communication" },
-          problem: { title: "Problem Solver", desc: "Creative solutions to complex challenges" },
-          detail: { title: "Detail Oriented", desc: "Committed to quality and best practices" },
+          learner: { title: "Curious Explorer", desc: "Passionate about exploring new tech fields" },
+          team: { title: "Team Leader", desc: "Driving collaboration and collective success" },
+          problem: { title: "Startup Mindset", desc: "Building scalable solutions for real problems" },
+          detail: { title: "Open Source", desc: "Contributing to community-driven innovation" },
         }
       },
       skills: {

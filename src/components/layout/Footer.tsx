@@ -26,8 +26,8 @@ export default function Footer() {
           {/* Brand Section */}
           <div>
             <h3 className="text-2xl font-display font-bold text-gradient mb-4">
-              {/* TODO: Replace with your name */}
-              YourName
+              {/* Your full name */}
+              Md Asif Istiaque Zaman
             </h3>
             <p className="text-muted-foreground text-sm">
               {t.hero.description}
@@ -84,7 +84,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-muted-foreground text-sm text-center md:text-left">
-            © {new Date().getFullYear()} YourName. {t.sections.footer.rights}
+            © {new Date().getFullYear()} Md Asif Istiaque Zaman. {t.sections.footer.rights}
           </p>
           <p className="text-muted-foreground text-xs flex items-center gap-1">
             {t.sections.footer.builtWith}

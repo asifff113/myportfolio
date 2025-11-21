@@ -28,17 +28,17 @@ import {
 export const mockPersonalInfo: PersonalInfo = {
   id: "personal-info",
   name: "Your Name", // TODO: Replace with your name
-  headline: "Full Stack Developer & Creative Problem Solver",
+  headline: "Aspiring Tech Generalist & Creative Leader",
   shortBio:
-    "I'm a passionate developer who loves building beautiful, functional web applications. With expertise in modern web technologies, I create solutions that make a difference.",
+    "I am a 3rd-year CSE student with a startup mindset and a passion for Open Source. I thrive on exploring diverse technologies, leading collaborative teams, and turning innovative ideas into reality.",
   longBio:
-    "I'm a full-stack developer with a passion for creating elegant solutions to complex problems. My journey in tech started with curiosity and has evolved into a career focused on building impactful applications.\n\nI specialize in modern web technologies including React, Next.js, TypeScript, and Node.js. I believe in writing clean, maintainable code and creating user experiences that delight.\n\nWhen I'm not coding, you'll find me exploring new technologies, contributing to open source, or sharing knowledge with the developer community.",
+    "I am currently a 3rd-year Computer Science and Engineering student driven by an insatiable curiosity for the tech world. My journey isn't defined by a single niche but by a broad spectrum of interests that fuel my growth. I am deeply passionate about Web Development, Cybersecurity, AI/ML, and Data Science, while also exploring the realms of Android Development and Competitive Programming.\n\nBeyond the code, I am an active advocate for Open Source and believe in the power of community-driven innovation. I embrace the creative and strategic sides of technology, with a keen interest in Design, Marketing, and SEO. My ambition extends beyond just engineering; I possess a strong entrepreneurial spirit and a startup mentality, constantly looking for opportunities to solve real-world problems and build scalable businesses.\n\nI believe that a healthy mind lives in a healthy body, which is why I am an avid enthusiast of both indoor and outdoor sports. This active lifestyle complements my work, keeping me energized and focused. Coupled with strong communication skills, I thrive in collaborative environments, bridging the gap between technical complexities and human understanding.\n\nI may not claim to be an expert in every field just yet, but I am a dedicated learner who loves to connect the dots between different disciplines. Whether it's contributing to open-source projects, leading a team through a hackathon, or brainstorming the next big startup idea, I am always eager to explore, learn, and create.",
   profileImageUrl: "https://placehold.co/400x400/png?text=Profile", // TODO: Add your profile image
-  resumeUrl: "#", // TODO: Add your resume
+  resumeUrl: "/api/generate-cv", // Auto-generated PDF resume
   location: "Your City, Country",
   email: "your.email@example.com",
   phone: "+1 (555) 123-4567",
-  currentStatus: "Open to opportunities",
+  currentStatus: "3rd Year CSE Student",
   socialLinks: [
     {
       platform: "GitHub",
