@@ -25,10 +25,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // @ts-ignore - renderToStream expects Document but createElement works at runtime
-    const pdfStream = await renderToStream(
-      React.createElement(CVTemplate, { content })
-    );
+    // Generate PDF stream
+    const cvDocument = React.createElement(CVTemplate, { content });
+    const pdfStream = await renderToStream(cvDocument as any);
 
     // Convert Node.js Readable stream to Buffer
     const chunks: Buffer[] = [];

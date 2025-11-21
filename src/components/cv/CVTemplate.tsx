@@ -152,7 +152,15 @@ interface CVTemplateProps {
 export const CVTemplate: React.FC<CVTemplateProps> = ({ content }) => {
   const { personalInfo, skillCategories, education, experience, projects, achievements, certificates } = content;
 
-  if (!personalInfo) return null;
+  if (!personalInfo) {
+    return (
+      <Document>
+        <Page size="A4" style={styles.page}>
+          <Text>Personal information not available</Text>
+        </Page>
+      </Document>
+    );
+  }
 
   return (
     <Document>
