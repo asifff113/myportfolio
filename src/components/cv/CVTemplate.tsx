@@ -209,8 +209,8 @@ export const CVTemplate: React.FC<CVTemplateProps> = ({ content }) => {
                 </View>
                 <Text style={styles.itemSubtitle}>{exp.company}</Text>
                 <Text style={styles.itemDate}>
-                  {new Date(exp.startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} - 
-                  {exp.isCurrent ? ' Present' : new Date(exp.endDate!).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                  {exp.startDate ? new Date(exp.startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'N/A'} - 
+                  {exp.isCurrent ? ' Present' : (exp.endDate ? new Date(exp.endDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'N/A')}
                 </Text>
                 <Text style={styles.itemDescription}>{exp.description}</Text>
                 {exp.technologies && exp.technologies.length > 0 && (
@@ -234,7 +234,7 @@ export const CVTemplate: React.FC<CVTemplateProps> = ({ content }) => {
                 <Text style={styles.itemTitle}>{edu.degree}</Text>
                 <Text style={styles.itemSubtitle}>{edu.institution}</Text>
                 <Text style={styles.itemDate}>
-                  {new Date(edu.startDate).getFullYear()} - {edu.isCurrent ? 'Present' : new Date(edu.endDate!).getFullYear()}
+                  {edu.startDate ? new Date(edu.startDate).getFullYear() : 'N/A'} - {edu.isCurrent ? 'Present' : (edu.endDate ? new Date(edu.endDate!).getFullYear() : 'N/A')}
                 </Text>
                 {edu.description && <Text style={styles.itemDescription}>{edu.description}</Text>}
               </View>

@@ -78,7 +78,7 @@ export interface EducationItem {
   institution: string; // School/university name
   degree: string; // e.g., "Bachelor of Science", "High School Diploma"
   field?: string; // e.g., "Computer Science", "Software Engineering"
-  startDate: Date | string;
+  startDate?: Date | string;
   endDate?: Date | string | null; // Null if currently enrolled
   isCurrent?: boolean;
   description?: string; // Additional details, coursework, achievements

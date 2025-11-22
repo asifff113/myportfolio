@@ -68,7 +68,7 @@ export default function ExperienceAdminPage() {
         company: exp.company,
         role: exp.role,
         location: exp.location || "",
-        startDate: typeof exp.startDate === 'string' ? exp.startDate : new Date(exp.startDate).toISOString().split('T')[0],
+        startDate: exp.startDate ? (typeof exp.startDate === 'string' ? exp.startDate : new Date(exp.startDate).toISOString().split('T')[0]) : "",
         endDate: exp.endDate ? (typeof exp.endDate === 'string' ? exp.endDate : new Date(exp.endDate).toISOString().split('T')[0]) : "",
         isCurrent: exp.isCurrent || false,
         description: exp.description || "",
@@ -222,8 +222,8 @@ export default function ExperienceAdminPage() {
                     <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-3">
                       <div className="flex items-center gap-1">
                         <Calendar className="w-4 h-4" />
-                        <span>
-                          {formatDate(exp.startDate as string)} -{" "}
+                          <span>
+                          {exp.startDate ? formatDate(exp.startDate as string) : "N/A"} - {" "}
                           {exp.isCurrent ? "Present" : exp.endDate ? formatDate(exp.endDate as string) : "N/A"}
                         </span>
                       </div>
@@ -353,14 +353,13 @@ export default function ExperienceAdminPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Start Date *
-                    </label>
+                        Start Date
+                      </label>
                     <input
                       type="date"
                       value={formData.startDate as string}
                       onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                      required
                     />
                   </div>
 

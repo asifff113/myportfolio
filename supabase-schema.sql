@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS experience (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   company TEXT NOT NULL,
   position TEXT NOT NULL,
-  start_date TEXT NOT NULL,
+  start_date TEXT,
   end_date TEXT,
   description TEXT,
   responsibilities TEXT[],

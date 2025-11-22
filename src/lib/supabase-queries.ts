@@ -303,7 +303,7 @@ export async function getEducation(): Promise<EducationItem[]> {
       institution: item.institution,
       degree: item.degree,
       field: item.field,
-      startDate: item.start_date,
+      startDate: item.start_date || undefined,
       endDate: item.end_date,
       isCurrent: !item.end_date,
       description: item.description,
@@ -411,7 +411,7 @@ export async function getExperience(): Promise<ExperienceItem[]> {
       id: item.id,
       role: item.position,
       company: item.company,
-      startDate: item.start_date,
+      startDate: item.start_date || undefined,
       endDate: item.end_date,
       isCurrent: !item.end_date,
       description: item.description,
@@ -432,8 +432,9 @@ export async function createExperienceItem(data: Omit<ExperienceItem, "id">): Pr
     const dbData = {
       position: data.role,
       company: data.company,
-      start_date: data.startDate,
-      end_date: data.endDate,
+      // convert empty/falsey startDate to null so DB can accept missing dates
+      start_date: data.startDate || null,
+      end_date: data.endDate || null,
       description: data.description,
       technologies: data.technologies,
     };
@@ -463,8 +464,8 @@ export async function updateExperienceItem(id: string, data: Partial<ExperienceI
     
     if (data.role !== undefined) dbData.position = data.role;
     if (data.company !== undefined) dbData.company = data.company;
-    if (data.startDate !== undefined) dbData.start_date = data.startDate;
-    if (data.endDate !== undefined) dbData.end_date = data.endDate;
+    if (data.startDate !== undefined) dbData.start_date = data.startDate || null;
+    if (data.endDate !== undefined) dbData.end_date = data.endDate || null;
     if (data.description !== undefined) dbData.description = data.description;
     if (data.technologies !== undefined) dbData.technologies = data.technologies;
 
