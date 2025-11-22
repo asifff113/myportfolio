@@ -69,7 +69,7 @@ export default function EducationAdminPage() {
         institution: edu.institution,
         degree: edu.degree,
         field: edu.field || "",
-        startDate: typeof edu.startDate === 'string' ? edu.startDate : new Date(edu.startDate).toISOString().split('T')[0],
+        startDate: edu.startDate ? (typeof edu.startDate === 'string' ? edu.startDate : new Date(edu.startDate).toISOString().split('T')[0]) : "",
         endDate: edu.endDate ? (typeof edu.endDate === 'string' ? edu.endDate : new Date(edu.endDate).toISOString().split('T')[0]) : "",
         isCurrent: edu.isCurrent || false,
         description: edu.description || "",
