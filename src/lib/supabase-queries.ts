@@ -657,6 +657,8 @@ export async function getAchievements(): Promise<Achievement[]> {
       description: item.description,
       category: item.category,
       iconUrl: item.icon,
+      fileUrl: item.file_url,
+      fileType: item.file_type,
       order: item.order,
     })) as Achievement[];
   } catch (error) {
@@ -673,6 +675,8 @@ export async function createAchievement(data: Omit<Achievement, "id">): Promise<
       date: data.date,
       icon: data.iconUrl,
       category: data.category,
+      file_url: data.fileUrl,
+      file_type: data.fileType,
     };
 
     const { data: result, error } = await supabase
@@ -700,6 +704,8 @@ export async function updateAchievement(id: string, data: Partial<Achievement>):
     if (data.date !== undefined) dbData.date = data.date;
     if (data.iconUrl !== undefined) dbData.icon = data.iconUrl;
     if (data.category !== undefined) dbData.category = data.category;
+    if (data.fileUrl !== undefined) dbData.file_url = data.fileUrl;
+    if (data.fileType !== undefined) dbData.file_type = data.fileType;
 
     const { error } = await supabase
       .from('achievements')

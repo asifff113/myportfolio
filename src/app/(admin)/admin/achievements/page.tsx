@@ -3,12 +3,13 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Edit2, Trash2, Trophy, X, Loader2, Calendar, ArrowUp, ArrowDown } from "lucide-react";
+import { Plus, Edit2, Trash2, Trophy, X, Loader2, Calendar, ArrowUp, ArrowDown, File, ExternalLink } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { getAchievements, createAchievement, updateAchievement, deleteAchievement } from "@/lib/supabase-queries";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { Achievement } from "@/lib/content-types";
 import { useReorder } from "@/hooks/useReorder";
+import { uploadFile, deleteFile } from "@/lib/supabase-storage";
 
 const categories = ["Competition", "Academic", "Community", "Professional", "Other"];
 
@@ -40,6 +41,9 @@ export default function AchievementsAdminPage() {
     loading: reorderLoading
   } = useReorder<Achievement>(achievements, 'achievements', loadAchievements);
 
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  
   const [formData, setFormData] = useState({
     title: "",
     organization: "",
@@ -47,6 +51,8 @@ export default function AchievementsAdminPage() {
     date: "",
     iconUrl: "",
     category: "Professional",
+    fileUrl: "",
+    fileType: undefined as 'image' | 'pdf' | undefined,
   });
 
   useEffect(() => {
@@ -71,6 +77,8 @@ export default function AchievementsAdminPage() {
         date: achievement.date instanceof Date ? achievement.date.toISOString().split('T')[0] : String(achievement.date),
         iconUrl: achievement.iconUrl || "",
         category: achievement.category || "Professional",
+        fileUrl: achievement.fileUrl || "",
+        fileType: achievement.fileType,
       });
     } else {
       setEditingAchievement(null);
@@ -81,14 +89,85 @@ export default function AchievementsAdminPage() {
         date: "",
         iconUrl: "",
         category: "Professional",
+        fileUrl: "",
+        fileType: undefined,
       });
     }
+    setSelectedFile(null);
+    setUploadProgress(0);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingAchievement(null);
+    setSelectedFile(null);
+    setUploadProgress(0);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const isImage = file.type.startsWith('image/');
+      const isPdf = file.type === 'application/pdf';
+      
+      if (!isImage && !isPdf) {
+        alert('Please select an image or PDF file');
+        return;
+      }
+      
+      const maxSize = isPdf ? 10 * 1024 * 1024 : 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        alert(`File size must be less than ${isPdf ? '10MB' : '5MB'}`);
+        return;
+      }
+      
+      setSelectedFile(file);
+    }
+  };
+
+  const handleRemoveFile = async () => {
+    if (!formData.fileUrl) return;
+    
+    if (!confirm('Are you sure you want to remove this file? This will permanently delete it from storage.')) {
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      
+      // Extract path from URL
+      const url = new URL(formData.fileUrl);
+      const pathMatch = url.pathname.match(/\/storage\/v1\/object\/public\/portfolio\/(.+)/);
+      
+      if (pathMatch) {
+        const filePath = pathMatch[1];
+        await deleteFile(filePath);
+      }
+
+      // Update achievement in database to remove file reference
+      if (editingAchievement && editingAchievement.id) {
+        await updateAchievement(editingAchievement.id, {
+          fileUrl: undefined,
+          fileType: undefined,
+        });
+      }
+
+      // Update form state
+      setFormData({
+        ...formData,
+        fileUrl: "",
+        fileType: undefined,
+      });
+
+      alert('File removed successfully');
+      await loadAchievements();
+    } catch (error) {
+      console.error('Error removing file:', error);
+      alert('Failed to remove file. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -96,10 +175,30 @@ export default function AchievementsAdminPage() {
     try {
       setSubmitting(true);
 
+      let fileUrl = formData.fileUrl;
+      let fileType = formData.fileType;
+
+      // Upload new file if selected
+      if (selectedFile) {
+        const uploadResult = await uploadFile(
+          selectedFile,
+          'achievements',
+          (progress) => setUploadProgress(progress)
+        );
+        fileUrl = uploadResult.url;
+        fileType = selectedFile.type.startsWith('image/') ? 'image' : 'pdf';
+      }
+
+      const dataToSave = {
+        ...formData,
+        fileUrl,
+        fileType,
+      };
+
       if (editingAchievement && editingAchievement.id) {
-        await updateAchievement(editingAchievement.id, formData);
+        await updateAchievement(editingAchievement.id, dataToSave);
       } else {
-        await createAchievement(formData);
+        await createAchievement(dataToSave);
       }
 
       await loadAchievements();
@@ -109,6 +208,7 @@ export default function AchievementsAdminPage() {
       alert("Failed to save achievement. Please try again.");
     } finally {
       setSubmitting(false);
+      setUploadProgress(0);
     }
   };
 
@@ -199,6 +299,15 @@ export default function AchievementsAdminPage() {
                   >
                     <ArrowDown className="w-4 h-4" />
                   </button>
+                  {achievement.fileUrl && (
+                    <button
+                      onClick={() => window.open(achievement.fileUrl, '_blank')}
+                      className="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                      title="View file"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </button>
+                  )}
                   <button
                     onClick={() => handleOpenModal(achievement)}
                     className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
@@ -216,9 +325,17 @@ export default function AchievementsAdminPage() {
               <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
                 {achievement.description}
               </p>
-              <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
-                <Calendar className="w-4 h-4" />
-                <span>{formatDate(achievement.date)}</span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+                  <Calendar className="w-4 h-4" />
+                  <span>{formatDate(achievement.date)}</span>
+                </div>
+                {achievement.fileUrl && (
+                  <div className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400">
+                    <File className="w-3 h-3" />
+                    <span>{achievement.fileType === 'pdf' ? 'PDF' : 'Image'}</span>
+                  </div>
+                )}
               </div>
             </motion.div>
           ))}
@@ -343,6 +460,56 @@ export default function AchievementsAdminPage() {
                       </option>
                     ))}
                   </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Attachment (Image or PDF)
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*,.pdf"
+                    onChange={handleFileChange}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                  />
+                  {selectedFile && (
+                    <p className="mt-2 text-sm text-green-600 dark:text-green-400">
+                      Selected: {selectedFile.name}
+                    </p>
+                  )}
+                  {formData.fileUrl && !selectedFile && (
+                    <div className="mt-2 flex items-center justify-between gap-2 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                      <a
+                        href={formData.fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                      >
+                        <ExternalLink className="w-3 h-3" />
+                        View current file ({formData.fileType})
+                      </a>
+                      <button
+                        type="button"
+                        onClick={handleRemoveFile}
+                        disabled={submitting}
+                        className="px-3 py-1 text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors disabled:opacity-50 flex items-center gap-1"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                  {uploadProgress > 0 && uploadProgress < 100 && (
+                    <div className="mt-2">
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-blue-600 h-2 rounded-full transition-all"
+                          style={{ width: `${uploadProgress}%` }}
+                        />
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">Uploading... {uploadProgress}%</p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex gap-3 pt-4">

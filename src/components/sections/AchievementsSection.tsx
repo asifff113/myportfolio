@@ -140,15 +140,20 @@ export default function AchievementsSection({ achievements }: AchievementsSectio
                   </p>
                 )}
 
-                {/* Certificate Link */}
-                {achievement.certificateUrl && (
+                {/* File/Certificate Link */}
+                {(achievement.fileUrl || achievement.certificateUrl) && (
                   <a
-                    href={achievement.certificateUrl}
+                    href={achievement.fileUrl || achievement.certificateUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors font-medium"
                   >
-                    <span>View Certificate</span>
+                    <span>
+                      {achievement.fileUrl 
+                        ? `View ${achievement.fileType === 'pdf' ? 'Certificate (PDF)' : 'Image'}`
+                        : 'View Certificate'
+                      }
+                    </span>
                     <ExternalLink size={14} />
                   </a>
                 )}

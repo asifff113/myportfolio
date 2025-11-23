@@ -159,6 +159,8 @@ export interface Achievement {
   category?: string; // e.g., "Competition", "Recognition", "Award"
   iconUrl?: string; // Badge or icon
   certificateUrl?: string; // Link to certificate if available
+  fileUrl?: string; // URL to uploaded image or PDF file
+  fileType?: 'image' | 'pdf'; // Type of the uploaded file
   order?: number;
 }
 
