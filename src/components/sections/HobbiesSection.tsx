@@ -72,7 +72,7 @@ export default function HobbiesSection({ hobbies }: HobbiesSectionProps) {
               key={hobby.id || index}
               variants={itemVariants}
               whileHover={{ y: -6 }}
-              className="bg-zinc-900/60 border border-zinc-800 hover:border-lime-500/30 rounded-2xl overflow-hidden relative group transition-colors"
+              className="bg-white/55 backdrop-blur-xl border border-lime-200/30 hover:border-lime-300/50 rounded-2xl overflow-hidden relative group transition-all shadow-sm hover:shadow-lg hover:shadow-lime-200/15"
             >
               {/* Top gradient bar */}
               <div className={`h-1 bg-gradient-to-r ${hobbyColor} rounded-t-2xl`} />
@@ -100,12 +100,12 @@ export default function HobbiesSection({ hobbies }: HobbiesSectionProps) {
                 </motion.div>
 
                 {/* Title */}
-                <h3 className="text-xl font-bold mb-3 text-white group-hover:text-lime-300 transition-colors duration-300">
+                <h3 className="text-xl font-bold mb-3 text-slate-800 group-hover:text-lime-600 transition-colors duration-300">
                   {hobby.title}
                 </h3>
 
                 {/* Description */}
-                <p className="text-sm text-zinc-400 leading-relaxed">
+                <p className="text-sm text-slate-500 leading-relaxed">
                   {hobby.description}
                 </p>
               </div>

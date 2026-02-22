@@ -81,9 +81,9 @@ export default function Card3D({
         transformStyle: "preserve-3d",
       }}
       className={cn(
-        "relative rounded-2xl transition-all duration-300 ease-out will-change-transform",
-        "glass-ultra",
-        enableGlow && "hover:shadow-2xl",
+        "relative rounded-2xl transition-all duration-400 ease-out will-change-transform",
+        "glass-ultra holographic",
+        enableGlow && "hover:shadow-[0_30px_60px_-20px_rgba(var(--section-rgb),0.15)]",
         onClick && "cursor-pointer",
         className
       )}

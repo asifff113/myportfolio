@@ -39,20 +39,20 @@ const itemVariants = {
 
 // Project type colors
 const typeColors: Record<string, string> = {
-  Personal: "bg-purple-500/20 text-purple-300 border border-purple-500/30",
-  Professional: "bg-blue-500/20 text-blue-300 border border-blue-500/30",
-  School: "bg-green-500/20 text-green-300 border border-green-500/30",
-  Freelance: "bg-orange-500/20 text-orange-300 border border-orange-500/30",
-  "Open Source": "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30",
-  Practice: "bg-pink-500/20 text-pink-300 border border-pink-500/30",
+  Personal: "bg-purple-100 text-purple-700 border border-purple-200/60",
+  Professional: "bg-blue-100 text-blue-700 border border-blue-200/60",
+  School: "bg-green-100 text-green-700 border border-green-200/60",
+  Freelance: "bg-orange-100 text-orange-700 border border-orange-200/60",
+  "Open Source": "bg-cyan-100 text-cyan-700 border border-cyan-200/60",
+  Practice: "bg-pink-100 text-pink-700 border border-pink-200/60",
 };
 
 // Status colors
 const statusColors: Record<string, string> = {
-  "In Progress": "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30",
-  Completed: "bg-green-500/20 text-green-300 border border-green-500/30",
-  Maintained: "bg-blue-500/20 text-blue-300 border border-blue-500/30",
-  Archived: "bg-gray-500/20 text-gray-300 border border-gray-500/30",
+  "In Progress": "bg-yellow-100 text-yellow-700 border border-yellow-200/60",
+  Completed: "bg-green-100 text-green-700 border border-green-200/60",
+  Maintained: "bg-blue-100 text-blue-700 border border-blue-200/60",
+  Archived: "bg-gray-100 text-gray-600 border border-gray-200/60",
 };
 
 export default function ProjectsSection({ projects: initialProjects }: ProjectsSectionProps) {
@@ -109,8 +109,8 @@ export default function ProjectsSection({ projects: initialProjects }: ProjectsS
             onClick={() => setFilter(type)}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
               filter === type
-                ? "bg-gradient-to-r from-orange-500 to-rose-500 text-white shadow-lg"
-                : "bg-zinc-800/50 border border-zinc-700/30 text-zinc-400 hover:text-zinc-200 hover:border-zinc-600"
+                ? "bg-gradient-to-r from-orange-500 to-rose-500 text-white shadow-lg shadow-orange-200/30"
+                : "bg-white/55 backdrop-blur-sm border border-orange-200/30 text-slate-600 hover:text-slate-800 hover:border-orange-300/50"
             }`}
           >
             {type === "All" ? t.sections.projects.filterAll : type}
@@ -174,10 +174,9 @@ export default function ProjectsSection({ projects: initialProjects }: ProjectsS
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center py-12 bg-zinc-900/60 border border-zinc-800 rounded-2xl"
+          className="text-center py-12 bg-white/55 backdrop-blur-xl border border-orange-200/30 rounded-2xl"
         >
-          <p className="text-zinc-400">
-            No projects found in this category.
+          <p className="text-slate-500">
           </p>
         </motion.div>
       )}
@@ -208,10 +207,10 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
     <motion.div
       variants={itemVariants}
       whileHover={{ y: -6 }}
-      className={`bg-zinc-900/60 border rounded-2xl overflow-hidden group relative cursor-pointer transition-colors duration-300 ${
+      className={`bg-white/55 backdrop-blur-xl border rounded-2xl overflow-hidden group relative cursor-pointer transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-orange-200/20 ${
         featured
-          ? "border-2 border-orange-500/30 hover:border-orange-500/50"
-          : "border-zinc-800 hover:border-orange-500/30"
+          ? "border-2 border-orange-300/50 hover:border-orange-400/60"
+          : "border-orange-200/30 hover:border-orange-300/50"
       }`}
       onClick={() => onClick(project)}
     >
@@ -226,7 +225,7 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
       )}
 
       {/* Project Image */}
-      <div className="relative h-48 md:h-56 bg-zinc-800 overflow-hidden">
+      <div className="relative h-48 md:h-56 bg-orange-50 overflow-hidden">
         {!imageError && project.imageUrl ? (
           <Image
             src={project.imageUrl}
@@ -237,20 +236,20 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
             sizes={featured ? "(max-width: 1024px) 100vw, 50vw" : "(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-zinc-800">
-            <Code2 size={48} className="text-zinc-600" />
+          <div className="w-full h-full flex items-center justify-center bg-orange-50">
+            <Code2 size={48} className="text-orange-300" />
           </div>
         )}
 
         {/* Overlay on Hover */}
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/95 via-zinc-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center pb-6 gap-4">
+        <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/60 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center pb-6 gap-4">
           {project.githubUrl && (
             <a
               href={project.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="p-3 bg-zinc-800 border border-zinc-700 rounded-full shadow-lg hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-colors"
+              className="p-3 bg-white/80 border border-orange-200/40 text-slate-700 rounded-full shadow-lg hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-colors"
               aria-label="View GitHub Repository"
             >
               <Github size={20} />
@@ -262,7 +261,7 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="p-3 bg-zinc-800 border border-zinc-700 rounded-full shadow-lg hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-colors"
+              className="p-3 bg-white/80 border border-orange-200/40 text-slate-700 rounded-full shadow-lg hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-colors"
               aria-label="View Live Demo"
             >
               <ExternalLink size={20} />
@@ -275,10 +274,10 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
       <div className="p-6">
         {/* Header */}
         <div className="mb-3">
-          <h3 className="text-xl font-bold mb-2 text-zinc-100 group-hover:text-orange-400 transition-colors duration-300">
+          <h3 className="text-xl font-bold mb-2 text-slate-800 group-hover:text-orange-600 transition-colors duration-300">
             {project.title}
           </h3>
-          <p className="text-sm text-zinc-400 line-clamp-2 leading-relaxed">
+          <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed">
             {project.summary}
           </p>
         </div>
@@ -301,7 +300,7 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
 
           {/* Date */}
           {project.endDate && (
-            <span className="inline-flex items-center gap-1 px-3 py-1 bg-zinc-800 border border-zinc-700 rounded-full text-xs text-zinc-400">
+            <span className="inline-flex items-center gap-1 px-3 py-1 bg-orange-50 border border-orange-200/40 rounded-full text-xs text-slate-500">
               <Calendar size={12} />
               {formatDate(project.endDate)}
             </span>
@@ -315,13 +314,13 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
               {project.techStack.slice(0, featured ? 8 : 5).map((tech, index) => (
                 <span
                   key={index}
-                  className="bg-zinc-800 border border-zinc-700 text-zinc-300 rounded-md px-2 py-1 text-xs"
+                  className="bg-orange-50 border border-orange-200/40 text-orange-700 rounded-md px-2 py-1 text-xs"
                 >
                   {tech}
                 </span>
               ))}
               {project.techStack.length > (featured ? 8 : 5) && (
-                <span className="text-zinc-500 text-xs px-2 py-1">
+                <span className="text-slate-400 text-xs px-2 py-1">
                   +{project.techStack.length - (featured ? 8 : 5)} more
                 </span>
               )}
@@ -330,14 +329,14 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
         )}
 
         {/* Links & Actions */}
-        <div className="flex items-center justify-between gap-3 text-sm mt-auto pt-4 border-t border-zinc-800">
+        <div className="flex items-center justify-between gap-3 text-sm mt-auto pt-4 border-t border-orange-200/30">
           <div className="flex gap-3">
             {project.githubUrl && (
               <a
                 href={project.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-zinc-400 hover:text-orange-400 transition-colors"
+                className="inline-flex items-center gap-2 text-slate-500 hover:text-orange-600 transition-colors"
                 onClick={(e) => e.stopPropagation()}
               >
                 <Github size={16} />
@@ -349,7 +348,7 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
                 href={project.liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-zinc-400 hover:text-orange-400 transition-colors"
+                className="inline-flex items-center gap-2 text-slate-500 hover:text-orange-600 transition-colors"
                 onClick={(e) => e.stopPropagation()}
               >
                 <ExternalLink size={16} />
@@ -360,7 +359,7 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
 
           <button
             onClick={() => onClick(project)}
-            className="inline-flex items-center gap-1 text-orange-400 font-bold hover:underline group/btn"
+            className="inline-flex items-center gap-1 text-orange-600 font-bold hover:underline group/btn"
           >
             View Details
             <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />

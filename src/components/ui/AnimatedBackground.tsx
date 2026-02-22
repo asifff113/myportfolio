@@ -3,9 +3,9 @@
 import React from "react";
 
 /**
- * Minimal animated background with static gradients
- * Performance-optimized: zero JS animations, zero Framer Motion
- * Uses CSS-only effects for a clean, subtle atmosphere
+ * Vibrant Animated Background — Light Futuristic Aurora
+ * Performance-optimized: CSS-only animations, GPU composited layers
+ * Beautiful multi-color aurora blobs on a clean white/cream canvas
  */
 
 interface AnimatedBackgroundProps {
@@ -16,34 +16,40 @@ export default function AnimatedBackground({ variant = "default" }: AnimatedBack
   const isHero = variant === "hero";
 
   return (
-    <div className="fixed inset-0 overflow-hidden -z-10 pointer-events-none noise-overlay">
-      <div className="absolute inset-0 bg-[linear-gradient(160deg,#0b0c15_0%,#160b1f_35%,#0d1326_68%,#1a0b1a_100%)]" />
+    <div className="fixed inset-0 overflow-hidden -z-10 pointer-events-none">
+      {/* Base: very subtle warm white gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-violet-50/60 via-white to-cyan-50/40" />
 
+      {/* Subtle grid pattern */}
       <div
-        className="absolute inset-0 opacity-[0.22]"
+        className="absolute inset-0 opacity-[0.06]"
         style={{
           backgroundImage: `
-            linear-gradient(to right, rgba(99,102,241,0.12) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(99,102,241,0.12) 1px, transparent 1px)
+            linear-gradient(to right, rgba(124,58,237,0.15) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(124,58,237,0.15) 1px, transparent 1px)
           `,
-          backgroundSize: isHero ? "72px 72px" : "96px 96px",
-          maskImage: "radial-gradient(circle at center, black 45%, transparent 100%)",
-          WebkitMaskImage: "radial-gradient(circle at center, black 45%, transparent 100%)",
+          backgroundSize: isHero ? "60px 60px" : "80px 80px",
+          maskImage: "radial-gradient(ellipse 80% 60% at center, black 30%, transparent 80%)",
+          WebkitMaskImage: "radial-gradient(ellipse 80% 60% at center, black 30%, transparent 80%)",
         }}
       />
 
-      <div className="aurora-blob top-[-10rem] left-[-6rem] h-[28rem] w-[28rem] bg-cyan-600/15" />
-      <div className="aurora-blob delay-1 top-[10%] right-[-8rem] h-[30rem] w-[30rem] bg-violet-600/15" />
-      <div className="aurora-blob delay-2 bottom-[-8rem] left-[20%] h-[26rem] w-[26rem] bg-indigo-600/15" />
-      <div className="aurora-blob delay-1 bottom-[-9rem] right-[8%] h-[24rem] w-[24rem] bg-blue-600/15" />
+      {/* Aurora blobs with vibrant colors */}
+      <div className="aurora-blob top-[-8rem] left-[-4rem] h-[32rem] w-[32rem] bg-violet-400/20" />
+      <div className="aurora-blob delay-1 top-[8%] right-[-6rem] h-[28rem] w-[28rem] bg-orange-300/18" />
+      <div className="aurora-blob delay-2 bottom-[-6rem] left-[15%] h-[30rem] w-[30rem] bg-cyan-300/18" />
+      <div className="aurora-blob delay-1 bottom-[-8rem] right-[10%] h-[26rem] w-[26rem] bg-emerald-300/15" />
+      <div className="aurora-blob top-[40%] left-[50%] h-[24rem] w-[24rem] bg-rose-300/10" />
 
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(11,12,21,0.5),transparent_52%),radial-gradient(circle_at_50%_100%,rgba(11,12,21,0.5),transparent_56%)]" />
-
-      <div className="absolute inset-0 opacity-40">
-        <div className="absolute top-16 left-1/2 h-px w-[min(92vw,80rem)] -translate-x-1/2 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
-        <div className="absolute top-[22rem] left-1/2 h-px w-[min(88vw,70rem)] -translate-x-1/2 bg-gradient-to-r from-transparent via-fuchsia-500/35 to-transparent" />
-        <div className="absolute bottom-24 left-1/2 h-px w-[min(86vw,72rem)] -translate-x-1/2 bg-gradient-to-r from-transparent via-cyan-500/35 to-transparent" />
+      {/* Decorative light beams */}
+      <div className="absolute inset-0 opacity-25">
+        <div className="absolute top-20 left-1/2 h-px w-[min(90vw,75rem)] -translate-x-1/2 bg-gradient-to-r from-transparent via-violet-400/40 to-transparent" />
+        <div className="absolute top-[26rem] left-1/2 h-px w-[min(85vw,65rem)] -translate-x-1/2 bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent" />
+        <div className="absolute bottom-32 left-1/2 h-px w-[min(80vw,60rem)] -translate-x-1/2 bg-gradient-to-r from-transparent via-orange-400/25 to-transparent" />
       </div>
+
+      {/* Very subtle radial lighting */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(124,58,237,0.04),transparent_60%)]" />
     </div>
   );
 }

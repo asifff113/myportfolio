@@ -100,7 +100,7 @@ export default function CertificatesSection({ certificates }: CertificatesSectio
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="relative max-w-5xl w-full max-h-[90vh] bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+              className="relative max-w-5xl w-full max-h-[90vh] bg-white/95 backdrop-blur-2xl border border-cyan-200/30 rounded-2xl overflow-hidden shadow-2xl flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
               <button
@@ -110,7 +110,7 @@ export default function CertificatesSection({ certificates }: CertificatesSectio
                 <X size={24} />
               </button>
 
-              <div className="flex-1 w-full relative bg-black/50 flex items-center justify-center p-4 overflow-hidden">
+              <div className="flex-1 w-full relative bg-cyan-50/30 flex items-center justify-center p-4 overflow-hidden">
                 {selectedCertificate.previewImageUrl || (isFile(selectedCertificate.fileUrl) && isImage(selectedCertificate.fileUrl)) ? (
                   <div className="relative w-full h-full min-h-[50vh]">
                     <Image
@@ -122,9 +122,9 @@ export default function CertificatesSection({ certificates }: CertificatesSectio
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center text-white gap-4">
-                    <FileText size={64} className="text-cyan-400" />
+                    <FileText size={64} className="text-cyan-500" />
                     <p className="text-lg font-medium">Document Preview Not Available</p>
-                    <p className="text-sm text-zinc-500">
+                    <p className="text-sm text-slate-500">
                       {isFile(selectedCertificate.fileUrl)
                         ? 'Click "View Certificate" to open the file'
                         : 'No certificate file uploaded'}
@@ -133,11 +133,11 @@ export default function CertificatesSection({ certificates }: CertificatesSectio
                 )}
               </div>
 
-              <div className="p-6 bg-zinc-950 border-t border-zinc-800">
+              <div className="p-6 bg-white/95 border-t border-cyan-200/30">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                   <div>
-                    <h3 className="text-2xl font-bold text-white mb-1">{selectedCertificate.title}</h3>
-                    <p className="text-zinc-400">{selectedCertificate.issuer} &bull; {formatDate(selectedCertificate.issuedDate)}</p>
+                    <h3 className="text-2xl font-bold text-slate-800 mb-1">{selectedCertificate.title}</h3>
+                    <p className="text-slate-500">{selectedCertificate.issuer} &bull; {formatDate(selectedCertificate.issuedDate)}</p>
                   </div>
                 </div>
 
@@ -153,7 +153,7 @@ export default function CertificatesSection({ certificates }: CertificatesSectio
                       View Certificate
                     </a>
                   ) : (
-                    <div className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-zinc-800 text-zinc-500 rounded-lg border border-zinc-700 font-medium text-lg cursor-not-allowed">
+                    <div className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-slate-100 text-slate-400 rounded-lg border border-slate-200 font-medium text-lg cursor-not-allowed">
                       <FileText size={20} />
                       No certificate pdf at the moment
                     </div>
@@ -164,7 +164,7 @@ export default function CertificatesSection({ certificates }: CertificatesSectio
                       href={selectedCertificate.credentialUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg transition-colors font-bold text-lg border border-zinc-700"
+                      className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/70 hover:bg-white/90 text-slate-700 rounded-lg transition-colors font-bold text-lg border border-cyan-200/40"
                     >
                       <Globe size={20} />
                       Visit Website
@@ -212,7 +212,7 @@ function CertificateCard({ certificate, onView }: CertificateCardProps) {
     <motion.div
       variants={itemVariants}
       whileHover={{ y: -6 }}
-      className="bg-zinc-900/60 border border-zinc-800 hover:border-cyan-500/30 rounded-2xl overflow-hidden group relative transition-colors duration-300 flex flex-col h-full"
+      className="bg-white/55 backdrop-blur-xl border border-cyan-200/30 hover:border-cyan-300/50 rounded-2xl overflow-hidden group relative transition-all duration-300 flex flex-col h-full shadow-sm hover:shadow-lg hover:shadow-cyan-200/20"
     >
       {/* Certified Pill Badge */}
       <div className="absolute top-3 left-3 z-20">
@@ -222,7 +222,7 @@ function CertificateCard({ certificate, onView }: CertificateCardProps) {
       </div>
 
       {/* Preview Image or PDF Icon */}
-      <div className="relative h-48 bg-zinc-800 overflow-hidden cursor-pointer" onClick={handleView}>
+      <div className="relative h-48 bg-cyan-50 overflow-hidden cursor-pointer" onClick={handleView}>
         {shouldShowImage ? (
           <Image
             src={certificate.previewImageUrl || certificate.fileUrl}
@@ -233,9 +233,9 @@ function CertificateCard({ certificate, onView }: CertificateCardProps) {
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-zinc-800">
+          <div className="w-full h-full flex items-center justify-center bg-cyan-50">
             <div className="relative">
-              <FileText size={64} className="text-zinc-600" />
+              <FileText size={64} className="text-cyan-300" />
               {isPDF && (
                 <div className="absolute -bottom-2 -right-2 px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded">
                   PDF
@@ -246,10 +246,10 @@ function CertificateCard({ certificate, onView }: CertificateCardProps) {
         )}
 
         {/* Hover Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/95 via-zinc-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center pb-6 gap-4">
+        <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/60 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center pb-6 gap-4">
           <button
             onClick={(e) => { e.stopPropagation(); handleView(e); }}
-            className="p-3 bg-zinc-800 border border-zinc-700 rounded-full shadow-lg hover:bg-cyan-500 hover:text-white hover:border-cyan-500 transition-colors"
+            className="p-3 bg-white/80 border border-cyan-200/40 text-slate-700 rounded-full shadow-lg hover:bg-cyan-500 hover:text-white hover:border-cyan-500 transition-colors"
             aria-label="View Certificate"
           >
             <Eye size={20} />
@@ -261,35 +261,35 @@ function CertificateCard({ certificate, onView }: CertificateCardProps) {
       <div className="p-6 flex-1 flex flex-col">
         {/* Icon & Title */}
         <div className="flex items-start gap-3 mb-3">
-          <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex-shrink-0">
-            <Award className="text-cyan-400" size={22} />
+          <div className="p-2 rounded-xl bg-cyan-100 border border-cyan-200/40 flex-shrink-0">
+            <Award className="text-cyan-600" size={22} />
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-bold mb-1 text-zinc-100 group-hover:text-cyan-400 transition-colors duration-300 line-clamp-2">
+            <h3 className="text-lg font-bold mb-1 text-slate-800 group-hover:text-cyan-600 transition-colors duration-300 line-clamp-2">
               {certificate.title}
             </h3>
-            <p className="text-sm text-cyan-400/80 font-semibold">
+            <p className="text-sm text-cyan-600 font-semibold">
               {certificate.issuer}
             </p>
           </div>
         </div>
 
         {/* Date */}
-        <div className="flex items-center gap-2 text-sm text-zinc-500 mb-3">
+        <div className="flex items-center gap-2 text-sm text-slate-500 mb-3">
           <Calendar size={14} />
           <span>Issued: {formatDate(certificate.issuedDate)}</span>
         </div>
 
         {/* Expiry Date */}
         {certificate.expiryDate && (
-          <div className="text-xs text-zinc-500 mb-3">
+          <div className="text-xs text-slate-500 mb-3">
             Expires: {formatDate(certificate.expiryDate)}
           </div>
         )}
 
         {/* Description */}
         {certificate.description && (
-          <p className="text-sm text-zinc-400 mb-4 line-clamp-2 flex-1">
+          <p className="text-sm text-slate-500 mb-4 line-clamp-2 flex-1">
             {certificate.description}
           </p>
         )}
@@ -301,13 +301,13 @@ function CertificateCard({ certificate, onView }: CertificateCardProps) {
               {certificate.skills.slice(0, 3).map((skill, index) => (
                 <span
                   key={index}
-                  className="bg-zinc-800 border border-zinc-700 text-zinc-300 text-xs rounded-md px-2 py-1"
+                  className="bg-cyan-50 border border-cyan-200/40 text-cyan-700 text-xs rounded-md px-2 py-1"
                 >
                   {skill}
                 </span>
               ))}
               {certificate.skills.length > 3 && (
-                <span className="text-zinc-500 text-xs px-2 py-1">
+                <span className="text-slate-400 text-xs px-2 py-1">
                   +{certificate.skills.length - 3}
                 </span>
               )}
@@ -317,9 +317,9 @@ function CertificateCard({ certificate, onView }: CertificateCardProps) {
 
         {/* Credential Info */}
         {certificate.credentialId && (
-          <div className="mb-3 p-3 bg-zinc-800/50 border border-zinc-700 rounded-lg">
-            <p className="text-xs text-zinc-500 mb-1">Credential ID</p>
-            <p className="text-xs font-mono font-semibold text-zinc-300 break-all">
+          <div className="mb-3 p-3 bg-cyan-50/50 border border-cyan-200/40 rounded-lg">
+            <p className="text-xs text-slate-500 mb-1">Credential ID</p>
+            <p className="text-xs font-mono font-semibold text-slate-700 break-all">
               {certificate.credentialId}
             </p>
           </div>
@@ -329,7 +329,7 @@ function CertificateCard({ certificate, onView }: CertificateCardProps) {
         <div className="mt-auto">
           <button
             onClick={handleView}
-            className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/20 rounded-lg transition-colors font-bold"
+            className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-cyan-100 hover:bg-cyan-200 text-cyan-700 border border-cyan-200/40 rounded-lg transition-colors font-bold"
           >
             <Eye size={16} />
             View

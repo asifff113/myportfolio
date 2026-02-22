@@ -79,15 +79,15 @@ export default function AchievementsSection({ achievements }: AchievementsSectio
               key={achievement.id || index}
               variants={itemVariants}
               whileHover={{ y: -6 }}
-              className="bg-zinc-900/60 border border-zinc-800 border-t-2 border-t-yellow-500 hover:border-yellow-500/30 rounded-2xl p-6 relative overflow-hidden group transition-colors duration-300"
+              className="bg-white/55 backdrop-blur-xl border border-amber-200/30 border-t-2 border-t-amber-500 hover:border-amber-300/50 rounded-2xl p-6 relative overflow-hidden group transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-amber-200/20"
             >
               {/* Icon */}
               <div className="relative mb-6 z-10">
                 <motion.div
                   whileHover={{ scale: 1.1 }}
-                  className="inline-flex p-4 rounded-2xl bg-yellow-500/10 border border-yellow-500/20"
+                  className="inline-flex p-4 rounded-2xl bg-amber-100 border border-amber-200/40"
                 >
-                  <Icon className="text-yellow-400" size={40} />
+                  <Icon className="text-amber-600" size={40} />
                 </motion.div>
               </div>
 
@@ -95,7 +95,7 @@ export default function AchievementsSection({ achievements }: AchievementsSectio
               <div className="relative z-10">
                 {/* Category Badge */}
                 {achievement.category && (
-                  <span className="inline-block px-3 py-1 bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 rounded-full text-xs font-medium mb-3">
+                  <span className="inline-block px-3 py-1 bg-amber-100 border border-amber-200/40 text-amber-700 rounded-full text-xs font-medium mb-3">
                     {achievement.category}
                   </span>
                 )}
@@ -106,18 +106,18 @@ export default function AchievementsSection({ achievements }: AchievementsSectio
                 </h3>
 
                 {/* Organization */}
-                <p className="text-base text-yellow-400/80 font-semibold mb-2">
+                <p className="text-base text-amber-600 font-semibold mb-2">
                   {achievement.organization}
                 </p>
 
                 {/* Date */}
-                <p className="text-sm text-zinc-500 mb-3">
+                <p className="text-sm text-slate-400 mb-3">
                   {formatDate(achievement.date)}
                 </p>
 
                 {/* Description */}
                 {achievement.description && (
-                  <p className="text-sm text-zinc-400 leading-relaxed mb-4">
+                  <p className="text-sm text-slate-500 leading-relaxed mb-4">
                     {achievement.description}
                   </p>
                 )}
@@ -128,7 +128,7 @@ export default function AchievementsSection({ achievements }: AchievementsSectio
                     href={achievement.fileUrl || achievement.certificateUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-sm text-yellow-400 hover:text-yellow-300 transition-colors font-medium"
+                    className="inline-flex items-center gap-2 text-sm text-amber-600 hover:text-amber-500 transition-colors font-medium"
                   >
                     <span>
                       {achievement.fileUrl
@@ -151,14 +151,14 @@ export default function AchievementsSection({ achievements }: AchievementsSectio
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ delay: 0.5 }}
-        className="mt-12 bg-zinc-900/60 border border-zinc-800 p-8 md:p-10 rounded-xl"
+        className="mt-12 bg-white/55 backdrop-blur-xl border border-amber-200/30 p-8 md:p-10 rounded-xl"
       >
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           <motion.div whileHover={{ scale: 1.02 }}>
             <div className="text-5xl font-display font-bold bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-300 bg-clip-text text-transparent mb-2">
               {achievements.length}
             </div>
-            <div className="text-sm text-zinc-500">
+            <div className="text-sm text-slate-500">
               Total Achievements
             </div>
           </motion.div>
@@ -166,7 +166,7 @@ export default function AchievementsSection({ achievements }: AchievementsSectio
             <div className="text-5xl font-display font-bold bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-300 bg-clip-text text-transparent mb-2">
               {achievements.filter(a => a.category === "Competition").length}
             </div>
-            <div className="text-sm text-zinc-500">
+            <div className="text-sm text-slate-500">
               Competitions Won
             </div>
           </motion.div>
@@ -174,7 +174,7 @@ export default function AchievementsSection({ achievements }: AchievementsSectio
             <div className="text-5xl font-display font-bold bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-300 bg-clip-text text-transparent mb-2">
               {achievements.filter(a => a.category === "Award").length}
             </div>
-            <div className="text-sm text-zinc-500">
+            <div className="text-sm text-slate-500">
               Awards Received
             </div>
           </motion.div>
@@ -182,7 +182,7 @@ export default function AchievementsSection({ achievements }: AchievementsSectio
             <div className="text-5xl font-display font-bold bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-300 bg-clip-text text-transparent mb-2">
               {achievements.filter(a => a.category === "Recognition").length}
             </div>
-            <div className="text-sm text-zinc-500">
+            <div className="text-sm text-slate-500">
               Recognitions
             </div>
           </motion.div>

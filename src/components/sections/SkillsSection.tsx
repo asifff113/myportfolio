@@ -179,46 +179,46 @@ export default function SkillsSection({
         >
           {/* Total Skills */}
           <motion.div
-            whileHover={{ y: -4 }}
-            className="bg-zinc-900/60 border border-zinc-800 hover:border-emerald-500/30 p-6 rounded-xl text-center transition-colors"
+            whileHover={{ y: -6, scale: 1.02 }}
+            className="bg-white/55 border border-emerald-200/40 hover:border-emerald-300/60 p-6 rounded-2xl text-center transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(16,185,129,0.08)]"
           >
-            <div className="text-5xl md:text-6xl font-black tabular-nums bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-300 bg-clip-text text-transparent mb-2">
+            <div className="text-5xl md:text-6xl font-black tabular-nums bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 bg-clip-text text-transparent mb-2">
               {allSkills.length}
             </div>
-            <div className="text-sm font-semibold text-zinc-500 uppercase tracking-wide">Total Skills</div>
+            <div className="text-sm font-semibold text-slate-500 uppercase tracking-wide">Total Skills</div>
           </motion.div>
 
           {/* Categories */}
           <motion.div
-            whileHover={{ y: -4 }}
-            className="bg-zinc-900/60 border border-zinc-800 hover:border-emerald-500/30 p-6 rounded-xl text-center transition-colors"
+            whileHover={{ y: -6, scale: 1.02 }}
+            className="bg-white/55 border border-emerald-200/40 hover:border-emerald-300/60 p-6 rounded-2xl text-center transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(16,185,129,0.08)]"
           >
-            <div className="text-5xl md:text-6xl font-black tabular-nums bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-300 bg-clip-text text-transparent mb-2">
+            <div className="text-5xl md:text-6xl font-black tabular-nums bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 bg-clip-text text-transparent mb-2">
               {filteredCategories.length}
             </div>
-            <div className="text-sm font-semibold text-zinc-500 uppercase tracking-wide">Categories</div>
+            <div className="text-sm font-semibold text-slate-500 uppercase tracking-wide">Categories</div>
           </motion.div>
 
           {/* Advanced+ */}
           <motion.div
-            whileHover={{ y: -4 }}
-            className="bg-zinc-900/60 border border-zinc-800 hover:border-emerald-500/30 p-6 rounded-xl text-center transition-colors"
+            whileHover={{ y: -6, scale: 1.02 }}
+            className="bg-white/55 border border-emerald-200/40 hover:border-emerald-300/60 p-6 rounded-2xl text-center transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(16,185,129,0.08)]"
           >
-            <div className="text-5xl md:text-6xl font-black tabular-nums bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-300 bg-clip-text text-transparent mb-2">
+            <div className="text-5xl md:text-6xl font-black tabular-nums bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 bg-clip-text text-transparent mb-2">
               {allSkills.filter(s => s.level && s.level >= 75).length}
             </div>
-            <div className="text-sm font-semibold text-zinc-500 uppercase tracking-wide">Advanced+</div>
+            <div className="text-sm font-semibold text-slate-500 uppercase tracking-wide">Advanced+</div>
           </motion.div>
 
           {/* Core Stack */}
           <motion.div
-            whileHover={{ y: -4 }}
-            className="bg-zinc-900/60 border border-zinc-800 hover:border-emerald-500/30 p-6 rounded-xl text-center transition-colors"
+            whileHover={{ y: -6, scale: 1.02 }}
+            className="bg-white/55 border border-emerald-200/40 hover:border-emerald-300/60 p-6 rounded-2xl text-center transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(16,185,129,0.08)]"
           >
-            <div className="text-5xl md:text-6xl font-black tabular-nums bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-300 bg-clip-text text-transparent mb-2">
+            <div className="text-5xl md:text-6xl font-black tabular-nums bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 bg-clip-text text-transparent mb-2">
               {allSkills.filter(s => s.isPrimary).length}
             </div>
-            <div className="text-sm font-semibold text-zinc-500 uppercase tracking-wide">Core Stack</div>
+            <div className="text-sm font-semibold text-slate-500 uppercase tracking-wide">Core Stack</div>
           </motion.div>
         </motion.div>
       )}
@@ -249,11 +249,11 @@ export default function SkillsSection({
             viewport={{ once: true }}
             transition={{ delay: idx * 0.05, type: "spring", stiffness: 200 }}
             whileHover={{ y: -2 }}
-            className="flex items-center gap-2 px-4 py-2 bg-zinc-900/60 border border-zinc-800 rounded-full hover:border-emerald-500/30 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-white/55 border border-emerald-200/30 rounded-full hover:border-emerald-300/60 transition-all backdrop-blur-xl shadow-sm"
           >
             <div className={`w-3 h-3 rounded-full bg-gradient-to-r ${getCategoryColor(category.name)}`} />
-            <span className="text-sm font-medium text-zinc-300">{category.name}</span>
-            <span className="text-sm text-zinc-500">({category.skills.length})</span>
+            <span className="text-sm font-medium text-slate-600">{category.name}</span>
+            <span className="text-sm text-slate-400">({category.skills.length})</span>
           </motion.div>
         ))}
       </motion.div>
@@ -365,22 +365,25 @@ function IndividualSkillCard({ skill, categoryColor, index, onClick }: Individua
       viewport={{ once: true }}
       transition={{
         duration: 0.4,
-        delay: index * 0.05,
+        delay: index * 0.04,
       }}
-      whileHover={{ y: -6, scale: 1.02 }}
+      whileHover={{ y: -8, scale: 1.03 }}
       onClick={onClick}
       className="relative group cursor-pointer"
     >
-      {/* Card Container */}
-      <div className="bg-zinc-900/60 border border-zinc-800 hover:border-white/20 p-6 rounded-xl relative overflow-hidden transition-colors">
-        {/* Gradient Top Border */}
-        <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${uniqueColor}`} />
+      {/* Card Container - vibrant glass with gradient accent */}
+      <div className="bg-white/55 border border-white/70 hover:border-[rgba(var(--section-rgb),0.2)] p-6 rounded-2xl relative overflow-hidden transition-all backdrop-blur-xl shadow-[0_6px_24px_-12px_rgba(var(--section-rgb),0.06)] hover:shadow-[0_16px_40px_-16px_rgba(var(--section-rgb),0.14)] group-hover:bg-white/70">
+        {/* Gradient Top Border - thicker and more vibrant */}
+        <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${uniqueColor} opacity-90`} />
+
+        {/* Holographic shimmer on hover */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-white/40 via-transparent to-white/20 pointer-events-none" />
 
         {/* Content */}
         <div className="relative flex flex-col items-center text-center">
           {/* Icon */}
           {skill.icon && (
-            <div className="text-5xl mb-4">
+            <div className="text-5xl mb-4 drop-shadow-sm">
               {skill.icon.startsWith('http') ? (
                 <img src={skill.icon} alt={skill.name} className="w-14 h-14 object-contain" />
               ) : (
@@ -390,30 +393,32 @@ function IndividualSkillCard({ skill, categoryColor, index, onClick }: Individua
           )}
 
           {/* Skill Name */}
-          <h3 className="text-lg font-bold text-zinc-100 mb-2 leading-tight">
+          <h3 className="text-lg font-bold text-slate-800 mb-2 leading-tight">
             {skill.name}
           </h3>
 
-          {/* Level Label */}
-          <p className="text-xs text-zinc-500 mb-4">
+          {/* Level Label with icon */}
+          <p className="text-xs text-slate-500 mb-4 flex items-center gap-1">
             {getLevelLabel(level)} level
+            {level >= 90 && <span className="text-amber-500">&#x1F3C6;</span>}
+            {level >= 75 && level < 90 && <span className="text-amber-400">&#x2B50;</span>}
           </p>
 
           {/* Progress Bar */}
           <div className="w-full">
-            <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+            <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
                 whileInView={{ width: `${level}%` }}
                 viewport={{ once: true }}
-                transition={{ duration: 1.2, delay: index * 0.05 + 0.3, ease: "easeOut" }}
-                className={`h-full bg-gradient-to-r ${uniqueColor} relative`}
+                transition={{ duration: 1.2, delay: index * 0.04 + 0.3, ease: "easeOut" }}
+                className={`h-full bg-gradient-to-r ${uniqueColor} relative rounded-full`}
               >
-                {/* Static glow dot at end */}
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white/80 progress-glow" />
+                {/* Glow dot at end */}
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_8px_rgba(var(--section-rgb),0.5)] progress-glow" />
               </motion.div>
             </div>
-            <div className="text-xs text-zinc-500 mt-1.5 font-medium tabular-nums">{level}%</div>
+            <div className="text-xs text-slate-500 mt-2 font-semibold tabular-nums">{level}%</div>
           </div>
         </div>
       </div>

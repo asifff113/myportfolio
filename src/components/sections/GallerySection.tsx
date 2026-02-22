@@ -110,8 +110,8 @@ export default function GallerySection({ gallery }: GallerySectionProps) {
               onClick={() => setFilter(category)}
               className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
                 filter === category
-                  ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/20"
-                  : "bg-zinc-800/50 border border-zinc-700/30 text-zinc-400 hover:text-zinc-200 hover:border-zinc-600"
+                ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-200/30"
+                : "bg-white/55 backdrop-blur-sm border border-rose-200/30 text-slate-600 hover:text-slate-800 hover:border-rose-300/50"
               }`}
             >
               {category}
@@ -172,7 +172,7 @@ function GalleryCard({ item, onClick }: GalleryCardProps) {
       variants={itemVariants}
       whileHover={{ y: -4, scale: 1.02 }}
       onClick={onClick}
-      className="relative aspect-square bg-zinc-900/60 border border-zinc-800 rounded-2xl overflow-hidden cursor-pointer group"
+      className="relative aspect-square bg-white/55 backdrop-blur-xl border border-rose-200/30 rounded-2xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-lg hover:shadow-rose-200/20"
     >
       {/* Image */}
       {!imageError ? (
@@ -185,21 +185,21 @@ function GalleryCard({ item, onClick }: GalleryCardProps) {
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
         />
       ) : (
-        <div className="w-full h-full flex items-center justify-center bg-zinc-800">
-          <span className="text-zinc-500">Image not found</span>
+        <div className="w-full h-full flex items-center justify-center bg-rose-50">
+          <span className="text-slate-400">Image not found</span>
         </div>
       )}
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-        <h3 className="text-lg font-bold text-white mb-1">{item.title}</h3>
+      <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+        <h3 className="text-lg font-bold text-slate-800 mb-1">{item.title}</h3>
         {item.description && (
-          <p className="text-sm text-zinc-400 line-clamp-2">
+          <p className="text-sm text-slate-500 line-clamp-2">
             {item.description}
           </p>
         )}
         {item.category && (
-          <span className="inline-block mt-2 px-3 py-1 bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-full text-xs font-medium w-fit">
+          <span className="inline-block mt-2 px-3 py-1 bg-rose-100 text-rose-700 border border-rose-200/60 rounded-full text-xs font-medium w-fit">
             {item.category}
           </span>
         )}
@@ -207,8 +207,8 @@ function GalleryCard({ item, onClick }: GalleryCardProps) {
 
       {/* Expand Icon */}
       <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-        <div className="p-2 bg-zinc-900/80 border border-zinc-700 rounded-full">
-          <Maximize2 size={16} className="text-zinc-300" />
+        <div className="p-2 bg-white/70 border border-rose-200/40 rounded-full">
+          <Maximize2 size={16} className="text-slate-600" />
         </div>
       </div>
     </motion.div>
@@ -232,7 +232,7 @@ function Lightbox({ items, currentIndex, onClose, onPrevious, onNext }: Lightbox
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 bg-zinc-950/95 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
       onClick={onClose}
     >
       {/* Close Button */}
@@ -240,10 +240,10 @@ function Lightbox({ items, currentIndex, onClose, onPrevious, onNext }: Lightbox
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={onClose}
-        className="absolute top-4 right-4 p-3 bg-zinc-900 border border-zinc-800 rounded-full hover:border-zinc-600 transition-colors z-10"
+        className="absolute top-4 right-4 p-3 bg-white/80 border border-rose-200/40 rounded-full hover:border-rose-300 transition-colors z-10"
         aria-label="Close lightbox"
       >
-        <X size={24} className="text-zinc-300" />
+        <X size={24} className="text-slate-700" />
       </motion.button>
 
       {/* Navigation Buttons */}
@@ -256,10 +256,10 @@ function Lightbox({ items, currentIndex, onClose, onPrevious, onNext }: Lightbox
               e.stopPropagation();
               onPrevious();
             }}
-            className="absolute left-4 p-3 bg-zinc-900 border border-zinc-800 rounded-full hover:border-zinc-600 transition-colors z-10"
+            className="absolute left-4 p-3 bg-white/80 border border-rose-200/40 rounded-full hover:border-rose-300 transition-colors z-10"
             aria-label="Previous image"
           >
-            <ChevronLeft size={24} className="text-zinc-300" />
+            <ChevronLeft size={24} className="text-slate-700" />
           </motion.button>
 
           <motion.button
@@ -269,10 +269,10 @@ function Lightbox({ items, currentIndex, onClose, onPrevious, onNext }: Lightbox
               e.stopPropagation();
               onNext();
             }}
-            className="absolute right-4 p-3 bg-zinc-900 border border-zinc-800 rounded-full hover:border-zinc-600 transition-colors z-10"
+            className="absolute right-4 p-3 bg-white/80 border border-rose-200/40 rounded-full hover:border-rose-300 transition-colors z-10"
             aria-label="Next image"
           >
-            <ChevronRight size={24} className="text-zinc-300" />
+            <ChevronRight size={24} className="text-slate-700" />
           </motion.button>
         </>
       )}
@@ -287,7 +287,7 @@ function Lightbox({ items, currentIndex, onClose, onPrevious, onNext }: Lightbox
         className="relative max-w-6xl max-h-[90vh] w-full"
       >
         {/* Main Image */}
-        <div className="relative aspect-video md:aspect-auto md:h-[70vh] rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-800">
+        <div className="relative aspect-video md:aspect-auto md:h-[70vh] rounded-2xl overflow-hidden bg-black/50 border border-rose-200/30">
           <Image
             src={currentItem.imageUrl}
             alt={currentItem.title}
@@ -299,23 +299,23 @@ function Lightbox({ items, currentIndex, onClose, onPrevious, onNext }: Lightbox
         </div>
 
         {/* Image Info */}
-        <div className="mt-4 bg-zinc-900/80 border border-zinc-800 p-6 rounded-2xl">
+        <div className="mt-4 bg-white/90 backdrop-blur-xl border border-rose-200/30 p-6 rounded-2xl">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-bold text-white mb-2">{currentItem.title}</h2>
+              <h2 className="text-2xl font-bold text-slate-800 mb-2">{currentItem.title}</h2>
               {currentItem.description && (
-                <p className="text-zinc-400">{currentItem.description}</p>
+                <p className="text-slate-500">{currentItem.description}</p>
               )}
             </div>
             {currentItem.category && (
-              <span className="px-4 py-2 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-full text-sm font-medium flex-shrink-0">
+              <span className="px-4 py-2 bg-rose-100 text-rose-700 border border-rose-200/60 rounded-full text-sm font-medium flex-shrink-0">
                 {currentItem.category}
               </span>
             )}
           </div>
 
           {/* Counter */}
-          <div className="mt-4 text-sm text-zinc-500 text-center">
+          <div className="mt-4 text-sm text-slate-400 text-center">
             {currentIndex + 1} / {items.length}
           </div>
         </div>

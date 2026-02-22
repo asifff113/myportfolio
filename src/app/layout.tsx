@@ -73,9 +73,9 @@ export default async function RootLayout({
       <body className="min-h-screen">
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="light"
           enableSystem={false}
-          forcedTheme="dark"
+          forcedTheme="light"
           disableTransitionOnChange={true}
         >
           <LanguageProvider>

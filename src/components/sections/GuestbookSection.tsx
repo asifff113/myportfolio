@@ -119,7 +119,7 @@ export default function GuestbookSection() {
           viewport={{ once: true }}
           className="mb-12"
         >
-          <div className="bg-zinc-900/60 border border-zinc-800 p-6 md:p-8 rounded-2xl relative overflow-hidden">
+          <div className="bg-white/55 backdrop-blur-xl border border-sky-200/30 p-6 md:p-8 rounded-2xl relative overflow-hidden shadow-sm">
             {/* Top gradient bar: sky-blue to lavender */}
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-sky-400 to-violet-400" />
 
@@ -135,9 +135,9 @@ export default function GuestbookSection() {
                 </div>
                 <div className="flex-1 w-full">
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 gap-2">
-                    <label htmlFor="message" className="text-sm font-medium text-zinc-400">
+                    <label htmlFor="message" className="text-sm font-medium text-slate-500">
                       {user ? (
-                        <>Posting as <span className="text-sky-400 font-bold">{user.user_metadata.full_name || "Anonymous"}</span></>
+                        <>Posting as <span className="text-sky-600 font-bold">{user.user_metadata.full_name || "Anonymous"}</span></>
                       ) : (
                         "Leave a message"
                       )}
@@ -149,7 +149,7 @@ export default function GuestbookSection() {
                         placeholder="Your Name (Optional)"
                         value={customName}
                         onChange={(e) => setCustomName(e.target.value)}
-                        className="bg-zinc-800/80 border border-zinc-700 rounded-lg px-3 py-1 text-sm text-white focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all w-full sm:w-auto"
+                        className="bg-white/70 backdrop-blur-sm border border-slate-200 rounded-lg px-3 py-1 text-sm text-slate-800 focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all w-full sm:w-auto"
                         maxLength={50}
                       />
                     )}
@@ -161,10 +161,10 @@ export default function GuestbookSection() {
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
                       placeholder={user ? "Write a message..." : "Write a message... (Sign in with GitHub to add your avatar)"}
-                      className="w-full bg-zinc-800/80 border border-zinc-700 rounded-xl p-4 min-h-[100px] text-white focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all resize-none"
+                      className="w-full bg-white/70 backdrop-blur-sm border border-slate-200 rounded-xl p-4 min-h-[100px] text-slate-800 focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all resize-none"
                       maxLength={500}
                     />
-                    <div className="absolute bottom-3 right-3 text-xs text-zinc-500">
+                    <div className="absolute bottom-3 right-3 text-xs text-slate-400">
                       {newMessage.length}/500
                     </div>
                   </div>
@@ -175,7 +175,7 @@ export default function GuestbookSection() {
                         type="button"
                         onClick={loginWithGitHub}
                         disabled={authLoading}
-                        className="text-xs flex items-center gap-1 text-zinc-400 hover:text-sky-400 transition-colors"
+                        className="text-xs flex items-center gap-1 text-slate-500 hover:text-sky-600 transition-colors"
                       >
                         <Github size={14} />
                         Sign in with GitHub
@@ -210,7 +210,7 @@ export default function GuestbookSection() {
 
         {/* Messages List */}
         <div className="space-y-4">
-          <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-zinc-100">
+          <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-slate-800">
             <span className="w-2 h-8 bg-sky-400 rounded-full" />
             Recent Messages ({messages.length})
           </h3>
@@ -220,8 +220,8 @@ export default function GuestbookSection() {
               <Loader2 className="animate-spin text-sky-400" size={32} />
             </div>
           ) : messages.length === 0 ? (
-            <div className="text-center py-12 bg-zinc-900/60 rounded-xl border-dashed border-2 border-zinc-800">
-              <p className="text-zinc-400">No messages yet. Be the first to sign!</p>
+            <div className="text-center py-12 bg-white/55 rounded-xl border-dashed border-2 border-sky-200/40">
+              <p className="text-slate-400">No messages yet. Be the first to sign!</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -233,7 +233,7 @@ export default function GuestbookSection() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ delay: index * 0.05 }}
-                    className="bg-zinc-800/50 border border-zinc-700/30 p-4 rounded-xl hover:border-sky-400/20 transition-colors group"
+                    className="bg-white/50 backdrop-blur-sm border border-sky-200/30 p-4 rounded-xl hover:border-sky-300/40 transition-all group"
                   >
                     <div className="flex items-start gap-3">
                       <Avatar
@@ -244,9 +244,9 @@ export default function GuestbookSection() {
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start mb-1">
-                          <h4 className="font-bold text-sm truncate pr-2 text-zinc-100">{msg.user_name}</h4>
+                          <h4 className="font-bold text-sm truncate pr-2 text-slate-800">{msg.user_name}</h4>
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-zinc-500 whitespace-nowrap">
+                            <span className="text-xs text-slate-400 whitespace-nowrap">
                               {new Date(msg.created_at).toLocaleDateString(undefined, {
                                 month: 'short',
                                 day: 'numeric'
@@ -255,7 +255,7 @@ export default function GuestbookSection() {
                             {(user?.id === msg.user_id || isAdmin) && (
                               <button
                                 onClick={() => handleDelete(msg.id)}
-                                className="text-zinc-500 hover:text-red-500 transition-colors p-1 rounded-md hover:bg-red-500/10 opacity-0 group-hover:opacity-100"
+                                className="text-slate-400 hover:text-red-500 transition-colors p-1 rounded-md hover:bg-red-500/10 opacity-0 group-hover:opacity-100"
                                 title="Delete message"
                               >
                                 <Trash2 size={14} />
@@ -263,7 +263,7 @@ export default function GuestbookSection() {
                             )}
                           </div>
                         </div>
-                        <p className="text-sm text-zinc-400 leading-relaxed break-words">
+                        <p className="text-sm text-slate-600 leading-relaxed break-words">
                           {msg.message}
                         </p>
                       </div>

@@ -46,7 +46,7 @@ export default function SectionTitle({
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
         className={cn(
-          "inline-flex items-center gap-2 rounded-full px-4 py-2 mb-4 glass-frosted border border-white/70 text-xs sm:text-sm font-semibold tracking-[0.14em] uppercase text-slate-600",
+          "inline-flex items-center gap-2 rounded-full px-4 py-2 mb-4 bg-white/60 backdrop-blur-lg border border-[rgba(var(--section-rgb),0.12)] text-xs sm:text-sm font-semibold tracking-[0.14em] uppercase text-slate-500 shadow-[0_4px_16px_-8px_rgba(var(--section-rgb),0.12)]",
           align === "center" && "mx-auto",
           align === "right" && "ml-auto"
         )}

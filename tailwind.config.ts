@@ -74,17 +74,39 @@ const config: Config = {
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-        "gradient-dark": "linear-gradient(135deg, #0a0a0f 0%, #111118 50%, #0a0a0f 100%)",
+        "gradient-light": "linear-gradient(135deg, #f5f0ff 0%, #eef6ff 50%, #fef5f0 100%)",
+        "gradient-mesh": "radial-gradient(at 40% 20%, hsla(270, 80%, 76%, 0.1) 0px, transparent 50%), radial-gradient(at 80% 0%, hsla(189, 80%, 56%, 0.08) 0px, transparent 50%), radial-gradient(at 0% 50%, hsla(355, 100%, 93%, 0.08) 0px, transparent 50%)",
       },
       animation: {
-        "slide-up": "slideUp 0.5s ease-out",
-        "slide-down": "slideDown 0.5s ease-out",
-        "glow": "glow 2s ease-in-out infinite alternate",
+        "slide-up": "slideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1)",
+        "slide-down": "slideDown 0.6s cubic-bezier(0.22, 1, 0.36, 1)",
+        "glow": "glow 3s ease-in-out infinite alternate",
+        "glow-pulse": "glowPulse 2s ease-in-out infinite",
+        "float": "float 6s ease-in-out infinite",
+        "shimmer": "shimmer 2s linear infinite",
+        "gradient-shift": "gradientShift 8s ease infinite",
+        "spin-slow": "spin 20s linear infinite",
       },
       keyframes: {
         glow: {
-          "0%": { boxShadow: "0 0 5px rgba(var(--section-rgb, 99, 102, 241), 0.3)" },
-          "100%": { boxShadow: "0 0 20px rgba(var(--section-rgb, 99, 102, 241), 0.6)" },
+          "0%": { boxShadow: "0 0 5px rgba(var(--section-rgb, 99, 102, 241), 0.15)" },
+          "100%": { boxShadow: "0 0 25px rgba(var(--section-rgb, 99, 102, 241), 0.3)" },
+        },
+        glowPulse: {
+          "0%, 100%": { opacity: "0.6" },
+          "50%": { opacity: "1" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-12px)" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+        gradientShift: {
+          "0%, 100%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
         },
         slideUp: {
           "0%": { transform: "translateY(20px)", opacity: "0" },

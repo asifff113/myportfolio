@@ -44,15 +44,15 @@ const categoryColors: Record<string, string> = {
 // Priority badges
 const priorityConfig: Record<string, { color: string; label: string }> = {
   High: {
-    color: "bg-red-500/10 text-red-400 border border-red-500/20",
+    color: "bg-red-100 text-red-700 border border-red-200/60",
     label: "High Priority",
   },
   Medium: {
-    color: "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20",
+    color: "bg-yellow-100 text-yellow-700 border border-yellow-200/60",
     label: "Medium Priority",
   },
   Low: {
-    color: "bg-green-500/10 text-green-400 border border-green-500/20",
+    color: "bg-green-100 text-green-700 border border-green-200/60",
     label: "Low Priority",
   },
 };
@@ -97,7 +97,7 @@ export default function GoalsSection({ goals }: GoalsSectionProps) {
               key={goal.id || index}
               variants={itemVariants}
               whileHover={{ y: -4 }}
-              className={`bg-zinc-900/60 border border-zinc-800 hover:border-purple-500/30 rounded-2xl p-6 relative overflow-hidden group transition-colors border-t-2`}
+              className={`bg-white/55 backdrop-blur-xl border border-purple-200/30 hover:border-purple-300/50 rounded-2xl p-6 relative overflow-hidden group transition-all shadow-sm hover:shadow-lg hover:shadow-purple-200/15 border-t-2`}
               style={{
                 borderTopColor: "transparent",
               }}
@@ -116,7 +116,7 @@ export default function GoalsSection({ goals }: GoalsSectionProps) {
                       stroke="currentColor"
                       strokeWidth="4"
                       fill="transparent"
-                      className="text-zinc-800"
+                      className="text-zinc-200"
                     />
                     <circle
                       cx="32"
@@ -137,7 +137,7 @@ export default function GoalsSection({ goals }: GoalsSectionProps) {
                       } transition-all duration-1000 ease-out`}
                     />
                   </svg>
-                  <span className="absolute text-xs font-bold text-zinc-300">
+                  <span className="absolute text-xs font-bold text-slate-600">
                     {progressPercent}%
                   </span>
                 </div>
@@ -150,16 +150,16 @@ export default function GoalsSection({ goals }: GoalsSectionProps) {
                     <Target className="text-white" size={22} />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white group-hover:text-purple-300 transition-colors duration-300">
+                    <h3 className="text-xl font-bold text-slate-800 group-hover:text-purple-600 transition-colors duration-300">
                       {goal.title}
                     </h3>
-                    <p className="text-sm text-zinc-500">{goal.category}</p>
+                    <p className="text-sm text-slate-400">{goal.category}</p>
                   </div>
                 </div>
               </div>
 
               {/* Description */}
-              <p className="text-zinc-400 mb-4 leading-relaxed">
+              <p className="text-slate-500 mb-4 leading-relaxed">
                 {goal.description}
               </p>
 
@@ -167,7 +167,7 @@ export default function GoalsSection({ goals }: GoalsSectionProps) {
               <div className="flex flex-wrap gap-3 items-center">
                 {/* Timeframe */}
                 {goal.targetDate && (
-                  <span className="inline-flex items-center gap-2 px-3 py-1 bg-zinc-800 border border-zinc-700 rounded-full text-xs font-medium text-zinc-300">
+                  <span className="inline-flex items-center gap-2 px-3 py-1 bg-purple-50 border border-purple-200/40 rounded-full text-xs font-medium text-slate-600">
                     <Clock size={14} />
                     {new Date(goal.targetDate).toLocaleDateString()}
                   </span>
@@ -175,7 +175,7 @@ export default function GoalsSection({ goals }: GoalsSectionProps) {
 
                 {/* Status */}
                 {goal.status && StatusIcon && (
-                  <span className="inline-flex items-center gap-2 px-3 py-1 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-full text-xs font-medium">
+                  <span className="inline-flex items-center gap-2 px-3 py-1 bg-purple-100 text-purple-700 border border-purple-200/60 rounded-full text-xs font-medium">
                     <StatusIcon size={14} />
                     {goal.status}
                   </span>
