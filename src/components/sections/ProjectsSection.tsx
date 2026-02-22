@@ -37,22 +37,22 @@ const itemVariants = {
   },
 };
 
-// Project type colors - MORE VIBRANT
+// Project type colors
 const typeColors: Record<string, string> = {
-  Personal: "bg-purple-500/30 text-purple-300 border-purple-400/50 shadow-lg shadow-purple-500/20",
-  Professional: "bg-blue-500/30 text-blue-300 border-blue-400/50 shadow-lg shadow-blue-500/20",
-  School: "bg-green-500/30 text-green-300 border-green-400/50 shadow-lg shadow-green-500/20",
-  Freelance: "bg-orange-500/30 text-orange-300 border-orange-400/50 shadow-lg shadow-orange-500/20",
-  "Open Source": "bg-cyan-500/30 text-cyan-300 border-cyan-400/50 shadow-lg shadow-cyan-500/20",
-  Practice: "bg-pink-500/30 text-pink-300 border-pink-400/50 shadow-lg shadow-pink-500/20",
+  Personal: "bg-purple-500/20 text-purple-300 border border-purple-500/30",
+  Professional: "bg-blue-500/20 text-blue-300 border border-blue-500/30",
+  School: "bg-green-500/20 text-green-300 border border-green-500/30",
+  Freelance: "bg-orange-500/20 text-orange-300 border border-orange-500/30",
+  "Open Source": "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30",
+  Practice: "bg-pink-500/20 text-pink-300 border border-pink-500/30",
 };
 
-// Status colors - MORE VIBRANT
+// Status colors
 const statusColors: Record<string, string> = {
-  "In Progress": "bg-yellow-500/30 text-yellow-300 border-yellow-400/50 shadow-lg shadow-yellow-500/20",
-  Completed: "bg-green-500/30 text-green-300 border-green-400/50 shadow-lg shadow-green-500/20",
-  Maintained: "bg-blue-500/30 text-blue-300 border-blue-400/50 shadow-lg shadow-blue-500/20",
-  Archived: "bg-gray-500/30 text-gray-300 border-gray-400/50 shadow-lg shadow-gray-500/20",
+  "In Progress": "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30",
+  Completed: "bg-green-500/20 text-green-300 border border-green-500/30",
+  Maintained: "bg-blue-500/20 text-blue-300 border border-blue-500/30",
+  Archived: "bg-gray-500/20 text-gray-300 border border-gray-500/30",
 };
 
 export default function ProjectsSection({ projects: initialProjects }: ProjectsSectionProps) {
@@ -80,8 +80,8 @@ export default function ProjectsSection({ projects: initialProjects }: ProjectsS
   const types = ["All", ...Array.from(new Set(projects.map((p) => p.type).filter((t): t is string => !!t)))];
 
   // Filter projects
-  const filteredProjects = filter === "All" 
-    ? projects 
+  const filteredProjects = filter === "All"
+    ? projects
     : projects.filter((p) => p.type === filter);
 
   // Separate featured projects
@@ -89,10 +89,11 @@ export default function ProjectsSection({ projects: initialProjects }: ProjectsS
   const regularProjects = filteredProjects.filter((p) => !p.featured);
 
   return (
-    <Section id="projects" className="relative bg-muted/20">
+    <Section id="projects" sectionId="projects">
       <SectionTitle
         title={t.sections.projects.title}
         subtitle={t.sections.projects.subtitle}
+        gradient="from-orange-400 via-rose-400 to-orange-300"
       />
 
       {/* Filter Buttons */}
@@ -108,8 +109,8 @@ export default function ProjectsSection({ projects: initialProjects }: ProjectsS
             onClick={() => setFilter(type)}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
               filter === type
-                ? "bg-primary text-primary-foreground shadow-lg scale-105"
-                : "bg-background/50 hover:bg-background hover:shadow-md text-muted-foreground hover:text-foreground"
+                ? "bg-gradient-to-r from-orange-500 to-rose-500 text-white shadow-lg"
+                : "bg-zinc-800/50 border border-zinc-700/30 text-zinc-400 hover:text-zinc-200 hover:border-zinc-600"
             }`}
           >
             {type === "All" ? t.sections.projects.filterAll : type}
@@ -121,7 +122,7 @@ export default function ProjectsSection({ projects: initialProjects }: ProjectsS
       {featuredProjects.length > 0 && (
         <div className="mb-16">
           <h3 className="text-3xl font-display font-bold text-center mb-8">
-            <span className="text-gradient neon-text">⭐ Featured Projects</span>
+            <span className="bg-gradient-to-r from-orange-400 via-rose-400 to-orange-300 bg-clip-text text-transparent">Featured Projects</span>
           </h3>
 
           <AnimatePresence mode="wait">
@@ -134,10 +135,10 @@ export default function ProjectsSection({ projects: initialProjects }: ProjectsS
               className="grid grid-cols-1 lg:grid-cols-2 gap-8"
             >
               {featuredProjects.map((project) => (
-                <ProjectCard 
-                  key={project.id} 
-                  project={project} 
-                  featured 
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  featured
                   onClick={handleProjectClick}
                 />
               ))}
@@ -158,9 +159,9 @@ export default function ProjectsSection({ projects: initialProjects }: ProjectsS
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
             {regularProjects.map((project) => (
-              <ProjectCard 
-                key={project.id} 
-                project={project} 
+              <ProjectCard
+                key={project.id}
+                project={project}
                 onClick={handleProjectClick}
               />
             ))}
@@ -173,9 +174,9 @@ export default function ProjectsSection({ projects: initialProjects }: ProjectsS
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center py-12 glass rounded-2xl"
+          className="text-center py-12 bg-zinc-900/60 border border-zinc-800 rounded-2xl"
         >
-          <p className="text-muted-foreground">
+          <p className="text-zinc-400">
             No projects found in this category.
           </p>
         </motion.div>
@@ -206,80 +207,66 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
   return (
     <motion.div
       variants={itemVariants}
-      whileHover={{ y: -10, scale: 1.02 }}
-      className={`glass-ultra rounded-2xl overflow-hidden group relative card-3d cursor-pointer ${
-        featured ? "lg:col-span-1 neon-border" : ""
+      whileHover={{ y: -6 }}
+      className={`bg-zinc-900/60 border rounded-2xl overflow-hidden group relative cursor-pointer transition-colors duration-300 ${
+        featured
+          ? "border-2 border-orange-500/30 hover:border-orange-500/50"
+          : "border-zinc-800 hover:border-orange-500/30"
       }`}
       onClick={() => onClick(project)}
     >
       {/* Featured Badge */}
       {featured && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8, rotate: -12 }}
-          animate={{ opacity: 1, scale: 1, rotate: -12 }}
-          transition={{ type: "spring", delay: 0.2 }}
-          className="absolute top-4 left-4 z-20"
-        >
-          <span className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-yellow-900 rounded-full text-xs font-bold shadow-xl glow-pulse shimmer">
-            <Star size={14} fill="currentColor" className="animate-spin-slow" />
+        <div className="absolute top-4 left-4 z-20">
+          <span className="inline-flex items-center gap-1.5 bg-orange-500 text-white font-semibold px-3 py-1 rounded-full text-xs shadow-lg">
+            <Star size={12} fill="currentColor" />
             Featured
           </span>
-        </motion.div>
+        </div>
       )}
 
       {/* Project Image */}
-      <div className="relative h-48 md:h-56 bg-gradient-to-br from-neon-purple/20 to-neon-cyan/20 overflow-hidden">
+      <div className="relative h-48 md:h-56 bg-zinc-800 overflow-hidden">
         {!imageError && project.imageUrl ? (
           <Image
             src={project.imageUrl}
             alt={project.title}
             fill
-            className="object-cover transition-all duration-500 group-hover:scale-110 group-hover:rotate-1"
+            className="object-cover transition-transform duration-500 group-hover:scale-110"
             onError={() => setImageError(true)}
             sizes={featured ? "(max-width: 1024px) 100vw, 50vw" : "(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-animated">
-            <Code2 size={48} className="text-primary/50 group-hover:scale-110 transition-transform" />
+          <div className="w-full h-full flex items-center justify-center bg-zinc-800">
+            <Code2 size={48} className="text-zinc-600" />
           </div>
         )}
-        
-        {/* Animated overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-accent/0 to-secondary/0 group-hover:from-primary/20 group-hover:via-accent/10 group-hover:to-secondary/20 transition-all duration-500" />
 
         {/* Overlay on Hover */}
-        <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/60 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center pb-6 gap-4">
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/95 via-zinc-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center pb-6 gap-4">
           {project.githubUrl && (
-            <motion.a
+            <a
               href={project.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
-              initial={{ y: 20, opacity: 0 }}
-              whileHover={{ scale: 1.15, y: -4 }}
-              whileTap={{ scale: 0.9 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.1 }}
-              className="p-4 glass-ultra rounded-full shadow-2xl hover:bg-primary hover:text-primary-foreground transition-colors neon-glow-hover magnetic"
+              onClick={(e) => e.stopPropagation()}
+              className="p-3 bg-zinc-800 border border-zinc-700 rounded-full shadow-lg hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-colors"
               aria-label="View GitHub Repository"
             >
-              <Github size={22} />
-            </motion.a>
+              <Github size={20} />
+            </a>
           )}
           {project.liveUrl && (
-            <motion.a
+            <a
               href={project.liveUrl}
               target="_blank"
               rel="noopener noreferrer"
-              initial={{ y: 20, opacity: 0 }}
-              whileHover={{ scale: 1.15, y: -4 }}
-              whileTap={{ scale: 0.9 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.15 }}
-              className="p-4 glass-ultra rounded-full shadow-2xl hover:bg-primary hover:text-primary-foreground transition-colors neon-glow-hover magnetic"
+              onClick={(e) => e.stopPropagation()}
+              className="p-3 bg-zinc-800 border border-zinc-700 rounded-full shadow-lg hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-colors"
               aria-label="View Live Demo"
             >
-              <ExternalLink size={22} />
-            </motion.a>
+              <ExternalLink size={20} />
+            </a>
           )}
         </div>
       </div>
@@ -288,10 +275,10 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
       <div className="p-6">
         {/* Header */}
         <div className="mb-3">
-          <h3 className="text-xl font-bold mb-2 group-hover:text-gradient transition-all duration-300 neon-text-hover">
+          <h3 className="text-xl font-bold mb-2 text-zinc-100 group-hover:text-orange-400 transition-colors duration-300">
             {project.title}
           </h3>
-          <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+          <p className="text-sm text-zinc-400 line-clamp-2 leading-relaxed">
             {project.summary}
           </p>
         </div>
@@ -300,21 +287,21 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
         <div className="flex flex-wrap gap-2 mb-4">
           {/* Type Badge */}
           {project.type && (
-            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border shimmer-hover ${typeColors[project.type] || typeColors.Personal}`}>
+            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${typeColors[project.type] || typeColors.Personal}`}>
               {project.type}
             </span>
           )}
 
           {/* Status Badge */}
           {project.status && (
-            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border shimmer-hover ${statusColors[project.status] || statusColors.Completed}`}>
+            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusColors[project.status] || statusColors.Completed}`}>
               {project.status}
             </span>
           )}
 
           {/* Date */}
           {project.endDate && (
-            <span className="inline-flex items-center gap-1 px-3 py-1 glass-ultra rounded-full text-xs">
+            <span className="inline-flex items-center gap-1 px-3 py-1 bg-zinc-800 border border-zinc-700 rounded-full text-xs text-zinc-400">
               <Calendar size={12} />
               {formatDate(project.endDate)}
             </span>
@@ -324,38 +311,17 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
         {/* Tech Stack */}
         {project.techStack && project.techStack.length > 0 && (
           <div className="mb-4">
-            <div className="flex flex-wrap gap-2">
-              {project.techStack.slice(0, featured ? 8 : 5).map((tech, index) => {
-                // Generate colorful gradient for each tech
-                const techColors = [
-                  "from-blue-500 to-cyan-500",
-                  "from-purple-500 to-pink-500",
-                  "from-green-500 to-emerald-500",
-                  "from-orange-500 to-red-500",
-                  "from-indigo-500 to-purple-500",
-                  "from-pink-500 to-rose-500",
-                  "from-teal-500 to-cyan-500",
-                  "from-violet-500 to-fuchsia-500",
-                ];
-                const techColor = techColors[index % techColors.length];
-                
-                return (
-                  <motion.span
-                    key={index}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    whileHover={{ scale: 1.1, y: -2 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.05 }}
-                    className={`px-3 py-1.5 bg-gradient-to-r ${techColor} bg-opacity-20 text-white rounded-lg text-xs font-bold border border-white/30 hover:border-white/60 hover:shadow-lg transition-all cursor-default relative overflow-hidden group/tech`}
-                  >
-                    <span className="relative z-10">{tech}</span>
-                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/tech:opacity-100 transition-opacity" />
-                  </motion.span>
-                );
-              })}
+            <div className="flex flex-wrap gap-1.5">
+              {project.techStack.slice(0, featured ? 8 : 5).map((tech, index) => (
+                <span
+                  key={index}
+                  className="bg-zinc-800 border border-zinc-700 text-zinc-300 rounded-md px-2 py-1 text-xs"
+                >
+                  {tech}
+                </span>
+              ))}
               {project.techStack.length > (featured ? 8 : 5) && (
-                <span className="px-3 py-1 text-muted-foreground text-xs glass-ultra rounded-lg">
+                <span className="text-zinc-500 text-xs px-2 py-1">
                   +{project.techStack.length - (featured ? 8 : 5)} more
                 </span>
               )}
@@ -364,14 +330,14 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
         )}
 
         {/* Links & Actions */}
-        <div className="flex items-center justify-between gap-3 text-sm mt-auto pt-4 border-t border-white/5">
+        <div className="flex items-center justify-between gap-3 text-sm mt-auto pt-4 border-t border-zinc-800">
           <div className="flex gap-3">
             {project.githubUrl && (
               <a
                 href={project.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+                className="inline-flex items-center gap-2 text-zinc-400 hover:text-orange-400 transition-colors"
                 onClick={(e) => e.stopPropagation()}
               >
                 <Github size={16} />
@@ -383,7 +349,7 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
                 href={project.liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+                className="inline-flex items-center gap-2 text-zinc-400 hover:text-orange-400 transition-colors"
                 onClick={(e) => e.stopPropagation()}
               >
                 <ExternalLink size={16} />
@@ -391,32 +357,16 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
               </a>
             )}
           </div>
-          
+
           <button
             onClick={() => onClick(project)}
-            className="inline-flex items-center gap-1 text-primary font-bold hover:underline group/btn"
+            className="inline-flex items-center gap-1 text-orange-400 font-bold hover:underline group/btn"
           >
             View Details
             <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
           </button>
         </div>
       </div>
-
-      {/* Enhanced Hover Glow Effect */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-neon-purple/10 via-neon-pink/10 to-neon-cyan/10 animate-pulse" />
-        <div className="absolute inset-0 neon-glow" />
-      </div>
-      
-      {/* Floating particles on hover */}
-      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-        <motion.div
-          animate={{ y: [0, -10, 0], opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="w-2 h-2 bg-neon-cyan rounded-full neon-glow"
-        />
-      </div>
     </motion.div>
   );
 }
-

@@ -8,11 +8,12 @@ interface SectionProps {
   className?: string;
   containerSize?: "sm" | "md" | "lg" | "full";
   noPadding?: boolean;
+  sectionId?: string;
 }
 
 /**
  * Reusable section wrapper component
- * Provides consistent spacing and structure for all sections
+ * Provides consistent spacing, structure, and data-section for color cascade
  */
 export default function Section({
   children,
@@ -20,13 +21,15 @@ export default function Section({
   className,
   containerSize = "lg",
   noPadding = false,
+  sectionId,
 }: SectionProps) {
   return (
     <section
       id={id}
+      data-section={sectionId || id}
       className={cn(
         "relative",
-        !noPadding && "py-20 md:py-32",
+        !noPadding && "py-20 md:py-28",
         className
       )}
     >
@@ -36,4 +39,3 @@ export default function Section({
     </section>
   );
 }
-

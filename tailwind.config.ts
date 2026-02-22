@@ -43,13 +43,23 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Futuristic custom colors
-        neon: {
-          purple: "#C084FC",
-          blue: "#60A5FA",
-          cyan: "#22D3EE",
-          pink: "#F472B6",
-          orange: "#FB923C",
+        // Multi-spectrum section colors
+        spectrum: {
+          hero: { primary: "#3B82F6", secondary: "#06B6D4" },
+          about: { primary: "#F59E0B", secondary: "#EAB308" },
+          skills: { primary: "#10B981", secondary: "#14B8A6" },
+          education: { primary: "#6366F1", secondary: "#8B5CF6" },
+          experience: { primary: "#3B82F6", secondary: "#64748B" },
+          projects: { primary: "#F97316", secondary: "#FB7185" },
+          achievements: { primary: "#EAB308", secondary: "#F59E0B" },
+          certificates: { primary: "#06B6D4", secondary: "#0EA5E9" },
+          gallery: { primary: "#F43F5E", secondary: "#EC4899" },
+          hobbies: { primary: "#84CC16", secondary: "#22C55E" },
+          goals: { primary: "#A855F7", secondary: "#D946EF" },
+          blog: { primary: "#14B8A6", secondary: "#10B981" },
+          testimonials: { primary: "#FB923C", secondary: "#FDBA74" },
+          guestbook: { primary: "#38BDF8", secondary: "#A78BFA" },
+          contact: { primary: "#EF4444", secondary: "#FB7185" },
         },
       },
       borderRadius: {
@@ -64,23 +74,17 @@ const config: Config = {
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-        "gradient-futuristic": "linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%)",
-        "gradient-dark": "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
+        "gradient-dark": "linear-gradient(135deg, #0a0a0f 0%, #111118 50%, #0a0a0f 100%)",
       },
       animation: {
-        "float": "float 6s ease-in-out infinite",
-        "glow": "glow 2s ease-in-out infinite alternate",
         "slide-up": "slideUp 0.5s ease-out",
         "slide-down": "slideDown 0.5s ease-out",
+        "glow": "glow 2s ease-in-out infinite alternate",
       },
       keyframes: {
-        float: {
-          "0%, 100%": { transform: "translateY(0px)" },
-          "50%": { transform: "translateY(-20px)" },
-        },
         glow: {
-          "0%": { boxShadow: "0 0 5px rgba(192, 132, 252, 0.5)" },
-          "100%": { boxShadow: "0 0 20px rgba(192, 132, 252, 1)" },
+          "0%": { boxShadow: "0 0 5px rgba(var(--section-rgb, 99, 102, 241), 0.3)" },
+          "100%": { boxShadow: "0 0 20px rgba(var(--section-rgb, 99, 102, 241), 0.6)" },
         },
         slideUp: {
           "0%": { transform: "translateY(20px)", opacity: "0" },
@@ -97,4 +101,3 @@ const config: Config = {
 };
 
 export default config;
-

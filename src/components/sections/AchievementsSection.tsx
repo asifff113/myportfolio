@@ -56,10 +56,11 @@ export default function AchievementsSection({ achievements }: AchievementsSectio
   }
 
   return (
-    <Section id="achievements">
+    <Section id="achievements" sectionId="achievements">
       <SectionTitle
         title="Achievements & Awards"
         subtitle="Recognition and milestones along my journey"
+        gradient="from-yellow-400 via-amber-300 to-yellow-300"
       />
 
       <motion.div
@@ -77,35 +78,16 @@ export default function AchievementsSection({ achievements }: AchievementsSectio
             <motion.div
               key={achievement.id || index}
               variants={itemVariants}
-              whileHover={{ y: -12, scale: 1.06 }}
-              className="glass-ultra p-8 md:p-10 rounded-3xl relative overflow-hidden group card-3d border-2 border-white/10 hover:border-white/20 shadow-2xl"
+              whileHover={{ y: -6 }}
+              className="bg-zinc-900/60 border border-zinc-800 border-t-2 border-t-yellow-500 hover:border-yellow-500/30 rounded-2xl p-6 relative overflow-hidden group transition-colors duration-300"
             >
-              {/* Large Decorative Wave Background */}
-              <div className={`absolute -top-20 -right-20 w-56 h-56 rounded-full bg-gradient-to-br ${gradientColor} opacity-20 blur-3xl group-hover:scale-125 group-hover:opacity-35 transition-all duration-700`} />
-              <div className={`absolute -bottom-16 -left-16 w-44 h-44 rounded-full bg-gradient-to-tr ${gradientColor} opacity-15 blur-3xl group-hover:scale-125 group-hover:opacity-30 transition-all duration-700`} />
-              
-              {/* Gradient Top Border - THICKER */}
-              <div className={`absolute top-0 left-0 right-0 h-2 bg-gradient-to-r ${gradientColor} shimmer shadow-lg shadow-primary/50`} />
-
-              {/* Icon - MUCH BIGGER & MORE BEAUTIFUL */}
+              {/* Icon */}
               <div className="relative mb-6 z-10">
                 <motion.div
-                  whileHover={{ scale: 1.2, rotate: 15 }}
-                  animate={{
-                    scale: [1, 1.08, 1],
-                    rotate: [0, 5, -5, 0],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className={`inline-flex p-6 rounded-3xl bg-gradient-to-br ${gradientColor} relative shimmer border-2 border-white/20 shadow-2xl`}
+                  whileHover={{ scale: 1.1 }}
+                  className="inline-flex p-4 rounded-2xl bg-yellow-500/10 border border-yellow-500/20"
                 >
-                  <Icon className="text-white" size={56} />
-                  
-                  {/* Enhanced Glow Effect - STRONGER */}
-                  <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${gradientColor} blur-3xl opacity-70 group-hover:opacity-100 transition-opacity glow-pulse`} />
+                  <Icon className="text-yellow-400" size={40} />
                 </motion.div>
               </div>
 
@@ -113,29 +95,29 @@ export default function AchievementsSection({ achievements }: AchievementsSectio
               <div className="relative z-10">
                 {/* Category Badge */}
                 {achievement.category && (
-                  <span className="inline-block px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium mb-3">
+                  <span className="inline-block px-3 py-1 bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 rounded-full text-xs font-medium mb-3">
                     {achievement.category}
                   </span>
                 )}
 
-                {/* Title - BIGGER & GRADIENT */}
-                <h3 className={`text-2xl md:text-3xl font-display font-bold mb-3 bg-gradient-to-r ${gradientColor} bg-clip-text text-transparent group-hover:scale-105 transition-transform`}>
+                {/* Title */}
+                <h3 className={`text-xl md:text-2xl font-display font-bold mb-3 bg-gradient-to-r ${gradientColor} bg-clip-text text-transparent`}>
                   {achievement.title}
                 </h3>
 
-                {/* Organization - BIGGER */}
-                <p className="text-lg md:text-xl text-primary font-bold mb-3 group-hover:text-primary/80 transition-colors">
+                {/* Organization */}
+                <p className="text-base text-yellow-400/80 font-semibold mb-2">
                   {achievement.organization}
                 </p>
 
                 {/* Date */}
-                <p className="text-sm text-muted-foreground mb-3">
+                <p className="text-sm text-zinc-500 mb-3">
                   {formatDate(achievement.date)}
                 </p>
 
-                {/* Description - BIGGER */}
+                {/* Description */}
                 {achievement.description && (
-                  <p className="text-base md:text-lg text-gray-300 leading-relaxed mb-5 font-medium group-hover:text-gray-200 transition-colors">
+                  <p className="text-sm text-zinc-400 leading-relaxed mb-4">
                     {achievement.description}
                   </p>
                 )}
@@ -146,10 +128,10 @@ export default function AchievementsSection({ achievements }: AchievementsSectio
                     href={achievement.fileUrl || achievement.certificateUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors font-medium"
+                    className="inline-flex items-center gap-2 text-sm text-yellow-400 hover:text-yellow-300 transition-colors font-medium"
                   >
                     <span>
-                      {achievement.fileUrl 
+                      {achievement.fileUrl
                         ? `View ${achievement.fileType === 'pdf' ? 'Certificate (PDF)' : 'Image'}`
                         : 'View Certificate'
                       }
@@ -158,71 +140,49 @@ export default function AchievementsSection({ achievements }: AchievementsSectio
                   </a>
                 )}
               </div>
-
-              {/* Decorative Elements */}
-              <motion.div
-                animate={{
-                  rotate: [0, 360],
-                  scale: [1, 1.2, 1],
-                }}
-                transition={{
-                  duration: 20,
-                  repeat: Infinity,
-                  ease: "linear",
-                }}
-                className={`absolute -top-10 -right-10 w-32 h-32 bg-gradient-to-br ${gradientColor} rounded-full blur-3xl opacity-10 group-hover:opacity-20 transition-opacity`}
-              />
-
-              {/* Hover Glow Effect */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                <div className={`absolute inset-0 bg-gradient-to-br ${gradientColor} opacity-5`} />
-              </div>
             </motion.div>
           );
         })}
       </motion.div>
 
-      {/* Achievement Stats (Optional Enhancement) */}
+      {/* Achievement Stats */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ delay: 0.5 }}
-        className="mt-12 glass-ultra p-8 md:p-10 rounded-2xl relative overflow-hidden group"
+        className="mt-12 bg-zinc-900/60 border border-zinc-800 p-8 md:p-10 rounded-xl"
       >
-        {/* Decorative glow */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-        
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center relative z-10">
-          <motion.div whileHover={{ scale: 1.05, y: -5 }}>
-            <div className="text-5xl font-display font-bold text-gradient mb-2 neon-text">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          <motion.div whileHover={{ scale: 1.02 }}>
+            <div className="text-5xl font-display font-bold bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-300 bg-clip-text text-transparent mb-2">
               {achievements.length}
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-sm text-zinc-500">
               Total Achievements
             </div>
           </motion.div>
-          <motion.div whileHover={{ scale: 1.05, y: -5 }}>
-            <div className="text-5xl font-display font-bold text-gradient mb-2 neon-text">
+          <motion.div whileHover={{ scale: 1.02 }}>
+            <div className="text-5xl font-display font-bold bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-300 bg-clip-text text-transparent mb-2">
               {achievements.filter(a => a.category === "Competition").length}
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-sm text-zinc-500">
               Competitions Won
             </div>
           </motion.div>
-          <motion.div whileHover={{ scale: 1.05, y: -5 }}>
-            <div className="text-5xl font-display font-bold text-gradient mb-2 neon-text">
+          <motion.div whileHover={{ scale: 1.02 }}>
+            <div className="text-5xl font-display font-bold bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-300 bg-clip-text text-transparent mb-2">
               {achievements.filter(a => a.category === "Award").length}
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-sm text-zinc-500">
               Awards Received
             </div>
           </motion.div>
-          <motion.div whileHover={{ scale: 1.05, y: -5 }}>
-            <div className="text-5xl font-display font-bold text-gradient mb-2 neon-text">
+          <motion.div whileHover={{ scale: 1.02 }}>
+            <div className="text-5xl font-display font-bold bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-300 bg-clip-text text-transparent mb-2">
               {achievements.filter(a => a.category === "Recognition").length}
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-sm text-zinc-500">
               Recognitions
             </div>
           </motion.div>
@@ -231,4 +191,3 @@ export default function AchievementsSection({ achievements }: AchievementsSectio
     </Section>
   );
 }
-

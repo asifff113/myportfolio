@@ -23,7 +23,7 @@ export default function GuestbookSection() {
   // Fetch messages on mount
   useEffect(() => {
     fetchMessages();
-    
+
     // Subscribe to new messages
     const channel = supabase
       .channel('guestbook_changes')
@@ -64,7 +64,7 @@ export default function GuestbookSection() {
     try {
       const { error } = await supabase.from("guestbook_messages").delete().eq("id", id);
       if (error) throw error;
-      
+
       setMessages((prev) => prev.filter((msg) => msg.id !== id));
     } catch (error) {
       console.error("Error deleting message:", error);
@@ -78,7 +78,7 @@ export default function GuestbookSection() {
 
     setIsSubmitting(true);
     try {
-      const userName = user 
+      const userName = user
         ? (user.user_metadata.full_name || user.user_metadata.name || "Anonymous")
         : (customName.trim() || "Anonymous");
 
@@ -92,7 +92,7 @@ export default function GuestbookSection() {
       if (error) throw error;
       setNewMessage("");
       setCustomName("");
-      
+
       // Refresh to show the new message immediately
       fetchMessages();
     } catch (error) {
@@ -104,16 +104,11 @@ export default function GuestbookSection() {
   };
 
   return (
-    <Section id="guestbook" className="bg-muted/20 relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
-      </div>
-
+    <Section id="guestbook" sectionId="guestbook">
       <SectionTitle
         title="Digital Guestbook"
         subtitle="Leave a mark on my digital space"
+        gradient="from-sky-400 via-blue-400 to-sky-300"
       />
 
       <div className="max-w-4xl mx-auto">
@@ -124,9 +119,10 @@ export default function GuestbookSection() {
           viewport={{ once: true }}
           className="mb-12"
         >
-          <div className="glass-ultra p-6 md:p-8 rounded-2xl border border-white/10 shadow-xl relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-accent to-secondary" />
-            
+          <div className="bg-zinc-900/60 border border-zinc-800 p-6 md:p-8 rounded-2xl relative overflow-hidden">
+            {/* Top gradient bar: sky-blue to lavender */}
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-sky-400 to-violet-400" />
+
             <form onSubmit={handleSubmit} className="relative z-10">
               <div className="flex flex-col md:flex-row items-start gap-4">
                 <div className="hidden md:block">
@@ -139,47 +135,47 @@ export default function GuestbookSection() {
                 </div>
                 <div className="flex-1 w-full">
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 gap-2">
-                    <label htmlFor="message" className="text-sm font-medium text-muted-foreground">
+                    <label htmlFor="message" className="text-sm font-medium text-zinc-400">
                       {user ? (
-                        <>Posting as <span className="text-primary font-bold">{user.user_metadata.full_name || "Anonymous"}</span></>
+                        <>Posting as <span className="text-sky-400 font-bold">{user.user_metadata.full_name || "Anonymous"}</span></>
                       ) : (
                         "Leave a message"
                       )}
                     </label>
-                    
+
                     {!user && (
                       <input
                         type="text"
                         placeholder="Your Name (Optional)"
                         value={customName}
                         onChange={(e) => setCustomName(e.target.value)}
-                        className="bg-background/50 border border-white/10 rounded-lg px-3 py-1 text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all w-full sm:w-auto"
+                        className="bg-zinc-800/80 border border-zinc-700 rounded-lg px-3 py-1 text-sm text-white focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all w-full sm:w-auto"
                         maxLength={50}
                       />
                     )}
                   </div>
-                  
+
                   <div className="relative">
                     <textarea
                       id="message"
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
                       placeholder={user ? "Write a message..." : "Write a message... (Sign in with GitHub to add your avatar)"}
-                      className="w-full bg-background/50 border border-white/10 rounded-xl p-4 min-h-[100px] focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all resize-none"
+                      className="w-full bg-zinc-800/80 border border-zinc-700 rounded-xl p-4 min-h-[100px] text-white focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all resize-none"
                       maxLength={500}
                     />
-                    <div className="absolute bottom-3 right-3 text-xs text-muted-foreground">
+                    <div className="absolute bottom-3 right-3 text-xs text-zinc-500">
                       {newMessage.length}/500
                     </div>
                   </div>
-                  
+
                   <div className="mt-4 flex flex-wrap justify-between items-center gap-4">
                     {!user ? (
                       <button
                         type="button"
                         onClick={loginWithGitHub}
                         disabled={authLoading}
-                        className="text-xs flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors"
+                        className="text-xs flex items-center gap-1 text-zinc-400 hover:text-sky-400 transition-colors"
                       >
                         <Github size={14} />
                         Sign in with GitHub
@@ -187,11 +183,11 @@ export default function GuestbookSection() {
                     ) : (
                       <div /> /* Spacer */
                     )}
-                    
+
                     <button
                       type="submit"
                       disabled={isSubmitting || !newMessage.trim()}
-                      className="inline-flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-primary to-accent text-white rounded-full font-bold shadow-lg hover:shadow-primary/25 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 transition-all ml-auto"
+                      className="inline-flex items-center gap-2 px-6 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg font-bold transition-colors disabled:opacity-50 disabled:hover:bg-sky-500 ml-auto"
                     >
                       {isSubmitting ? (
                         <>
@@ -214,18 +210,18 @@ export default function GuestbookSection() {
 
         {/* Messages List */}
         <div className="space-y-4">
-          <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-            <span className="w-2 h-8 bg-primary rounded-full" />
+          <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-zinc-100">
+            <span className="w-2 h-8 bg-sky-400 rounded-full" />
             Recent Messages ({messages.length})
           </h3>
 
           {isLoadingMessages ? (
             <div className="flex justify-center py-12">
-              <Loader2 className="animate-spin text-primary" size={32} />
+              <Loader2 className="animate-spin text-sky-400" size={32} />
             </div>
           ) : messages.length === 0 ? (
-            <div className="text-center py-12 glass rounded-xl border-dashed border-2 border-white/10">
-              <p className="text-muted-foreground">No messages yet. Be the first to sign!</p>
+            <div className="text-center py-12 bg-zinc-900/60 rounded-xl border-dashed border-2 border-zinc-800">
+              <p className="text-zinc-400">No messages yet. Be the first to sign!</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -237,7 +233,7 @@ export default function GuestbookSection() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ delay: index * 0.05 }}
-                    className="glass p-5 rounded-xl border border-white/5 hover:border-primary/20 transition-colors group"
+                    className="bg-zinc-800/50 border border-zinc-700/30 p-4 rounded-xl hover:border-sky-400/20 transition-colors group"
                   >
                     <div className="flex items-start gap-3">
                       <Avatar
@@ -248,9 +244,9 @@ export default function GuestbookSection() {
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start mb-1">
-                          <h4 className="font-bold text-sm truncate pr-2">{msg.user_name}</h4>
+                          <h4 className="font-bold text-sm truncate pr-2 text-zinc-100">{msg.user_name}</h4>
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground whitespace-nowrap">
+                            <span className="text-xs text-zinc-500 whitespace-nowrap">
                               {new Date(msg.created_at).toLocaleDateString(undefined, {
                                 month: 'short',
                                 day: 'numeric'
@@ -259,7 +255,7 @@ export default function GuestbookSection() {
                             {(user?.id === msg.user_id || isAdmin) && (
                               <button
                                 onClick={() => handleDelete(msg.id)}
-                                className="text-muted-foreground hover:text-red-500 transition-colors p-1 rounded-md hover:bg-red-500/10 opacity-0 group-hover:opacity-100"
+                                className="text-zinc-500 hover:text-red-500 transition-colors p-1 rounded-md hover:bg-red-500/10 opacity-0 group-hover:opacity-100"
                                 title="Delete message"
                               >
                                 <Trash2 size={14} />
@@ -267,7 +263,7 @@ export default function GuestbookSection() {
                             )}
                           </div>
                         </div>
-                        <p className="text-sm text-muted-foreground leading-relaxed break-words">
+                        <p className="text-sm text-zinc-400 leading-relaxed break-words">
                           {msg.message}
                         </p>
                       </div>

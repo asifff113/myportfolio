@@ -91,7 +91,7 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
 
       setSubmitStatus("success");
       reset();
-      
+
       // Auto-hide success message after 5 seconds
       setTimeout(() => {
         setSubmitStatus("idle");
@@ -106,10 +106,11 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
   };
 
   return (
-    <Section id="contact" className="relative overflow-hidden">
+    <Section id="contact" sectionId="contact">
       <SectionTitle
         title={t.sections.contact.title}
         subtitle={t.sections.contact.subtitle}
+        gradient="from-red-400 via-rose-400 to-red-300"
       />
 
       <div className="grid lg:grid-cols-2 gap-12 items-start">
@@ -123,9 +124,9 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
         >
           <div>
             <h3 className="text-2xl font-display font-bold mb-6">
-              <span className="text-gradient">Let's Connect</span>
+              <span className="bg-gradient-to-r from-red-400 via-rose-400 to-red-300 bg-clip-text text-transparent">Let&apos;s Connect</span>
             </h3>
-            <p className="text-muted-foreground leading-relaxed mb-6">
+            <p className="text-zinc-400 leading-relaxed mb-6">
               {contactInfo.availability ||
                 "I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision."}
             </p>
@@ -137,21 +138,15 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
             {contactInfo.email && (
               <motion.a
                 href={`mailto:${contactInfo.email}`}
-                whileHover={{ scale: 1.04, x: 8 }}
-                className="flex items-center gap-5 p-6 glass-ultra rounded-2xl hover:bg-primary/10 transition-colors group card-3d neon-glow-hover relative overflow-hidden border-2 border-white/10 hover:border-white/20 shadow-lg"
+                whileHover={{ y: -4 }}
+                className="flex items-center gap-5 p-5 bg-zinc-900/60 border border-zinc-800 hover:border-red-500/30 rounded-xl transition-colors group"
               >
-                {/* Wave Background */}
-                <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-gradient-to-br from-blue-500/20 via-cyan-500/20 to-teal-500/20 blur-2xl group-hover:scale-125 transition-transform duration-700" />
-                
-                <motion.div 
-                  whileHover={{ scale: 1.15, rotate: 10 }}
-                  className="p-4 bg-gradient-to-br from-blue-500/30 to-cyan-500/30 rounded-2xl group-hover:from-blue-500/50 group-hover:to-cyan-500/50 transition-colors shimmer border-2 border-cyan-400/30 shadow-xl relative z-10"
-                >
-                  <Mail size={32} className="text-cyan-300" />
-                </motion.div>
-                <div className="relative z-10">
-                  <p className="text-sm text-gray-400 font-medium mb-1">Email</p>
-                  <p className="font-bold text-lg text-gray-200 group-hover:text-cyan-300 transition-colors">{contactInfo.email}</p>
+                <div className="p-3 bg-blue-500/15 rounded-xl border border-blue-500/20">
+                  <Mail size={28} className="text-cyan-300" />
+                </div>
+                <div>
+                  <p className="text-sm text-zinc-500 font-medium mb-0.5">Email</p>
+                  <p className="font-bold text-zinc-200 group-hover:text-cyan-300 transition-colors">{contactInfo.email}</p>
                 </div>
               </motion.a>
             )}
@@ -160,21 +155,15 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
             {contactInfo.phone && (
               <motion.a
                 href={`tel:${contactInfo.phone}`}
-                whileHover={{ scale: 1.04, x: 8 }}
-                className="flex items-center gap-5 p-6 glass-ultra rounded-2xl hover:bg-primary/10 transition-colors group card-3d neon-glow-hover relative overflow-hidden border-2 border-white/10 hover:border-white/20 shadow-lg"
+                whileHover={{ y: -4 }}
+                className="flex items-center gap-5 p-5 bg-zinc-900/60 border border-zinc-800 hover:border-red-500/30 rounded-xl transition-colors group"
               >
-                {/* Wave Background */}
-                <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-rose-500/20 blur-2xl group-hover:scale-125 transition-transform duration-700" />
-                
-                <motion.div 
-                  whileHover={{ scale: 1.15, rotate: 10 }}
-                  className="p-4 bg-gradient-to-br from-purple-500/30 to-pink-500/30 rounded-2xl group-hover:from-purple-500/50 group-hover:to-pink-500/50 transition-colors shimmer border-2 border-pink-400/30 shadow-xl relative z-10"
-                >
-                  <Phone size={32} className="text-pink-300" />
-                </motion.div>
-                <div className="relative z-10">
-                  <p className="text-sm text-gray-400 font-medium mb-1">Phone</p>
-                  <p className="font-bold text-lg text-gray-200 group-hover:text-pink-300 transition-colors">{contactInfo.phone}</p>
+                <div className="p-3 bg-purple-500/15 rounded-xl border border-purple-500/20">
+                  <Phone size={28} className="text-pink-300" />
+                </div>
+                <div>
+                  <p className="text-sm text-zinc-500 font-medium mb-0.5">Phone</p>
+                  <p className="font-bold text-zinc-200 group-hover:text-pink-300 transition-colors">{contactInfo.phone}</p>
                 </div>
               </motion.a>
             )}
@@ -182,21 +171,15 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
             {/* Location */}
             {contactInfo.location && (
               <motion.div
-                whileHover={{ scale: 1.04, x: 8 }}
-                className="flex items-center gap-5 p-6 glass-ultra rounded-2xl group card-3d relative overflow-hidden border-2 border-white/10 hover:border-white/20 shadow-lg"
+                whileHover={{ y: -4 }}
+                className="flex items-center gap-5 p-5 bg-zinc-900/60 border border-zinc-800 hover:border-red-500/30 rounded-xl transition-colors group"
               >
-                {/* Wave Background */}
-                <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-gradient-to-br from-green-500/20 via-emerald-500/20 to-teal-500/20 blur-2xl group-hover:scale-125 transition-transform duration-700" />
-                
-                <motion.div 
-                  whileHover={{ scale: 1.15, rotate: 10 }}
-                  className="p-4 bg-gradient-to-br from-green-500/30 to-emerald-500/30 rounded-2xl group-hover:from-green-500/50 group-hover:to-emerald-500/50 transition-colors border-2 border-emerald-400/30 shadow-xl relative z-10"
-                >
-                  <MapPin size={32} className="text-emerald-300" />
-                </motion.div>
-                <div className="relative z-10">
-                  <p className="text-sm text-gray-400 font-medium mb-1">Location</p>
-                  <p className="font-bold text-lg text-gray-200 group-hover:text-emerald-300 transition-colors">{contactInfo.location}</p>
+                <div className="p-3 bg-green-500/15 rounded-xl border border-emerald-500/20">
+                  <MapPin size={28} className="text-emerald-300" />
+                </div>
+                <div>
+                  <p className="text-sm text-zinc-500 font-medium mb-0.5">Location</p>
+                  <p className="font-bold text-zinc-200 group-hover:text-emerald-300 transition-colors">{contactInfo.location}</p>
                 </div>
               </motion.div>
             )}
@@ -204,21 +187,15 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
             {/* Response Time */}
             {contactInfo.responseTime && (
               <motion.div
-                whileHover={{ scale: 1.04, x: 8 }}
-                className="flex items-center gap-5 p-6 glass-ultra rounded-2xl group card-3d relative overflow-hidden border-2 border-white/10 hover:border-white/20 shadow-lg"
+                whileHover={{ y: -4 }}
+                className="flex items-center gap-5 p-5 bg-zinc-900/60 border border-zinc-800 hover:border-red-500/30 rounded-xl transition-colors group"
               >
-                {/* Wave Background */}
-                <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-gradient-to-br from-orange-500/20 via-amber-500/20 to-yellow-500/20 blur-2xl group-hover:scale-125 transition-transform duration-700" />
-                
-                <motion.div 
-                  whileHover={{ scale: 1.15, rotate: 10 }}
-                  className="p-4 bg-gradient-to-br from-orange-500/30 to-amber-500/30 rounded-2xl group-hover:from-orange-500/50 group-hover:to-amber-500/50 transition-colors border-2 border-amber-400/30 shadow-xl relative z-10"
-                >
-                  <Clock size={32} className="text-amber-300" />
-                </motion.div>
-                <div className="relative z-10">
-                  <p className="text-sm text-gray-400 font-medium mb-1">Response Time</p>
-                  <p className="font-bold text-lg text-gray-200 group-hover:text-amber-300 transition-colors">{contactInfo.responseTime}</p>
+                <div className="p-3 bg-orange-500/15 rounded-xl border border-amber-500/20">
+                  <Clock size={28} className="text-amber-300" />
+                </div>
+                <div>
+                  <p className="text-sm text-zinc-500 font-medium mb-0.5">Response Time</p>
+                  <p className="font-bold text-zinc-200 group-hover:text-amber-300 transition-colors">{contactInfo.responseTime}</p>
                 </div>
               </motion.div>
             )}
@@ -227,26 +204,25 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
           {/* Social Links */}
           {contactInfo.socialLinks && contactInfo.socialLinks.length > 0 && (
             <div>
-              <h4 className="text-lg font-semibold mb-4">Follow Me</h4>
+              <h4 className="text-lg font-semibold mb-4 text-zinc-100">Follow Me</h4>
               <div className="flex gap-4">
                 {contactInfo.socialLinks.map((social) => {
                   const Icon = socialIconMap[social.platform];
                   if (!Icon) return null;
 
                   return (
-                  <motion.a
-                    key={social.platform}
-                    href={social.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    whileHover={{ scale: 1.15, y: -4 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="p-4 glass-ultra rounded-xl hover:bg-primary/20 transition-colors magnetic neon-glow-hover relative group"
-                    aria-label={social.platform}
-                  >
-                    <Icon size={26} className="relative z-10" />
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </motion.a>
+                    <motion.a
+                      key={social.platform}
+                      href={social.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      whileHover={{ y: -4 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="p-4 bg-zinc-900/60 border border-zinc-800 hover:border-red-500/30 rounded-xl transition-colors"
+                      aria-label={social.platform}
+                    >
+                      <Icon size={24} className="text-zinc-300" />
+                    </motion.a>
                   );
                 })}
               </div>
@@ -255,23 +231,21 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
         </motion.div>
 
         {/* Contact Form */}
-          <motion.div variants={itemVariants}>
-            <form onSubmit={handleSubmit(onSubmit)} className="glass-ultra p-8 rounded-2xl space-y-6 relative overflow-hidden group">
-              {/* Decorative glow */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+        <motion.div variants={itemVariants}>
+          <form onSubmit={handleSubmit(onSubmit)} className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-6 space-y-6">
             {/* Name Field */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium mb-2 ml-1">
+              <label htmlFor="name" className="block text-sm font-medium mb-2 ml-1 text-zinc-300">
                 {t.sections.contact.form.name}
               </label>
-              <div className="relative group">
+              <div className="relative">
                 <input
                   {...register("name")}
                   type="text"
                   id="name"
-                  className={`w-full bg-background/50 border ${
-                    errors.name ? "border-red-500" : "border-border"
-                  } rounded-xl px-4 py-3 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all group-hover:bg-background/80`}
+                  className={`w-full bg-zinc-800/80 border ${
+                    errors.name ? "border-red-500" : "border-zinc-700"
+                  } focus:border-red-500 rounded-lg px-4 py-3 text-white outline-none focus:ring-1 focus:ring-red-500/50 transition-all`}
                   placeholder={t.sections.contact.form.name}
                 />
                 {errors.name && (
@@ -287,17 +261,17 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
 
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-2 ml-1">
+              <label htmlFor="email" className="block text-sm font-medium mb-2 ml-1 text-zinc-300">
                 {t.sections.contact.form.email}
               </label>
-              <div className="relative group">
+              <div className="relative">
                 <input
                   {...register("email")}
                   type="email"
                   id="email"
-                  className={`w-full bg-background/50 border ${
-                    errors.email ? "border-red-500" : "border-border"
-                  } rounded-xl px-4 py-3 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all group-hover:bg-background/80`}
+                  className={`w-full bg-zinc-800/80 border ${
+                    errors.email ? "border-red-500" : "border-zinc-700"
+                  } focus:border-red-500 rounded-lg px-4 py-3 text-white outline-none focus:ring-1 focus:ring-red-500/50 transition-all`}
                   placeholder="john@example.com"
                 />
                 {errors.email && (
@@ -313,17 +287,17 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
 
             {/* Subject Field */}
             <div>
-              <label htmlFor="subject" className="block text-sm font-medium mb-2 ml-1">
+              <label htmlFor="subject" className="block text-sm font-medium mb-2 ml-1 text-zinc-300">
                 {t.sections.contact.form.subject}
               </label>
-              <div className="relative group">
+              <div className="relative">
                 <input
                   {...register("subject")}
                   type="text"
                   id="subject"
-                  className={`w-full bg-background/50 border ${
-                    errors.subject ? "border-red-500" : "border-border"
-                  } rounded-xl px-4 py-3 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all group-hover:bg-background/80`}
+                  className={`w-full bg-zinc-800/80 border ${
+                    errors.subject ? "border-red-500" : "border-zinc-700"
+                  } focus:border-red-500 rounded-lg px-4 py-3 text-white outline-none focus:ring-1 focus:ring-red-500/50 transition-all`}
                   placeholder={t.sections.contact.form.subject}
                 />
                 {errors.subject && (
@@ -339,17 +313,17 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
 
             {/* Message Field */}
             <div>
-              <label htmlFor="message" className="block text-sm font-medium mb-2 ml-1">
+              <label htmlFor="message" className="block text-sm font-medium mb-2 ml-1 text-zinc-300">
                 {t.sections.contact.form.message}
               </label>
-              <div className="relative group">
+              <div className="relative">
                 <textarea
                   {...register("message")}
                   id="message"
                   rows={5}
-                  className={`w-full bg-background/50 border ${
-                    errors.message ? "border-red-500" : "border-border"
-                  } rounded-xl px-4 py-3 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all resize-none group-hover:bg-background/80`}
+                  className={`w-full bg-zinc-800/80 border ${
+                    errors.message ? "border-red-500" : "border-zinc-700"
+                  } focus:border-red-500 rounded-lg px-4 py-3 text-white outline-none focus:ring-1 focus:ring-red-500/50 transition-all resize-none`}
                   placeholder={t.sections.contact.form.message}
                 />
                 {errors.message && (
@@ -364,13 +338,13 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
             </div>
 
             {/* Submit Button */}
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/25 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-              >
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white font-semibold py-4 rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+            >
               {isSubmitting ? (
                 <>
                   <Clock className="animate-spin" size={20} />
@@ -409,48 +383,45 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
           </form>
 
           {/* Scheduling & Alternative Contact Options */}
-            <motion.div
-              variants={itemVariants}
-              className="mt-6 p-6 glass-ultra rounded-xl card-3d group relative overflow-hidden"
-            >
-              {/* Decorative glow */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-              <h4 className="text-lg font-semibold mb-4 relative z-10">Prefer to schedule a call?</h4>
-              <p className="text-sm text-muted-foreground mb-4 relative z-10">
-                Book a time that works for you, and let's chat!
+          <motion.div
+            variants={itemVariants}
+            className="mt-6 p-6 bg-zinc-900/60 border border-zinc-800 rounded-2xl"
+          >
+            <h4 className="text-lg font-semibold mb-4 text-zinc-100">Prefer to schedule a call?</h4>
+            <p className="text-sm text-zinc-400 mb-4">
+              Book a time that works for you, and let&apos;s chat!
+            </p>
+            <div className="flex flex-wrap gap-3">
+              {/* Replace with your actual scheduling links */}
+              <motion.a
+                href="https://calendly.com/yourname" // TODO: Replace with your Calendly link
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="flex items-center gap-2 px-4 py-2 bg-zinc-800/80 border border-zinc-700 hover:border-red-500/30 rounded-lg transition-colors text-sm font-medium text-zinc-300"
+              >
+                <Clock size={16} />
+                <span>Schedule on Calendly</span>
+              </motion.a>
+              <motion.a
+                href={`mailto:${contactInfo.email}`}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="flex items-center gap-2 px-4 py-2 bg-zinc-800/80 border border-zinc-700 hover:border-red-500/30 rounded-lg transition-colors text-sm font-medium text-zinc-300"
+              >
+                <Mail size={16} />
+                <span>Email Directly</span>
+              </motion.a>
+            </div>
+            {contactInfo.availability && (
+              <p className="mt-4 text-xs text-zinc-500">
+                <strong>Office Hours:</strong> {contactInfo.availability}
               </p>
-              <div className="flex flex-wrap gap-3 relative z-10">
-                {/* Replace with your actual scheduling links */}
-                <motion.a
-                  href="https://calendly.com/yourname" // TODO: Replace with your Calendly link
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="flex items-center gap-2 px-4 py-2 glass-ultra hover:bg-primary/20 rounded-lg transition-colors text-sm font-medium neon-glow-hover"
-                >
-                  <Clock size={16} />
-                  <span>Schedule on Calendly</span>
-                </motion.a>
-                <motion.a
-                  href={`mailto:${contactInfo.email}`}
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="flex items-center gap-2 px-4 py-2 glass-ultra hover:bg-primary/20 rounded-lg transition-colors text-sm font-medium neon-glow-hover"
-                >
-                  <Mail size={16} />
-                  <span>Email Directly</span>
-                </motion.a>
-              </div>
-              {contactInfo.availability && (
-                <p className="mt-4 text-xs text-muted-foreground relative z-10">
-                  <strong>Office Hours:</strong> {contactInfo.availability}
-                </p>
-              )}
+            )}
           </motion.div>
         </motion.div>
       </div>
     </Section>
   );
 }
-

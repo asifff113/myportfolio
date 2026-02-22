@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Orbitron } from "next/font/google";
+import { Inter, Orbitron, Space_Grotesk } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "@/styles/globals.css";
 import AnimatedBackground from "@/components/ui/AnimatedBackground";
@@ -25,6 +25,12 @@ const inter = Inter({
 const orbitron = Orbitron({
   subsets: ["latin"],
   variable: "--font-orbitron",
+  display: "swap",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space-grotesk",
   display: "swap",
 });
 
@@ -63,7 +69,7 @@ export default async function RootLayout({
   const portfolioContent = await getAllPublicContent();
 
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${orbitron.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${orbitron.variable} ${spaceGrotesk.variable}`}>
       <body className="min-h-screen">
         <ThemeProvider
           attribute="class"

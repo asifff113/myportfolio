@@ -32,28 +32,29 @@ const itemVariants = {
   },
 };
 
+// Per-hobby color variety for the top gradient bar
+const uniqueHobbyColors = [
+  "from-lime-500 to-green-500",
+  "from-green-500 to-emerald-500",
+  "from-emerald-500 to-teal-500",
+  "from-teal-500 to-cyan-500",
+  "from-lime-400 to-lime-600",
+  "from-green-400 to-green-600",
+  "from-emerald-400 to-lime-500",
+  "from-cyan-500 to-green-500",
+];
+
 export default function HobbiesSection({ hobbies }: HobbiesSectionProps) {
   if (!hobbies || hobbies.length === 0) {
     return null;
   }
 
-  // Colorful gradients for each hobby
-  const hobbyColors = [
-    "from-blue-500 via-cyan-500 to-teal-500",
-    "from-purple-500 via-pink-500 to-rose-500",
-    "from-green-500 via-emerald-500 to-lime-500",
-    "from-orange-500 via-amber-500 to-yellow-500",
-    "from-red-500 via-pink-500 to-purple-500",
-    "from-indigo-500 via-blue-500 to-cyan-500",
-    "from-fuchsia-500 via-purple-500 to-pink-500",
-    "from-violet-500 via-purple-500 to-fuchsia-500",
-  ];
-
   return (
-    <Section id="hobbies" className="relative">
+    <Section id="hobbies" sectionId="hobbies">
       <SectionTitle
         title="Hobbies & Interests"
         subtitle="What I enjoy doing when I'm not coding"
+        gradient="from-lime-400 via-green-400 to-lime-300"
       />
 
       <motion.div
@@ -64,86 +65,50 @@ export default function HobbiesSection({ hobbies }: HobbiesSectionProps) {
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
       >
         {hobbies.map((hobby, index) => {
-          const hobbyColor = hobbyColors[index % hobbyColors.length];
-          
+          const hobbyColor = uniqueHobbyColors[index % uniqueHobbyColors.length];
+
           return (
             <motion.div
               key={hobby.id || index}
               variants={itemVariants}
-              whileHover={{
-                scale: 1.05,
-                y: -10,
-              }}
-              className="glass-ultra p-6 md:p-8 rounded-2xl relative overflow-hidden group card-3d border-2 border-transparent hover:border-white/20"
+              whileHover={{ y: -6 }}
+              className="bg-zinc-900/60 border border-zinc-800 hover:border-lime-500/30 rounded-2xl overflow-hidden relative group transition-colors"
             >
-              {/* Colorful gradient background */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${hobbyColor} opacity-20 group-hover:opacity-40 transition-opacity duration-500`} />
-              
               {/* Top gradient bar */}
-              <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${hobbyColor}`} />
-            {/* Background Image if available */}
-            {hobby.imageUrl && (
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300">
-                <Image
-                  src={hobby.imageUrl}
-                  alt={hobby.title}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            )}
+              <div className={`h-1 bg-gradient-to-r ${hobbyColor} rounded-t-2xl`} />
 
-            {/* Content */}
-            <div className="relative z-10">
-              {/* Icon */}
-              <motion.div
-                whileHover={{ scale: 1.2, rotate: 10 }}
-                transition={{ type: "spring", stiffness: 300 }}
-                className="text-6xl mb-4 floating"
-              >
-                {hobby.icon || "✨"}
-              </motion.div>
-
-              {/* Title */}
-              <h3 className="text-xl font-bold mb-3 group-hover:text-gradient transition-all duration-300 neon-text-hover">{hobby.title}</h3>
-
-              {/* Description */}
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {hobby.description}
-              </p>
-            </div>
-
-              {/* Fun Particles on Hover */}
-              <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                {[...Array(5)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 0, x: 0 }}
-                    whileHover={{ 
-                      opacity: [0, 1, 0], 
-                      y: -100 - ((i * 15) % 50), 
-                      x: ((i * 20) % 50) - 25 
-                    }}
-                    transition={{ 
-                      duration: 1 + (i * 0.2), 
-                      repeat: Infinity, 
-                      delay: i * 0.1 
-                    }}
-                    className={`absolute bottom-0 left-1/2 w-2 h-2 rounded-full bg-gradient-to-r ${hobbyColor} opacity-0`}
-                    style={{ left: `${20 + (i * 15) % 60}%` }}
+              {/* Background Image if available */}
+              {hobby.imageUrl && (
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300">
+                  <Image
+                    src={hobby.imageUrl}
+                    alt={hobby.title}
+                    fill
+                    className="object-cover"
                   />
-                ))}
-              </div>
+                </div>
+              )}
 
-              {/* Enhanced Hover Glow Effect */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl">
-                <div className={`absolute inset-0 bg-gradient-to-br ${hobbyColor} opacity-20 animate-pulse`} />
-                <div className="absolute inset-0 neon-glow" />
+              {/* Content */}
+              <div className="relative z-10 p-6">
+                {/* Icon */}
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  className="text-5xl mb-4"
+                >
+                  {hobby.icon || "✨"}
+                </motion.div>
+
+                {/* Title */}
+                <h3 className="text-xl font-bold mb-3 text-white group-hover:text-lime-300 transition-colors duration-300">
+                  {hobby.title}
+                </h3>
+
+                {/* Description */}
+                <p className="text-sm text-zinc-400 leading-relaxed">
+                  {hobby.description}
+                </p>
               </div>
-              
-              {/* Colorful corner accents */}
-              <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${hobbyColor} opacity-30 group-hover:opacity-60 rounded-bl-full transition-opacity duration-500`} />
-              <div className={`absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr ${hobbyColor} opacity-20 group-hover:opacity-50 rounded-tr-full transition-opacity duration-500`} />
             </motion.div>
           );
         })}
@@ -151,4 +116,3 @@ export default function HobbiesSection({ hobbies }: HobbiesSectionProps) {
     </Section>
   );
 }
-

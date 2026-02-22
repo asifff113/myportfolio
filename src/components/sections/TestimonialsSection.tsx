@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Quote, Star, Linkedin } from "lucide-react";
+import { Star, Linkedin } from "lucide-react";
 import { Testimonial } from "@/lib/content-types";
 import Section from "@/components/ui/Section";
 import SectionTitle from "@/components/ui/SectionTitle";
@@ -39,10 +39,11 @@ export default function TestimonialsSection({ testimonials }: TestimonialsSectio
   }
 
   return (
-    <Section id="testimonials" className="bg-muted/20">
+    <Section id="testimonials" sectionId="testimonials">
       <SectionTitle
         title="Testimonials"
         subtitle="What people say about working with me"
+        gradient="from-orange-400 via-amber-300 to-orange-300"
       />
 
       <motion.div
@@ -69,72 +70,48 @@ function TestimonialCard({ testimonial }: TestimonialCardProps) {
   return (
     <motion.div
       variants={itemVariants}
-      whileHover={{ y: -8, scale: 1.03 }}
-      className="glass-ultra p-6 md:p-8 rounded-2xl relative overflow-hidden group card-3d"
+      whileHover={{ y: -4 }}
+      className="bg-zinc-900/60 border border-zinc-800 hover:border-orange-400/30 p-6 rounded-2xl relative overflow-hidden group border-l-[3px] border-l-orange-400 transition-colors"
     >
-      {/* Quote Icon */}
-      <motion.div 
-        animate={{ 
-          scale: [1, 1.1, 1],
-          rotate: [0, 5, 0],
-        }}
-        transition={{ 
-          duration: 4, 
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className="absolute top-6 right-6 opacity-20 group-hover:opacity-40 transition-opacity"
-      >
-        <div className="relative">
-           <Quote size={56} className="text-transparent stroke-[3px] bg-gradient-to-br from-neon-purple to-neon-pink bg-clip-text" style={{ stroke: "url(#quote-gradient)" }} />
-           <svg width="0" height="0">
-             <linearGradient id="quote-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-               <stop stopColor="#a855f7" offset="0%" />
-               <stop stopColor="#ec4899" offset="100%" />
-             </linearGradient>
-           </svg>
-        </div>
-      </motion.div>
+      {/* Quote Icon - static SVG in warm orange */}
+      <div className="absolute top-6 right-6 opacity-20 group-hover:opacity-40 transition-opacity">
+        <svg
+          width="56"
+          height="56"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="text-orange-400"
+        >
+          <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21z" />
+          <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3z" />
+        </svg>
+      </div>
 
       {/* Rating */}
       {testimonial.rating && (
         <div className="flex gap-1 mb-4">
-          {Array.from({ length: 5 }).map((_, i) => {
-            // Rainbow colors for stars!
-            const starColors = [
-              "text-yellow-400 fill-yellow-400 drop-shadow-[0_0_10px_rgba(250,204,21,0.8)]",
-              "text-orange-400 fill-orange-400 drop-shadow-[0_0_10px_rgba(251,146,60,0.8)]",
-              "text-amber-400 fill-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.8)]",
-              "text-yellow-500 fill-yellow-500 drop-shadow-[0_0_10px_rgba(234,179,8,0.8)]",
-              "text-orange-500 fill-orange-500 drop-shadow-[0_0_10px_rgba(249,115,22,0.8)]",
-            ];
-            
-            return (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0, rotate: -180 }}
-                animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                transition={{ delay: i * 0.1, type: "spring" }}
-                whileHover={{ scale: 1.2, rotate: 10 }}
-              >
-                <Star
-                  size={20}
-                  className={
-                    i < testimonial.rating!
-                      ? starColors[i % starColors.length]
-                      : "text-muted-foreground/30"
-                  }
-                />
-              </motion.div>
-            );
-          })}
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Star
+              key={i}
+              size={18}
+              className={
+                i < testimonial.rating!
+                  ? "text-amber-400 fill-amber-400"
+                  : "text-zinc-700"
+              }
+            />
+          ))}
         </div>
       )}
 
       {/* Quote */}
       <blockquote className="relative z-10 mb-6">
-        <p className="text-muted-foreground leading-relaxed italic">
-          "{testimonial.quote}"
+        <p className="text-zinc-400 leading-relaxed italic">
+          &ldquo;{testimonial.quote}&rdquo;
         </p>
       </blockquote>
 
@@ -151,38 +128,29 @@ function TestimonialCard({ testimonial }: TestimonialCardProps) {
         {/* Details */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h4 className="font-bold truncate">{testimonial.name}</h4>
+            <h4 className="font-bold truncate text-zinc-100">{testimonial.name}</h4>
             {testimonial.linkedInUrl && (
               <a
                 href={testimonial.linkedInUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary hover:text-primary/80 transition-colors flex-shrink-0"
+                className="text-orange-400 hover:text-orange-300 transition-colors flex-shrink-0"
                 aria-label={`${testimonial.name}'s LinkedIn`}
               >
                 <Linkedin size={16} />
               </a>
             )}
           </div>
-          <p className="text-sm text-muted-foreground truncate">
+          <p className="text-sm text-zinc-400 truncate">
             {testimonial.role}
           </p>
           {testimonial.company && (
-            <p className="text-xs text-muted-foreground truncate">
+            <p className="text-xs text-zinc-500 truncate">
               {testimonial.company}
             </p>
           )}
         </div>
       </div>
-
-      {/* Decorative Element */}
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-neon-purple via-neon-pink to-neon-cyan opacity-50 group-hover:opacity-100 rounded-b-2xl shimmer transition-opacity duration-500" />
-      
-      {/* Hover Glow Effect */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl">
-        <div className="absolute inset-0 bg-gradient-to-br from-neon-purple/5 via-neon-pink/5 to-neon-cyan/5 animate-pulse" />
-      </div>
     </motion.div>
   );
 }
-

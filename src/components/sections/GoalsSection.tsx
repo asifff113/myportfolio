@@ -22,41 +22,38 @@ const containerVariants = {
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, x: -20 },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
-    x: 0,
+    y: 0,
     transition: {
       duration: 0.5,
     },
   },
 };
 
-// Category colors - MORE VIBRANT
+// Category colors
 const categoryColors: Record<string, string> = {
-  Career: "from-purple-500 via-pink-500 to-rose-500",
-  Education: "from-cyan-500 via-blue-500 to-indigo-500",
-  Personal: "from-pink-500 via-rose-500 to-red-500",
-  Technical: "from-blue-500 via-cyan-500 to-teal-500",
-  Other: "from-orange-500 via-amber-500 to-yellow-500",
+  Career: "from-purple-500 to-fuchsia-500",
+  Education: "from-fuchsia-500 to-purple-500",
+  Personal: "from-purple-400 to-pink-500",
+  Technical: "from-violet-500 to-purple-500",
+  Other: "from-fuchsia-400 to-purple-400",
 };
 
-// Priority badges - MORE COLORFUL
-const priorityConfig: Record<string, { color: string; gradient: string; label: string }> = {
-  High: { 
-    color: "bg-red-500/30 text-red-300 border-red-400/60 shadow-lg shadow-red-500/30", 
-    gradient: "from-red-500 via-pink-500 to-rose-500",
-    label: "High Priority" 
+// Priority badges
+const priorityConfig: Record<string, { color: string; label: string }> = {
+  High: {
+    color: "bg-red-500/10 text-red-400 border border-red-500/20",
+    label: "High Priority",
   },
-  Medium: { 
-    color: "bg-yellow-500/30 text-yellow-300 border-yellow-400/60 shadow-lg shadow-yellow-500/30", 
-    gradient: "from-yellow-500 via-amber-500 to-orange-500",
-    label: "Medium Priority" 
+  Medium: {
+    color: "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20",
+    label: "Medium Priority",
   },
-  Low: { 
-    color: "bg-green-500/30 text-green-300 border-green-400/60 shadow-lg shadow-green-500/30", 
-    gradient: "from-green-500 via-emerald-500 to-teal-500",
-    label: "Low Priority" 
+  Low: {
+    color: "bg-green-500/10 text-green-400 border border-green-500/20",
+    label: "Low Priority",
   },
 };
 
@@ -73,10 +70,11 @@ export default function GoalsSection({ goals }: GoalsSectionProps) {
   }
 
   return (
-    <Section id="future-goals" className="bg-muted/20">
+    <Section id="future-goals" sectionId="goals">
       <SectionTitle
         title="Future Goals"
         subtitle="My aspirations and what I'm working towards"
+        gradient="from-purple-400 via-fuchsia-400 to-purple-300"
       />
 
       <motion.div
@@ -84,123 +82,109 @@ export default function GoalsSection({ goals }: GoalsSectionProps) {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
-        className="relative"
+        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
       >
-        {/* Timeline Line */}
-        <div className="hidden lg:block absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-neon-purple via-neon-pink to-neon-cyan opacity-30" />
+        {goals.map((goal, index) => {
+          const StatusIcon = statusIcons[goal.status || "Planning"];
+          const gradientColor = categoryColors[goal.category || "Other"];
+          const progressPercent = goal.status === "Achieved" ? 100 : goal.status === "In Progress" ? 50 : 10;
+          // Slightly larger ring: r=28 => circumference = 2*pi*28 = 175.93
+          const circumference = 175.93;
+          const offset = circumference - (circumference * progressPercent) / 100;
 
-        {/* Goals */}
-        <div className="space-y-8">
-          {goals.map((goal, index) => {
-            const isEven = index % 2 === 0;
-            const StatusIcon = statusIcons[goal.status || "Planning"];
-            const gradientColor = categoryColors[goal.category || "Other"];
+          return (
+            <motion.div
+              key={goal.id || index}
+              variants={itemVariants}
+              whileHover={{ y: -4 }}
+              className={`bg-zinc-900/60 border border-zinc-800 hover:border-purple-500/30 rounded-2xl p-6 relative overflow-hidden group transition-colors border-t-2`}
+              style={{
+                borderTopColor: "transparent",
+              }}
+            >
+              {/* Category Gradient Top Border */}
+              <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${gradientColor}`} />
 
-            return (
-              <motion.div
-                key={goal.id || index}
-                variants={itemVariants}
-                className={`relative lg:w-1/2 ${isEven ? "lg:ml-auto lg:pl-12" : "lg:pr-12"}`}
-              >
-                {/* Timeline Dot */}
-                <div className="hidden lg:block absolute top-8 w-4 h-4 rounded-full bg-gradient-to-r from-neon-purple to-neon-cyan">
-                  <div className={`absolute inset-0 ${isEven ? "left-full ml-[-8px]" : "right-full mr-[-8px]"}`} />
+              {/* Progress Ring */}
+              <div className="absolute top-6 right-6">
+                <div className="relative w-18 h-18 flex items-center justify-center" style={{ width: "72px", height: "72px" }}>
+                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 64 64">
+                    <circle
+                      cx="32"
+                      cy="32"
+                      r="28"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="transparent"
+                      className="text-zinc-800"
+                    />
+                    <circle
+                      cx="32"
+                      cy="32"
+                      r="28"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="transparent"
+                      strokeDasharray={circumference}
+                      strokeDashoffset={offset}
+                      strokeLinecap="round"
+                      className={`${
+                        goal.status === "Achieved"
+                          ? "text-green-500"
+                          : goal.status === "In Progress"
+                          ? "text-purple-500"
+                          : "text-zinc-600"
+                      } transition-all duration-1000 ease-out`}
+                    />
+                  </svg>
+                  <span className="absolute text-xs font-bold text-zinc-300">
+                    {progressPercent}%
+                  </span>
                 </div>
+              </div>
 
-                {/* Goal Card */}
-                <motion.div
-                  whileHover={{ scale: 1.02, y: -8 }}
-                  className="glass-ultra p-6 md:p-8 rounded-2xl relative overflow-hidden group card-3d"
-                >
-                  {/* Category Gradient Bar */}
-                  <div className={`absolute top-0 left-0 right-0 h-2 bg-gradient-to-r ${gradientColor} shimmer`} />
-
-                  {/* Progress Ring */}
-                  <div className="absolute top-6 right-6">
-                    <div className="relative w-12 h-12 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <svg className="w-full h-full transform -rotate-90">
-                        <circle
-                          cx="24"
-                          cy="24"
-                          r="20"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                          fill="transparent"
-                          className="text-muted/20"
-                        />
-                        <circle
-                          cx="24"
-                          cy="24"
-                          r="20"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                          fill="transparent"
-                          strokeDasharray={125.6}
-                          strokeDashoffset={125.6 - (125.6 * (goal.status === "Achieved" ? 100 : goal.status === "In Progress" ? 50 : 10)) / 100}
-                          className={`${goal.status === "Achieved" ? "text-green-500" : goal.status === "In Progress" ? "text-blue-500" : "text-gray-500"} transition-all duration-1000 ease-out drop-shadow-[0_0_5px_rgba(var(--primary-rgb),0.5)]`}
-                        />
-                      </svg>
-                      <span className="absolute text-[10px] font-bold">
-                        {goal.status === "Achieved" ? "100%" : goal.status === "In Progress" ? "50%" : "10%"}
-                      </span>
-                    </div>
+              {/* Header */}
+              <div className="flex items-start justify-between mb-4 pr-24">
+                <div className="flex items-center gap-3">
+                  <div className={`p-3 rounded-xl bg-gradient-to-r ${gradientColor}`}>
+                    <Target className="text-white" size={22} />
                   </div>
-
-                  {/* Header */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <motion.div 
-                        whileHover={{ scale: 1.15, rotate: 10 }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                        className={`p-3 rounded-xl bg-gradient-to-r ${gradientColor} shimmer`}
-                      >
-                        <Target className="text-white" size={26} />
-                      </motion.div>
-                      <div>
-                        <h3 className="text-xl font-bold group-hover:text-gradient transition-all duration-300 neon-text-hover">{goal.title}</h3>
-                        <p className="text-sm text-muted-foreground">{goal.category}</p>
-                      </div>
-                    </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white group-hover:text-purple-300 transition-colors duration-300">
+                      {goal.title}
+                    </h3>
+                    <p className="text-sm text-zinc-500">{goal.category}</p>
                   </div>
+                </div>
+              </div>
 
-                  {/* Description */}
-                  <p className="text-muted-foreground mb-4 leading-relaxed">
-                    {goal.description}
-                  </p>
+              {/* Description */}
+              <p className="text-zinc-400 mb-4 leading-relaxed">
+                {goal.description}
+              </p>
 
-                  {/* Metadata */}
-                  <div className="flex flex-wrap gap-3 items-center">
-                    {/* Timeframe */}
-                    {goal.targetDate && (
-                      <span className="inline-flex items-center gap-2 px-3 py-1 glass rounded-full text-xs font-medium">
-                        <Clock size={14} />
-                        {new Date(goal.targetDate).toLocaleDateString()}
-                      </span>
-                    )}
+              {/* Metadata */}
+              <div className="flex flex-wrap gap-3 items-center">
+                {/* Timeframe */}
+                {goal.targetDate && (
+                  <span className="inline-flex items-center gap-2 px-3 py-1 bg-zinc-800 border border-zinc-700 rounded-full text-xs font-medium text-zinc-300">
+                    <Clock size={14} />
+                    {new Date(goal.targetDate).toLocaleDateString()}
+                  </span>
+                )}
 
-
-
-                    {/* Status */}
-                    {goal.status && StatusIcon && (
-                      <span className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
-                        <StatusIcon size={14} />
-                        {goal.status}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Enhanced Hover Glow Effect */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${gradientColor} opacity-10 animate-pulse`} />
-                    <div className="absolute inset-0 neon-glow" />
-                  </div>
-                </motion.div>
-              </motion.div>
-            );
-          })}
-        </div>
+                {/* Status */}
+                {goal.status && StatusIcon && (
+                  <span className="inline-flex items-center gap-2 px-3 py-1 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-full text-xs font-medium">
+                    <StatusIcon size={14} />
+                    {goal.status}
+                  </span>
+                )}
+              </div>
+            </motion.div>
+          );
+        })}
       </motion.div>
     </Section>
   );
 }
-

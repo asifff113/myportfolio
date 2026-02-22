@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Calendar, Clock, Eye, ArrowRight } from "lucide-react";
+import { Calendar, Clock, Eye, ArrowRight, FileText } from "lucide-react";
 import { BlogPost } from "@/lib/content-types";
 import Section from "@/components/ui/Section";
 import SectionTitle from "@/components/ui/SectionTitle";
@@ -43,10 +43,11 @@ export default function BlogSection({ blogPosts }: BlogSectionProps) {
   }
 
   return (
-    <Section id="blog">
+    <Section id="blog" sectionId="blog">
       <SectionTitle
         title="Blog & Articles"
         subtitle="Thoughts, tutorials, and insights I want to share"
+        gradient="from-teal-400 via-emerald-400 to-teal-300"
       />
 
       <motion.div
@@ -75,34 +76,28 @@ function BlogCard({ post }: BlogCardProps) {
   return (
     <motion.article
       variants={itemVariants}
-      whileHover={{ y: -10, scale: 1.02 }}
-      className="glass-ultra rounded-2xl overflow-hidden group card-3d"
+      whileHover={{ y: -6 }}
+      className="bg-zinc-900/60 border border-zinc-800 hover:border-teal-500/30 rounded-2xl overflow-hidden group transition-colors"
     >
       {/* Cover Image */}
-      <div className="relative h-48 bg-gradient-to-br from-neon-purple/20 to-neon-pink/20 overflow-hidden">
+      <div className="relative h-48 bg-zinc-800 overflow-hidden">
         {!imageError && post.coverImageUrl ? (
           <Image
             src={post.coverImageUrl}
             alt={post.title}
             fill
-            className="object-cover transition-all duration-500 group-hover:scale-110 group-hover:rotate-1"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
             onError={() => setImageError(true)}
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-animated">
-            <motion.div 
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              className="text-6xl"
-            >
-              📝
-            </motion.div>
+          <div className="w-full h-full flex items-center justify-center bg-zinc-800/80">
+            <FileText size={48} className="text-zinc-600" />
           </div>
         )}
 
-        {/* Enhanced Overlay Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-accent/0 to-secondary/0 group-hover:from-primary/20 group-hover:via-accent/10 group-hover:to-secondary/20 transition-all duration-500" />
+        {/* Bottom gradient fade */}
+        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-zinc-900/80 to-transparent" />
       </div>
 
       {/* Content */}
@@ -110,30 +105,16 @@ function BlogCard({ post }: BlogCardProps) {
         {/* Tags */}
         {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
-            {post.tags.slice(0, 2).map((tag, index) => {
-              // Colorful gradients for tags
-              const tagColors = [
-                "from-blue-500 to-cyan-500",
-                "from-purple-500 to-pink-500",
-                "from-green-500 to-emerald-500",
-                "from-orange-500 to-red-500",
-                "from-indigo-500 to-purple-500",
-              ];
-              const tagColor = tagColors[index % tagColors.length];
-              
-              return (
-                <motion.span
-                  key={index}
-                  whileHover={{ scale: 1.1, y: -2 }}
-                  className={`px-3 py-1.5 bg-gradient-to-r ${tagColor} bg-opacity-20 text-white rounded-lg text-xs font-bold border border-white/30 hover:border-white/60 hover:shadow-lg transition-all cursor-default relative overflow-hidden group/tag`}
-                >
-                  <span className="relative z-10">{tag}</span>
-                  <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/tag:opacity-100 transition-opacity" />
-                </motion.span>
-              );
-            })}
+            {post.tags.slice(0, 2).map((tag, index) => (
+              <span
+                key={index}
+                className="bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded-md px-2 py-1"
+              >
+                {tag}
+              </span>
+            ))}
             {post.tags.length > 2 && (
-              <span className="px-2 py-1 text-muted-foreground text-xs">
+              <span className="px-2 py-1 text-zinc-500 text-xs">
                 +{post.tags.length - 2}
               </span>
             )}
@@ -141,17 +122,17 @@ function BlogCard({ post }: BlogCardProps) {
         )}
 
         {/* Title */}
-        <h3 className="text-xl font-bold mb-3 group-hover:text-gradient transition-all duration-300 line-clamp-2 neon-text-hover">
+        <h3 className="text-xl font-bold mb-3 text-white group-hover:text-teal-300 transition-colors duration-300 line-clamp-2">
           {post.title}
         </h3>
 
         {/* Excerpt */}
-        <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
+        <p className="text-sm text-zinc-400 mb-4 line-clamp-3">
           {post.excerpt}
         </p>
 
         {/* Metadata */}
-        <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground mb-4">
+        <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-500 mb-4">
           {/* Date */}
           <div className="flex items-center gap-1">
             <Calendar size={14} />
@@ -178,31 +159,12 @@ function BlogCard({ post }: BlogCardProps) {
         {/* Read More Link */}
         <a
           href={`/blog/${post.slug}`}
-          className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-semibold text-sm group/link"
+          className="inline-flex items-center gap-2 text-teal-400 hover:text-teal-300 transition-colors font-semibold text-sm group/link"
         >
           <span>Read More</span>
           <ArrowRight size={16} className="transition-transform group-hover/link:translate-x-1" />
         </a>
       </div>
-
-      {/* Enhanced Hover Glow Effect */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-neon-purple/10 via-neon-pink/10 to-neon-cyan/10 animate-pulse" />
-        <div className="absolute inset-0 neon-glow" />
-      </div>
-      
-      {/* Floating particles on hover */}
-      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-        <motion.div
-          animate={{ y: [0, -10, 0], opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="w-2 h-2 bg-neon-cyan rounded-full neon-glow"
-        />
-      </div>
     </motion.article>
   );
 }
-
-// Add useState import at top
-import { useState } from "react";
-

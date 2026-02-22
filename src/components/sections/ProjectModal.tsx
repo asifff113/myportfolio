@@ -35,11 +35,11 @@ export default function ProjectModal({ project, isOpen, onClose }: ProjectModalP
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 pointer-events-none"
           >
-            <div className="bg-[#0a0a0a] border border-white/10 w-full max-w-4xl max-h-[90vh] rounded-3xl overflow-hidden shadow-2xl flex flex-col pointer-events-auto relative">
+            <div className="bg-zinc-950 border border-zinc-800 w-full max-w-5xl max-h-[90vh] rounded-2xl overflow-hidden shadow-2xl flex flex-col pointer-events-auto relative">
               {/* Close Button */}
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 p-2 bg-black/50 hover:bg-white/10 rounded-full text-white/70 hover:text-white transition-colors z-10 backdrop-blur-md"
+                className="absolute top-4 right-4 p-2 bg-zinc-800 hover:bg-zinc-700 rounded-full text-zinc-400 hover:text-white transition-colors z-10"
               >
                 <X size={24} />
               </button>
@@ -52,17 +52,17 @@ export default function ProjectModal({ project, isOpen, onClose }: ProjectModalP
                   fill
                   className="object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 to-transparent" />
                 <div className="absolute bottom-0 left-0 p-6 sm:p-8">
                   <h2 className="text-3xl sm:text-4xl font-bold text-white mb-2">{project.title}</h2>
                   <div className="flex flex-wrap gap-2">
                     {project.category && (
-                      <span className="px-3 py-1 bg-primary/20 text-primary rounded-full text-sm font-medium border border-primary/20">
+                      <span className="px-3 py-1 bg-zinc-800/80 text-zinc-300 rounded-full text-sm font-medium border border-zinc-700">
                         {project.category}
                       </span>
                     )}
                     {project.featured && (
-                      <span className="px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-sm font-medium border border-yellow-500/20">
+                      <span className="px-3 py-1 bg-yellow-500/15 text-yellow-400 rounded-full text-sm font-medium border border-yellow-500/20">
                         Featured
                       </span>
                     )}
@@ -77,7 +77,7 @@ export default function ProjectModal({ project, isOpen, onClose }: ProjectModalP
                   <div className="lg:col-span-2 space-y-8">
                     {/* Summary */}
                     <div>
-                      <p className="text-lg text-muted-foreground leading-relaxed">
+                      <p className="text-lg text-zinc-400 leading-relaxed">
                         {project.description || project.summary}
                       </p>
                     </div>
@@ -86,32 +86,32 @@ export default function ProjectModal({ project, isOpen, onClose }: ProjectModalP
                     {(project.problem || project.solution || project.challenges) && (
                       <div className="space-y-6">
                         {project.problem && (
-                          <div className="glass p-6 rounded-xl border-l-4 border-red-500">
+                          <div className="bg-zinc-900/60 border border-zinc-800 p-6 rounded-xl border-l-4 border-l-red-500">
                             <h3 className="text-xl font-bold mb-3 flex items-center gap-2 text-white">
                               <AlertTriangle className="text-red-500" size={20} />
                               The Problem
                             </h3>
-                            <p className="text-muted-foreground">{project.problem}</p>
+                            <p className="text-zinc-400">{project.problem}</p>
                           </div>
                         )}
 
                         {project.solution && (
-                          <div className="glass p-6 rounded-xl border-l-4 border-green-500">
+                          <div className="bg-zinc-900/60 border border-zinc-800 p-6 rounded-xl border-l-4 border-l-green-500">
                             <h3 className="text-xl font-bold mb-3 flex items-center gap-2 text-white">
                               <Lightbulb className="text-green-500" size={20} />
                               The Solution
                             </h3>
-                            <p className="text-muted-foreground">{project.solution}</p>
+                            <p className="text-zinc-400">{project.solution}</p>
                           </div>
                         )}
 
                         {project.challenges && (
-                          <div className="glass p-6 rounded-xl border-l-4 border-orange-500">
+                          <div className="bg-zinc-900/60 border border-zinc-800 p-6 rounded-xl border-l-4 border-l-orange-500">
                             <h3 className="text-xl font-bold mb-3 flex items-center gap-2 text-white">
                               <Layers className="text-orange-500" size={20} />
                               Technical Challenges
                             </h3>
-                            <p className="text-muted-foreground">{project.challenges}</p>
+                            <p className="text-zinc-400">{project.challenges}</p>
                           </div>
                         )}
                       </div>
@@ -127,7 +127,7 @@ export default function ProjectModal({ project, isOpen, onClose }: ProjectModalP
                           href={project.liveUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center justify-center gap-2 w-full py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-bold transition-all shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-1"
+                          className="flex items-center justify-center gap-2 w-full py-3 bg-white text-zinc-900 rounded-xl font-bold transition-all hover:bg-zinc-200 hover:-translate-y-1"
                         >
                           <ExternalLink size={20} />
                           View Live Demo
@@ -138,7 +138,7 @@ export default function ProjectModal({ project, isOpen, onClose }: ProjectModalP
                           href={project.githubUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center justify-center gap-2 w-full py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold transition-all border border-white/10 hover:border-white/30"
+                          className="flex items-center justify-center gap-2 w-full py-3 bg-zinc-900/60 hover:bg-zinc-800 text-white rounded-xl font-bold transition-all border border-zinc-700 hover:border-zinc-600"
                         >
                           <Github size={20} />
                           View Source Code
@@ -147,16 +147,16 @@ export default function ProjectModal({ project, isOpen, onClose }: ProjectModalP
                     </div>
 
                     {/* Tech Stack */}
-                    <div className="glass-ultra p-5 rounded-xl">
-                      <h3 className="font-bold mb-4 flex items-center gap-2">
-                        <Layers size={18} className="text-primary" />
+                    <div className="bg-zinc-900/60 border border-zinc-800 p-5 rounded-xl">
+                      <h3 className="font-bold mb-4 flex items-center gap-2 text-zinc-100">
+                        <Layers size={18} className="text-zinc-400" />
                         Tech Stack
                       </h3>
                       <div className="flex flex-wrap gap-2">
                         {project.techStack.map((tech) => (
                           <span
                             key={tech}
-                            className="px-3 py-1 bg-white/5 hover:bg-white/10 text-xs font-medium rounded-lg border border-white/10 transition-colors"
+                            className="bg-zinc-800 border border-zinc-700 text-zinc-300 rounded-md px-2.5 py-1 text-sm font-medium"
                           >
                             {tech}
                           </span>
@@ -166,13 +166,13 @@ export default function ProjectModal({ project, isOpen, onClose }: ProjectModalP
 
                     {/* Stack Details */}
                     {project.stackDetails && (
-                      <div className="glass-ultra p-5 rounded-xl">
-                        <h3 className="font-bold mb-4">Architecture Highlights</h3>
+                      <div className="bg-zinc-900/60 border border-zinc-800 p-5 rounded-xl">
+                        <h3 className="font-bold mb-4 text-zinc-100">Architecture Highlights</h3>
                         <ul className="space-y-3">
                           {project.stackDetails.map((detail, idx) => (
                             <li key={idx} className="text-sm">
-                              <span className="font-bold text-primary block mb-1">{detail.name}</span>
-                              <span className="text-muted-foreground">{detail.usage}</span>
+                              <span className="font-bold text-zinc-200 block mb-1">{detail.name}</span>
+                              <span className="text-zinc-400">{detail.usage}</span>
                             </li>
                           ))}
                         </ul>

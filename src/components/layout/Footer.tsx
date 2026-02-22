@@ -1,55 +1,50 @@
 "use client";
 
 import React from "react";
-import { Github, Linkedin, Mail, Twitter, ArrowUp } from "lucide-react";
+import { Github, Linkedin, Mail, Twitter } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 
-// TODO: Replace these with your actual social links
 const socialLinks = [
-  { name: "GitHub", icon: Github, href: "https://github.com/yourusername" },
-  { name: "LinkedIn", icon: Linkedin, href: "https://linkedin.com/in/yourusername" },
-  { name: "Twitter", icon: Twitter, href: "https://twitter.com/yourusername" },
-  { name: "Email", icon: Mail, href: "mailto:your.email@example.com" },
+  { name: "GitHub", icon: Github, href: "https://github.com/yourusername", hoverColor: "hover:bg-zinc-700/50 hover:text-white" },
+  { name: "LinkedIn", icon: Linkedin, href: "https://linkedin.com/in/yourusername", hoverColor: "hover:bg-blue-500/20 hover:text-blue-400" },
+  { name: "Twitter", icon: Twitter, href: "https://twitter.com/yourusername", hoverColor: "hover:bg-sky-500/20 hover:text-sky-400" },
+  { name: "Email", icon: Mail, href: "mailto:your.email@example.com", hoverColor: "hover:bg-red-500/20 hover:text-red-400" },
 ];
 
 export default function Footer() {
   const { t } = useLanguage();
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
 
   return (
-    <footer className="relative glass border-t border-border mt-20">
+    <footer className="relative border-t border-zinc-800/50 mt-20 bg-zinc-950/50">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           {/* Brand Section */}
           <div>
-            <h3 className="text-2xl font-display font-bold text-gradient mb-4">
-              {/* Your full name */}
+            <h3 className="text-2xl font-display font-bold text-white mb-4">
               Md Asif Istiaque Zaman
             </h3>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-zinc-500 text-sm">
               {t.hero.description}
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">{t.sections.footer.quickLinks}</h4>
+            <h4 className="text-lg font-semibold mb-4 text-zinc-300">{t.sections.footer.quickLinks}</h4>
             <ul className="space-y-2">
               <li>
-                <a href="#about" className="text-muted-foreground hover:text-primary transition-colors text-sm">
+                <a href="#about" className="text-zinc-500 hover:text-zinc-300 transition-colors text-sm">
                   {t.nav.about}
                 </a>
               </li>
               <li>
-                <a href="#projects" className="text-muted-foreground hover:text-primary transition-colors text-sm">
+                <a href="#projects" className="text-zinc-500 hover:text-zinc-300 transition-colors text-sm">
                   {t.nav.projects}
                 </a>
               </li>
               <li>
-                <a href="#contact" className="text-muted-foreground hover:text-primary transition-colors text-sm">
+                <a href="#contact" className="text-zinc-500 hover:text-zinc-300 transition-colors text-sm">
                   {t.nav.contact}
                 </a>
               </li>
@@ -58,8 +53,8 @@ export default function Footer() {
 
           {/* Social Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Connect</h4>
-            <div className="flex gap-4">
+            <h4 className="text-lg font-semibold mb-4 text-zinc-300">Connect</h4>
+            <div className="flex gap-3">
               {socialLinks.map((social) => {
                 const Icon = social.icon;
                 return (
@@ -68,12 +63,12 @@ export default function Footer() {
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    whileHover={{ scale: 1.1, y: -2 }}
+                    whileHover={{ scale: 1.05, y: -2 }}
                     whileTap={{ scale: 0.95 }}
-                    className="p-3 glass rounded-lg hover:bg-primary/20 transition-colors"
+                    className={`p-2.5 rounded-lg bg-zinc-800/50 border border-zinc-700/30 text-zinc-400 transition-colors ${social.hoverColor}`}
                     aria-label={social.name}
                   >
-                    <Icon size={20} />
+                    <Icon size={18} />
                   </motion.a>
                 );
               })}
@@ -82,11 +77,11 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-muted-foreground text-sm text-center md:text-left">
-            © {new Date().getFullYear()} Md Asif Istiaque Zaman. {t.sections.footer.rights}
+        <div className="border-t border-zinc-800/50 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-zinc-600 text-sm text-center md:text-left">
+            &copy; {new Date().getFullYear()} Md Asif Istiaque Zaman. {t.sections.footer.rights}
           </p>
-          <p className="text-muted-foreground text-xs flex items-center gap-1">
+          <p className="text-zinc-600 text-xs flex items-center gap-1">
             {t.sections.footer.builtWith}
           </p>
         </div>
@@ -94,4 +89,3 @@ export default function Footer() {
     </footer>
   );
 }
-

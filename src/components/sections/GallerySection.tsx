@@ -87,10 +87,11 @@ export default function GallerySection({ gallery }: GallerySectionProps) {
   }, [selectedImage]);
 
   return (
-    <Section id="gallery" className="bg-muted/20">
+    <Section id="gallery" sectionId="gallery">
       <SectionTitle
         title="Gallery"
         subtitle="Moments and memories captured along the way"
+        gradient="from-rose-400 via-pink-400 to-rose-300"
       />
 
       {/* Category Filters */}
@@ -101,35 +102,21 @@ export default function GallerySection({ gallery }: GallerySectionProps) {
           viewport={{ once: true }}
           className="flex flex-wrap justify-center gap-3 mb-12"
         >
-          {categories.map((category, idx) => {
-            const catColors = [
-              "from-blue-500 to-cyan-500",
-              "from-purple-500 to-pink-500",
-              "from-green-500 to-emerald-500",
-              "from-orange-500 to-amber-500",
-              "from-red-500 to-pink-500",
-            ];
-            const catColor = catColors[idx % catColors.length];
-            
-            return (
-              <motion.button
-                key={category}
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setFilter(category)}
-                className={`px-6 py-3 rounded-full font-bold transition-all ripple relative overflow-hidden ${
-                  filter === category
-                    ? `bg-gradient-to-r ${catColor} text-white shadow-[0_0_20px_rgba(var(--primary-rgb),0.5)] border-2 border-white/50 scale-105`
-                    : "glass-ultra hover:bg-primary/20 border-2 border-transparent hover:border-white/20 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]"
-                }`}
-              >
-                <span className="relative z-10">{category}</span>
-                {filter === category && (
-                  <div className="absolute inset-0 bg-white/20 animate-pulse" />
-                )}
-              </motion.button>
-            );
-          })}
+          {categories.map((category) => (
+            <motion.button
+              key={category}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setFilter(category)}
+              className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
+                filter === category
+                  ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/20"
+                  : "bg-zinc-800/50 border border-zinc-700/30 text-zinc-400 hover:text-zinc-200 hover:border-zinc-600"
+              }`}
+            >
+              {category}
+            </motion.button>
+          ))}
         </motion.div>
       )}
 
@@ -183,9 +170,9 @@ function GalleryCard({ item, onClick }: GalleryCardProps) {
   return (
     <motion.div
       variants={itemVariants}
-      whileHover={{ scale: 1.05, y: -5 }}
+      whileHover={{ y: -4, scale: 1.02 }}
       onClick={onClick}
-      className="relative aspect-square glass-ultra rounded-2xl overflow-hidden cursor-pointer group card-3d"
+      className="relative aspect-square bg-zinc-900/60 border border-zinc-800 rounded-2xl overflow-hidden cursor-pointer group"
     >
       {/* Image */}
       {!imageError ? (
@@ -193,51 +180,36 @@ function GalleryCard({ item, onClick }: GalleryCardProps) {
           src={item.imageUrl}
           alt={item.title}
           fill
-          className="object-cover transition-all duration-500 group-hover:scale-110 group-hover:rotate-1"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
           onError={() => setImageError(true)}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
         />
       ) : (
-        <div className="w-full h-full flex items-center justify-center bg-gradient-animated">
-          <span className="text-muted-foreground">Image not found</span>
+        <div className="w-full h-full flex items-center justify-center bg-zinc-800">
+          <span className="text-zinc-500">Image not found</span>
         </div>
       )}
-      
-      {/* Animated overlay gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-accent/0 to-secondary/0 group-hover:from-primary/20 group-hover:via-accent/10 group-hover:to-secondary/20 transition-all duration-500" />
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-        <h3 className="text-lg font-bold mb-1">{item.title}</h3>
+      <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+        <h3 className="text-lg font-bold text-white mb-1">{item.title}</h3>
         {item.description && (
-          <p className="text-sm text-muted-foreground line-clamp-2">
+          <p className="text-sm text-zinc-400 line-clamp-2">
             {item.description}
           </p>
         )}
         {item.category && (
-          <span className="inline-block mt-2 px-3 py-1 glass rounded-full text-xs font-medium w-fit">
+          <span className="inline-block mt-2 px-3 py-1 bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-full text-xs font-medium w-fit">
             {item.category}
           </span>
         )}
       </div>
 
       {/* Expand Icon */}
-      <motion.div
-        initial={{ scale: 0 }}
-        whileInView={{ scale: 1 }}
-        className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity"
-      >
-        <motion.div 
-          whileHover={{ scale: 1.2, rotate: 10 }}
-          className="p-2 glass-ultra rounded-full neon-glow-hover"
-        >
-          <Maximize2 size={18} />
-        </motion.div>
-      </motion.div>
-      
-      {/* Enhanced hover glow */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl">
-        <div className="absolute inset-0 neon-glow" />
+      <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="p-2 bg-zinc-900/80 border border-zinc-700 rounded-full">
+          <Maximize2 size={16} className="text-zinc-300" />
+        </div>
       </div>
     </motion.div>
   );
@@ -260,7 +232,7 @@ function Lightbox({ items, currentIndex, onClose, onPrevious, onNext }: Lightbox
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-zinc-950/95 flex items-center justify-center p-4"
       onClick={onClose}
     >
       {/* Close Button */}
@@ -268,10 +240,10 @@ function Lightbox({ items, currentIndex, onClose, onPrevious, onNext }: Lightbox
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={onClose}
-        className="absolute top-4 right-4 p-3 glass rounded-full hover:bg-primary/20 transition-colors z-10"
+        className="absolute top-4 right-4 p-3 bg-zinc-900 border border-zinc-800 rounded-full hover:border-zinc-600 transition-colors z-10"
         aria-label="Close lightbox"
       >
-        <X size={24} />
+        <X size={24} className="text-zinc-300" />
       </motion.button>
 
       {/* Navigation Buttons */}
@@ -284,10 +256,10 @@ function Lightbox({ items, currentIndex, onClose, onPrevious, onNext }: Lightbox
               e.stopPropagation();
               onPrevious();
             }}
-            className="absolute left-4 p-3 glass rounded-full hover:bg-primary/20 transition-colors z-10"
+            className="absolute left-4 p-3 bg-zinc-900 border border-zinc-800 rounded-full hover:border-zinc-600 transition-colors z-10"
             aria-label="Previous image"
           >
-            <ChevronLeft size={24} />
+            <ChevronLeft size={24} className="text-zinc-300" />
           </motion.button>
 
           <motion.button
@@ -297,10 +269,10 @@ function Lightbox({ items, currentIndex, onClose, onPrevious, onNext }: Lightbox
               e.stopPropagation();
               onNext();
             }}
-            className="absolute right-4 p-3 glass rounded-full hover:bg-primary/20 transition-colors z-10"
+            className="absolute right-4 p-3 bg-zinc-900 border border-zinc-800 rounded-full hover:border-zinc-600 transition-colors z-10"
             aria-label="Next image"
           >
-            <ChevronRight size={24} />
+            <ChevronRight size={24} className="text-zinc-300" />
           </motion.button>
         </>
       )}
@@ -315,7 +287,7 @@ function Lightbox({ items, currentIndex, onClose, onPrevious, onNext }: Lightbox
         className="relative max-w-6xl max-h-[90vh] w-full"
       >
         {/* Main Image */}
-        <div className="relative aspect-video md:aspect-auto md:h-[70vh] rounded-xl overflow-hidden glass">
+        <div className="relative aspect-video md:aspect-auto md:h-[70vh] rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-800">
           <Image
             src={currentItem.imageUrl}
             alt={currentItem.title}
@@ -327,23 +299,23 @@ function Lightbox({ items, currentIndex, onClose, onPrevious, onNext }: Lightbox
         </div>
 
         {/* Image Info */}
-        <div className="mt-4 glass p-6 rounded-xl">
+        <div className="mt-4 bg-zinc-900/80 border border-zinc-800 p-6 rounded-2xl">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-bold mb-2">{currentItem.title}</h2>
+              <h2 className="text-2xl font-bold text-white mb-2">{currentItem.title}</h2>
               {currentItem.description && (
-                <p className="text-muted-foreground">{currentItem.description}</p>
+                <p className="text-zinc-400">{currentItem.description}</p>
               )}
             </div>
             {currentItem.category && (
-              <span className="px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium flex-shrink-0">
+              <span className="px-4 py-2 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-full text-sm font-medium flex-shrink-0">
                 {currentItem.category}
               </span>
             )}
           </div>
 
           {/* Counter */}
-          <div className="mt-4 text-sm text-muted-foreground text-center">
+          <div className="mt-4 text-sm text-zinc-500 text-center">
             {currentIndex + 1} / {items.length}
           </div>
         </div>
@@ -351,4 +323,3 @@ function Lightbox({ items, currentIndex, onClose, onPrevious, onNext }: Lightbox
     </motion.div>
   );
 }
-
