@@ -28,13 +28,20 @@ export default function Section({
       id={id}
       data-section={sectionId || id}
       className={cn(
-        "relative",
+        "relative overflow-visible",
         !noPadding && "py-20 md:py-28",
         className
       )}
     >
-      <Container size={containerSize}>
-        {children}
+      <div className="pointer-events-none absolute inset-x-0 top-6 h-28 opacity-90">
+        <div className="absolute left-[8%] top-0 h-20 w-20 rounded-full blur-2xl bg-[rgba(var(--section-rgb),0.18)]" />
+        <div className="absolute right-[10%] top-8 h-16 w-28 rounded-full blur-2xl bg-[rgba(var(--section-rgb),0.14)]" />
+      </div>
+
+      <Container size={containerSize} className="relative z-10">
+        <div className="section-shell">
+          {children}
+        </div>
       </Container>
     </section>
   );

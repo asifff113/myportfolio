@@ -1,0 +1,17 @@
+
+> futuristic-portfolio@0.1.0 dev D:\projects\portfolio app professional
+> next dev
+
+  ▲ Next.js 14.2.33
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+   automatically enabled Fast Refresh for 1 custom loader
+ ✓ Ready in 1710ms
+ ○ Compiling / ...
+ ✓ Compiled / in 3.4s (3107 modules)
+✅ Supabase initialized successfully
+ ✓ Compiled in 342ms (1497 modules)
+✅ Supabase initialized successfully
+ GET / 200 in 5356ms

@@ -76,7 +76,7 @@ export default async function RootLayout({
           defaultTheme="dark"
           enableSystem={false}
           forcedTheme="dark"
-          disableTransitionOnChange={false}
+          disableTransitionOnChange={true}
         >
           <LanguageProvider>
             <GoogleTranslateFix />

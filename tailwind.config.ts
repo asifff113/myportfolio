@@ -68,7 +68,7 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
+        sans: ["var(--font-space-grotesk)", "var(--font-inter)", "Inter", "system-ui", "sans-serif"],
         display: ["var(--font-orbitron)", "Orbitron", "sans-serif"],
       },
       backgroundImage: {
