@@ -77,10 +77,10 @@ function BlogCard({ post }: BlogCardProps) {
     <motion.article
       variants={itemVariants}
       whileHover={{ y: -6 }}
-      className="bg-white/55 backdrop-blur-xl border border-teal-200/30 hover:border-teal-300/50 rounded-2xl overflow-hidden group transition-all shadow-sm hover:shadow-lg hover:shadow-teal-200/15"
+      className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-teal-500/20 hover:border-teal-400/40 rounded-2xl overflow-hidden group transition-all shadow-sm hover:shadow-lg hover:shadow-teal-500/15"
     >
       {/* Cover Image */}
-      <div className="relative h-48 bg-teal-50 overflow-hidden">
+      <div className="relative h-48 bg-teal-500/15 overflow-hidden">
         {!imageError && post.coverImageUrl ? (
           <Image
             src={post.coverImageUrl}
@@ -91,7 +91,7 @@ function BlogCard({ post }: BlogCardProps) {
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-teal-50">
+          <div className="w-full h-full flex items-center justify-center bg-teal-500/15">
             <FileText size={48} className="text-teal-300" />
           </div>
         )}
@@ -108,7 +108,7 @@ function BlogCard({ post }: BlogCardProps) {
             {post.tags.slice(0, 2).map((tag, index) => (
               <span
                 key={index}
-                className="bg-teal-50 border border-teal-200/40 text-xs text-teal-700 rounded-md px-2 py-1"
+                className="bg-teal-500/15 border border-teal-200/40 text-xs text-teal-300 rounded-md px-2 py-1"
               >
                 {tag}
               </span>
@@ -122,12 +122,12 @@ function BlogCard({ post }: BlogCardProps) {
         )}
 
         {/* Title */}
-        <h3 className="text-xl font-bold mb-3 text-slate-800 group-hover:text-teal-600 transition-colors duration-300 line-clamp-2">
+        <h3 className="text-xl font-bold mb-3 text-white group-hover:text-teal-400 transition-colors duration-300 line-clamp-2">
           {post.title}
         </h3>
 
         {/* Excerpt */}
-        <p className="text-sm text-slate-500 mb-4 line-clamp-3">
+        <p className="text-sm text-slate-400 mb-4 line-clamp-3">
           {post.excerpt}
         </p>
 
@@ -159,7 +159,7 @@ function BlogCard({ post }: BlogCardProps) {
         {/* Read More Link */}
         <a
           href={`/blog/${post.slug}`}
-          className="inline-flex items-center gap-2 text-teal-600 hover:text-teal-500 transition-colors font-semibold text-sm group/link"
+          className="inline-flex items-center gap-2 text-teal-400 hover:text-teal-300 transition-colors font-semibold text-sm group/link"
         >
           <span>Read More</span>
           <ArrowRight size={16} className="transition-transform group-hover/link:translate-x-1" />

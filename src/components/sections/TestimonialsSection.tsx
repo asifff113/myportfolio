@@ -71,7 +71,7 @@ function TestimonialCard({ testimonial }: TestimonialCardProps) {
     <motion.div
       variants={itemVariants}
       whileHover={{ y: -4 }}
-      className="bg-white/55 backdrop-blur-xl border border-orange-200/30 hover:border-orange-300/50 p-6 rounded-2xl relative overflow-hidden group border-l-[3px] border-l-orange-400 transition-all shadow-sm hover:shadow-lg hover:shadow-orange-200/15"
+      className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-orange-500/20 hover:border-orange-400/40 p-6 rounded-2xl relative overflow-hidden group border-l-[3px] border-l-orange-400 transition-all shadow-sm hover:shadow-lg hover:shadow-orange-500/15"
     >
       {/* Quote Icon - static SVG in warm orange */}
       <div className="absolute top-6 right-6 opacity-20 group-hover:opacity-40 transition-opacity">
@@ -110,7 +110,7 @@ function TestimonialCard({ testimonial }: TestimonialCardProps) {
 
       {/* Quote */}
       <blockquote className="relative z-10 mb-6">
-        <p className="text-slate-600 leading-relaxed italic">
+        <p className="text-slate-300 leading-relaxed italic">
           &ldquo;{testimonial.quote}&rdquo;
         </p>
       </blockquote>
@@ -128,20 +128,20 @@ function TestimonialCard({ testimonial }: TestimonialCardProps) {
         {/* Details */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h4 className="font-bold truncate text-slate-800">{testimonial.name}</h4>
+            <h4 className="font-bold truncate text-white">{testimonial.name}</h4>
             {testimonial.linkedInUrl && (
               <a
                 href={testimonial.linkedInUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-orange-600 hover:text-orange-500 transition-colors flex-shrink-0"
+                className="text-orange-400 hover:text-orange-500 transition-colors flex-shrink-0"
                 aria-label={`${testimonial.name}'s LinkedIn`}
               >
                 <Linkedin size={16} />
               </a>
             )}
           </div>
-          <p className="text-sm text-slate-500 truncate">
+          <p className="text-sm text-slate-400 truncate">
             {testimonial.role}
           </p>
           {testimonial.company && (

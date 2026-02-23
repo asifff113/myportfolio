@@ -89,7 +89,7 @@ export default function SkillsSearchFilter({
             placeholder="Search skills by name or description..."
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full pl-20 pr-16 py-4 bg-transparent text-lg font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none relative z-10"
+            className="w-full pl-20 pr-16 py-4 bg-transparent text-lg font-medium text-white placeholder:text-slate-500 focus:outline-none relative z-10"
           />
           {searchQuery && (
             <motion.button
@@ -128,7 +128,7 @@ export default function SkillsSearchFilter({
           >
             {/* Category Filters - ENHANCED */}
             <div>
-              <div className="text-base text-slate-500 mb-4 font-bold uppercase tracking-wide">
+              <div className="text-base text-slate-400 mb-4 font-bold uppercase tracking-wide">
                 Category
               </div>
               <div className="flex flex-wrap gap-3">
@@ -155,7 +155,7 @@ export default function SkillsSearchFilter({
                       className={`px-5 py-3 rounded-xl text-sm font-bold transition-all relative overflow-hidden shadow-lg ${
                         isActive
                           ? `bg-gradient-to-r ${gradient} text-white border-2 border-white/30`
-                          : "glass-ultra border-2 border-white/10 hover:border-white/20 text-slate-600"
+                          : "glass-ultra border-2 border-white/10 hover:border-white/20 text-slate-300"
                       }`}
                     >
                       <span className="relative z-10 flex items-center gap-1">
@@ -177,7 +177,7 @@ export default function SkillsSearchFilter({
 
             {/* Proficiency Filters - ENHANCED WITH ACTIVE STATE */}
             <div>
-              <div className="text-base text-slate-500 mb-4 font-bold uppercase tracking-wide">
+              <div className="text-base text-slate-400 mb-4 font-bold uppercase tracking-wide">
                 Proficiency Level
               </div>
               <div className="flex flex-wrap gap-3">
@@ -204,7 +204,7 @@ export default function SkillsSearchFilter({
                       className={`px-5 py-3 rounded-xl text-sm font-bold transition-all relative overflow-hidden shadow-lg ${
                         isActive
                           ? `bg-gradient-to-r ${config.gradient} text-white border-2 border-white/30`
-                          : "glass-ultra border-2 border-white/10 hover:border-white/20 text-slate-600"
+                          : "glass-ultra border-2 border-white/10 hover:border-white/20 text-slate-300"
                       }`}
                     >
                       <span className="relative z-10 flex items-center gap-2">

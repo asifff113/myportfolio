@@ -46,7 +46,7 @@ export default function SectionTitle({
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
         className={cn(
-          "inline-flex items-center gap-2 rounded-full px-4 py-2 mb-4 bg-white/60 backdrop-blur-lg border border-[rgba(var(--section-rgb),0.12)] text-xs sm:text-sm font-semibold tracking-[0.14em] uppercase text-slate-500 shadow-[0_4px_16px_-8px_rgba(var(--section-rgb),0.12)]",
+          "inline-flex items-center gap-2 rounded-full px-4 py-2 mb-4 bg-[rgba(15,15,40,0.70)] backdrop-blur-lg border border-[rgba(var(--section-rgb),0.20)] text-xs sm:text-sm font-semibold tracking-[0.14em] uppercase text-slate-400 shadow-[0_4px_16px_-8px_rgba(var(--section-rgb),0.20)]",
           align === "center" && "mx-auto",
           align === "right" && "ml-auto"
         )}
@@ -80,7 +80,7 @@ export default function SectionTitle({
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}
           className={cn(
-            "text-base md:text-lg text-slate-600 max-w-2xl font-medium leading-relaxed relative z-10",
+            "text-base md:text-lg text-slate-400 max-w-2xl font-medium leading-relaxed relative z-10",
             subtitleAlignment
           )}
         >

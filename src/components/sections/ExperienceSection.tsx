@@ -37,7 +37,7 @@ const itemVariants = {
 
 // Type badge colors
 const typeColors: Record<string, string> = {
-  "Full-time": "bg-blue-100 text-blue-700 border-blue-200/60",
+  "Full-time": "bg-blue-500/20 text-blue-300 border-blue-200/60",
   "Part-time": "bg-purple-100 text-purple-700 border-purple-200/60",
   "Internship": "bg-green-100 text-green-700 border-green-200/60",
   "Freelance": "bg-orange-100 text-orange-700 border-orange-200/60",
@@ -57,7 +57,7 @@ export default function ExperienceSection({ experience: initialExperience }: Exp
           subtitle={t.sections.experience.subtitle}
           gradient="from-blue-400 via-slate-300 to-blue-300"
         />
-        <div className="text-center py-12 text-slate-500">
+        <div className="text-center py-12 text-slate-400">
           No experience entries found.
         </div>
       </Section>
@@ -84,7 +84,7 @@ export default function ExperienceSection({ experience: initialExperience }: Exp
             key={item.id || index}
             variants={itemVariants}
             whileHover={{ y: -4 }}
-            className="bg-white/55 backdrop-blur-xl border border-blue-200/30 hover:border-blue-300/50 border-t-2 border-t-blue-500 rounded-2xl p-6 md:p-8 transition-all shadow-sm hover:shadow-lg hover:shadow-blue-200/20"
+            className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-blue-500/20 hover:border-blue-400/40 border-t-2 border-t-blue-500 rounded-2xl p-6 md:p-8 transition-all shadow-sm hover:shadow-lg hover:shadow-blue-500/15"
           >
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
@@ -93,17 +93,17 @@ export default function ExperienceSection({ experience: initialExperience }: Exp
                   {/* Icon */}
                   <motion.div
                     whileHover={{ scale: 1.1 }}
-                    className="bg-blue-100 border border-blue-200/40 rounded-xl p-3 flex-shrink-0"
+                    className="bg-blue-500/20 border border-blue-200/40 rounded-xl p-3 flex-shrink-0"
                   >
-                    <Briefcase className="text-blue-600" size={24} />
+                    <Briefcase className="text-blue-400" size={24} />
                   </motion.div>
                   <div>
                     {/* Role */}
-                    <h3 className="text-slate-800 font-bold text-xl mb-1">
+                    <h3 className="text-white font-bold text-xl mb-1">
                       {item.role}
                     </h3>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-base text-blue-600 font-semibold">
+                      <p className="text-base text-blue-400 font-semibold">
                         {item.company}
                       </p>
                       {item.companyUrl && (
@@ -111,7 +111,7 @@ export default function ExperienceSection({ experience: initialExperience }: Exp
                           href={item.companyUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-slate-400 hover:text-blue-600 transition-colors"
+                          className="text-slate-400 hover:text-blue-400 transition-colors"
                         >
                           <ExternalLink size={14} />
                         </a>
@@ -125,7 +125,7 @@ export default function ExperienceSection({ experience: initialExperience }: Exp
               <div className="flex flex-wrap gap-2">
                 {/* Current Badge */}
                 {item.isCurrent && (
-                  <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-100 text-blue-700 border border-blue-200/60 rounded-full text-sm font-medium">
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-500/20 text-blue-300 border border-blue-200/60 rounded-full text-sm font-medium">
                     <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
                     Current
                   </span>
@@ -141,7 +141,7 @@ export default function ExperienceSection({ experience: initialExperience }: Exp
             </div>
 
             {/* Metadata Row */}
-            <div className="flex flex-wrap gap-4 mb-4 text-sm text-slate-500">
+            <div className="flex flex-wrap gap-4 mb-4 text-sm text-slate-400">
               {/* Date Range */}
               <div className="flex items-center gap-2">
                 <Calendar size={14} />
@@ -167,7 +167,7 @@ export default function ExperienceSection({ experience: initialExperience }: Exp
             {item.description && (
               <div className="mb-4">
                 {item.description.split("\n").map((line: string, i: number) => (
-                  <p key={i} className="text-slate-600 leading-relaxed mb-2 last:mb-0">
+                  <p key={i} className="text-slate-300 leading-relaxed mb-2 last:mb-0">
                     {line}
                   </p>
                 ))}
@@ -177,14 +177,14 @@ export default function ExperienceSection({ experience: initialExperience }: Exp
             {/* Technologies */}
             {item.technologies && item.technologies.length > 0 && (
               <div>
-                <h4 className="text-sm font-semibold mb-3 text-slate-500">
+                <h4 className="text-sm font-semibold mb-3 text-slate-400">
                   Technologies Used:
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {item.technologies.map((tech, techIndex) => (
                     <span
                       key={techIndex}
-                      className="bg-blue-50 border border-blue-200/40 text-blue-700 rounded-md px-2 py-1 text-xs font-medium"
+                      className="bg-blue-500/15 border border-blue-200/40 text-blue-300 rounded-md px-2 py-1 text-xs font-medium"
                     >
                       {tech}
                     </span>

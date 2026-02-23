@@ -87,7 +87,7 @@ export default function Navbar() {
   return (
     <>
       {/* Progress Bar - rainbow multi-spectrum */}
-      <div className="fixed top-0 left-0 right-0 z-[60] h-[3px] bg-gradient-to-r from-white/40 via-white/20 to-white/40">
+      <div className="fixed top-0 left-0 right-0 z-[60] h-[3px] bg-gradient-to-r from-transparent via-white/5 to-transparent">
         <div
           className="h-full bg-gradient-to-r from-indigo-500 via-violet-500 via-cyan-400 via-emerald-400 via-orange-400 to-rose-500 transition-[width] duration-200 ease-out shadow-[0_0_20px_rgba(99,102,241,0.4),0_0_40px_rgba(99,102,241,0.15)]"
           style={{ width: `${scrollProgress}%` }}
@@ -105,8 +105,8 @@ export default function Navbar() {
           <div
             className={`flex items-center justify-between gap-2 rounded-2xl border transition-all duration-500 px-2 sm:px-3 ${
               scrolled
-                ? "bg-white/75 border-white/90 backdrop-blur-2xl shadow-[0_20px_50px_-30px_rgba(99,102,241,0.15),0_0_0_1px_rgba(255,255,255,0.8)]"
-                : "bg-white/50 border-white/70 backdrop-blur-xl shadow-[0_12px_30px_-20px_rgba(99,102,241,0.08)]"
+                ? "bg-[rgba(10,10,30,0.85)] border-white/10 backdrop-blur-2xl shadow-[0_20px_50px_-30px_rgba(99,102,241,0.25),0_0_0_1px_rgba(99,102,241,0.10)]"
+                : "bg-[rgba(10,10,30,0.60)] border-white/8 backdrop-blur-xl shadow-[0_12px_30px_-20px_rgba(99,102,241,0.15)]"
             }`}
           >
             {/* Logo */}
@@ -115,7 +115,7 @@ export default function Navbar() {
               className="relative group flex items-center gap-2 rounded-xl p-1.5"
             >
               <div className="relative w-9 h-9 sm:w-10 sm:h-10 overflow-hidden rounded-xl bg-gradient-to-br from-indigo-500 via-violet-500 to-cyan-500 p-[1.5px] shadow-[0_8px_20px_-10px_rgba(99,102,241,0.35)] group-hover:shadow-[0_12px_28px_-8px_rgba(99,102,241,0.45)] transition-shadow">
-                <div className="absolute inset-0 rounded-[11px] bg-white/95 backdrop-blur-xl flex items-center justify-center">
+                <div className="absolute inset-0 rounded-[11px] bg-[rgba(10,10,30,0.95)] backdrop-blur-xl flex items-center justify-center">
                   <span className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500">
                     A
                   </span>
@@ -137,11 +137,11 @@ export default function Navbar() {
                     className={`group relative px-2.5 sm:px-3 py-1.5 rounded-xl text-[10px] sm:text-xs font-semibold transition-all duration-300 whitespace-nowrap ${
                       isActive
                         ? "text-white shadow-md"
-                        : "text-slate-500 hover:text-slate-800 hover:bg-white/50"
+                        : "text-slate-400 hover:text-white hover:bg-white/5"
                     }`}
                   >
                     {!isActive && (
-                      <span className="absolute inset-0 rounded-xl border border-transparent group-hover:border-white/60 transition-colors" />
+                      <span className="absolute inset-0 rounded-xl border border-transparent group-hover:border-white/10 transition-colors" />
                     )}
 
                     {/* Active Background with glow */}
@@ -164,7 +164,7 @@ export default function Navbar() {
               {isAdmin && (
                 <Link
                   href="/admin"
-                  className="px-2 py-1.5 text-[10px] sm:text-xs font-semibold text-blue-600 hover:text-blue-700 hover:bg-blue-500/10 rounded-xl border border-transparent hover:border-blue-200 transition-all inline-flex items-center gap-1"
+                  className="px-2 py-1.5 text-[10px] sm:text-xs font-semibold text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-xl border border-transparent hover:border-blue-500/30 transition-all inline-flex items-center gap-1"
                   title="Admin Panel"
                 >
                   <Shield size={16} />
@@ -187,10 +187,10 @@ export default function Navbar() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             onClick={scrollToTop}
-            className="fixed bottom-8 right-8 z-40 p-3 rounded-2xl bg-white/75 border border-indigo-100/60 shadow-[0_16px_40px_-20px_rgba(99,102,241,0.2)] hover:bg-white/90 hover:shadow-[0_20px_48px_-20px_rgba(99,102,241,0.28)] transition-all hover:scale-110 group backdrop-blur-xl"
+            className="fixed bottom-8 right-8 z-40 p-3 rounded-2xl bg-[rgba(10,10,30,0.80)] border border-indigo-500/20 shadow-[0_16px_40px_-20px_rgba(99,102,241,0.35)] hover:bg-[rgba(10,10,30,0.90)] hover:shadow-[0_20px_48px_-20px_rgba(99,102,241,0.45)] transition-all hover:scale-110 group backdrop-blur-xl"
             title="Back to top"
           >
-            <ArrowUp size={20} className="text-slate-600 group-hover:text-slate-900 group-hover:-translate-y-0.5 transition-all" />
+            <ArrowUp size={20} className="text-indigo-400 group-hover:text-indigo-300 group-hover:-translate-y-0.5 transition-all" />
           </motion.button>
         )}
       </AnimatePresence>

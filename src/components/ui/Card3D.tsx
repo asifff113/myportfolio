@@ -83,7 +83,7 @@ export default function Card3D({
       className={cn(
         "relative rounded-2xl transition-all duration-400 ease-out will-change-transform",
         "glass-ultra holographic",
-        enableGlow && "hover:shadow-[0_30px_60px_-20px_rgba(var(--section-rgb),0.15)]",
+        enableGlow && "hover:shadow-[0_30px_60px_-20px_rgba(var(--section-rgb),0.30)]",
         onClick && "cursor-pointer",
         className
       )}
@@ -117,9 +117,9 @@ export default function Card3D({
         style={{
           background: `linear-gradient(135deg, 
             transparent 0%, 
-            rgba(255, 255, 255, 0.18) ${glowX - 20}%, 
-            rgba(255, 255, 255, 0.32) ${glowX}%, 
-            rgba(255, 255, 255, 0.16) ${glowX + 20}%, 
+            rgba(255, 255, 255, 0.06) ${glowX - 20}%, 
+            rgba(255, 255, 255, 0.12) ${glowX}%, 
+            rgba(255, 255, 255, 0.05) ${glowX + 20}%, 
             transparent 100%)`,
         }}
       />

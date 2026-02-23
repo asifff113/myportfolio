@@ -1,6 +1,6 @@
 /**
- * Advanced Design System — Futuristic Vibrant Light Theme
- * Multi-spectrum section colors, glassmorphism, aurora effects, 3D transforms
+ * Advanced Design System — Futuristic Dark Colorful Theme
+ * Multi-spectrum section colors, dark glassmorphism, colorful gradients, 3D transforms
  * Performance-optimized: GPU-accelerated, reduced paint, will-change hints
  */
 
@@ -38,7 +38,7 @@
 }
 
 /* ============================================================================
-   GLOW EFFECTS (Section-aware, light theme)
+   GLOW EFFECTS (Section-aware, dark colorful theme)
    ============================================================================ */
 
 .neon-glow-hover {
@@ -47,44 +47,47 @@
 
 .neon-glow-hover:hover {
   box-shadow:
-    0 20px 50px -18px rgba(var(--section-rgb, 99, 102, 241), 0.22),
-    0 0 0 1px rgba(var(--section-rgb, 99, 102, 241), 0.08),
-    0 0 80px -20px rgba(var(--section-rgb, 99, 102, 241), 0.12);
+    0 20px 50px -18px rgba(var(--section-rgb, 99, 102, 241), 0.40),
+    0 0 0 1px rgba(var(--section-rgb, 99, 102, 241), 0.20),
+    0 0 80px -20px rgba(var(--section-rgb, 99, 102, 241), 0.25);
 }
 
 .neon-text {
   text-shadow:
-    0 0 20px rgba(var(--section-rgb, 99, 102, 241), 0.12),
-    0 4px 16px rgba(var(--section-rgb, 99, 102, 241), 0.08);
+    0 0 20px rgba(var(--section-rgb, 99, 102, 241), 0.30),
+    0 4px 16px rgba(var(--section-rgb, 99, 102, 241), 0.20),
+    0 0 60px rgba(var(--section-rgb, 99, 102, 241), 0.10);
 }
 
 /* ============================================================================
-   GLASSMORPHISM — LIGHT VIBRANT VARIANT
+   GLASSMORPHISM — DARK COLORFUL VARIANT
    ============================================================================ */
 
 .glass-ultra {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.72),
-    rgba(255, 255, 255, 0.50)
+    rgba(15, 15, 40, 0.80),
+    rgba(var(--section-rgb, 99, 102, 241), 0.08),
+    rgba(15, 15, 40, 0.75)
   );
   backdrop-filter: blur(24px) saturate(200%);
   -webkit-backdrop-filter: blur(24px) saturate(200%);
-  border: 1px solid rgba(255, 255, 255, 0.80);
+  border: 1px solid rgba(var(--section-rgb, 99, 102, 241), 0.18);
   box-shadow:
-    0 8px 32px rgba(var(--section-rgb, 99, 102, 241), 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 1),
-    inset 0 -1px 0 rgba(var(--section-rgb, 99, 102, 241), 0.03);
+    0 8px 32px rgba(0, 0, 0, 0.35),
+    0 0 40px -15px rgba(var(--section-rgb, 99, 102, 241), 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 -1px 0 rgba(var(--section-rgb, 99, 102, 241), 0.05);
 }
 
 .glass-frosted {
-  background: rgba(255, 255, 255, 0.55);
+  background: rgba(12, 12, 30, 0.70);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(var(--section-rgb, 99, 102, 241), 0.12);
   box-shadow:
-    0 4px 20px rgba(var(--section-rgb, 99, 102, 241), 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    0 4px 20px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 /* ============================================================================
@@ -140,7 +143,7 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.4) 50%,
+    rgba(var(--section-rgb, 99, 102, 241), 0.15) 50%,
     transparent 100%
   );
   pointer-events: none;
@@ -170,11 +173,11 @@
   inset: 0;
   background: linear-gradient(
     135deg,
-    rgba(255, 0, 128, 0.04) 0%,
-    rgba(0, 255, 255, 0.04) 25%,
-    rgba(128, 0, 255, 0.04) 50%,
-    rgba(255, 128, 0, 0.04) 75%,
-    rgba(0, 128, 255, 0.04) 100%
+    rgba(255, 0, 128, 0.10) 0%,
+    rgba(0, 255, 255, 0.10) 25%,
+    rgba(128, 0, 255, 0.10) 50%,
+    rgba(255, 128, 0, 0.10) 75%,
+    rgba(0, 128, 255, 0.10) 100%
   );
   background-size: 400% 400%;
   animation: holo-shift 12s ease infinite;
@@ -226,7 +229,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent 60%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent 60%);
   pointer-events: none;
   border-radius: inherit;
 }
@@ -234,9 +237,9 @@
 .button-futuristic:hover {
   transform: translateY(-3px);
   box-shadow:
-    0 20px 40px -16px rgba(var(--section-rgb, 99, 102, 241), 0.30),
-    0 0 0 1px rgba(var(--section-rgb, 99, 102, 241), 0.12),
-    0 0 60px -10px rgba(var(--section-rgb, 99, 102, 241), 0.15);
+    0 20px 40px -16px rgba(var(--section-rgb, 99, 102, 241), 0.50),
+    0 0 0 1px rgba(var(--section-rgb, 99, 102, 241), 0.25),
+    0 0 80px -10px rgba(var(--section-rgb, 99, 102, 241), 0.30);
 }
 
 .button-futuristic:active {
@@ -254,9 +257,9 @@
 .card-lift:hover {
   transform: translateY(-10px) scale(1.01);
   box-shadow:
-    0 30px 60px -24px rgba(var(--section-rgb, 99, 102, 241), 0.16),
-    0 0 0 1px rgba(var(--section-rgb, 99, 102, 241), 0.06),
-    0 0 40px rgba(var(--section-rgb, 99, 102, 241), 0.06);
+    0 30px 60px -24px rgba(var(--section-rgb, 99, 102, 241), 0.35),
+    0 0 0 1px rgba(var(--section-rgb, 99, 102, 241), 0.15),
+    0 0 60px rgba(var(--section-rgb, 99, 102, 241), 0.15);
 }
 
 /* ============================================================================
@@ -357,22 +360,22 @@
     0deg,
     transparent,
     transparent 3px,
-    rgba(var(--section-rgb), 0.015) 3px,
-    rgba(var(--section-rgb), 0.015) 6px
+    rgba(var(--section-rgb), 0.04) 3px,
+    rgba(var(--section-rgb), 0.04) 6px
   );
   pointer-events: none;
   z-index: 1;
 }
 
 /* ============================================================================
-   NOISE TEXTURE OVERLAY (very subtle for light theme)
+   NOISE TEXTURE OVERLAY (subtle dark grain)
    ============================================================================ */
 
 .noise-overlay::after {
   content: '';
   position: absolute;
   inset: 0;
-  opacity: 0.018;
+  opacity: 0.035;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 1;
@@ -395,15 +398,15 @@
 }
 
 /* ============================================================================
-   AURORA BLOBS — LIGHT VIBRANT
+   AURORA BLOBS — DARK VIBRANT
    ============================================================================ */
 
 .aurora-blob {
   position: absolute;
   border-radius: 9999px;
-  filter: blur(50px);
-  opacity: 0.35;
-  mix-blend-mode: normal;
+  filter: blur(80px);
+  opacity: 0.45;
+  mix-blend-mode: screen;
   animation: aurora-drift 18s ease-in-out infinite alternate;
   will-change: transform;
 }
@@ -426,26 +429,27 @@
 }
 
 /* ============================================================================
-   GLASS PANEL — LIGHT VERSION
+   GLASS PANEL — DARK COLORFUL VERSION
    ============================================================================ */
 
-.glass-panel-light {
+.glass-panel-dark {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.80),
-    rgba(255, 255, 255, 0.55)
+    rgba(15, 15, 40, 0.85),
+    rgba(var(--section-rgb, 99, 102, 241), 0.06),
+    rgba(15, 15, 40, 0.80)
   );
-  border: 1px solid rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(var(--section-rgb, 99, 102, 241), 0.15);
   box-shadow:
-    0 20px 50px -20px rgba(var(--section-rgb, 99, 102, 241), 0.10),
-    inset 0 1px 0 rgba(255, 255, 255, 1),
-    inset 0 -1px 0 rgba(var(--section-rgb, 99, 102, 241), 0.02);
+    0 20px 50px -20px rgba(0, 0, 0, 0.40),
+    0 0 40px -10px rgba(var(--section-rgb, 99, 102, 241), 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(20px) saturate(200%);
   -webkit-backdrop-filter: blur(20px) saturate(200%);
 }
 
 /* ============================================================================
-   SECTION SHELL — LIGHT GLASS WITH SECTION ACCENT
+   SECTION SHELL — DARK GLASS WITH COLORFUL SECTION ACCENT
    ============================================================================ */
 
 .section-shell {
@@ -454,15 +458,16 @@
   padding: 1.5rem;
   background: linear-gradient(
     135deg,
-    rgba(var(--section-rgb, 99, 102, 241), 0.04),
-    rgba(255, 255, 255, 0.70) 30%,
-    rgba(255, 255, 255, 0.55) 70%,
-    rgba(var(--section-rgb, 99, 102, 241), 0.03)
+    rgba(var(--section-rgb, 99, 102, 241), 0.10),
+    rgba(12, 12, 30, 0.80) 30%,
+    rgba(12, 12, 30, 0.75) 70%,
+    rgba(var(--section-rgb, 99, 102, 241), 0.06)
   );
-  border: 1px solid rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(var(--section-rgb, 99, 102, 241), 0.18);
   box-shadow:
-    0 20px 50px -25px rgba(var(--section-rgb, 99, 102, 241), 0.10),
-    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    0 20px 50px -25px rgba(0, 0, 0, 0.40),
+    0 0 60px -20px rgba(var(--section-rgb, 99, 102, 241), 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(16px) saturate(160%);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
 }
@@ -475,9 +480,9 @@
   padding: 1px;
   background: linear-gradient(
     135deg,
-    rgba(var(--section-rgb, 99, 102, 241), 0.20),
-    rgba(255, 255, 255, 0.60) 40%,
-    rgba(var(--section-rgb, 99, 102, 241), 0.08)
+    rgba(var(--section-rgb, 99, 102, 241), 0.35),
+    rgba(var(--section-rgb, 99, 102, 241), 0.05) 40%,
+    rgba(var(--section-rgb, 99, 102, 241), 0.20)
   );
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
@@ -508,9 +513,9 @@
   border-radius: inherit;
   background: linear-gradient(
     135deg,
-    rgba(var(--section-rgb), 0.3),
-    rgba(255, 255, 255, 0.5),
-    rgba(var(--section-rgb), 0.15)
+    rgba(var(--section-rgb), 0.5),
+    rgba(var(--section-rgb), 0.08),
+    rgba(var(--section-rgb), 0.35)
   );
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,

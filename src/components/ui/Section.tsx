@@ -35,9 +35,9 @@ export default function Section({
     >
       {/* Section-colored ambient glow orbs */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-40 opacity-70">
-        <div className="absolute left-[6%] top-4 h-24 w-24 rounded-full blur-3xl bg-[rgba(var(--section-rgb),0.10)]" />
-        <div className="absolute right-[8%] top-10 h-20 w-32 rounded-full blur-3xl bg-[rgba(var(--section-rgb),0.08)]" />
-        <div className="absolute left-[40%] -top-4 h-16 w-40 rounded-full blur-3xl bg-[rgba(var(--section-rgb),0.05)]" />
+        <div className="absolute left-[6%] top-4 h-24 w-24 rounded-full blur-3xl bg-[rgba(var(--section-rgb),0.18)]" />
+        <div className="absolute right-[8%] top-10 h-20 w-32 rounded-full blur-3xl bg-[rgba(var(--section-rgb),0.14)]" />
+        <div className="absolute left-[40%] -top-4 h-16 w-40 rounded-full blur-3xl bg-[rgba(var(--section-rgb),0.10)]" />
       </div>
 
       <Container size={containerSize} className="relative z-10">

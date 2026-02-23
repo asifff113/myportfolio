@@ -25,33 +25,33 @@ export default function AboutSection({ personalInfo: initialPersonalInfo }: Abou
       title: t.sections.about.highlights.learner.title,
       description: t.sections.about.highlights.learner.desc,
       icon: Compass,
-      accent: "text-amber-600",
-      borderHover: "hover:border-amber-300/60",
-      iconBg: "bg-amber-100",
+      accent: "text-amber-400",
+      borderHover: "hover:border-amber-400/40",
+      iconBg: "bg-amber-500/15",
     },
     {
       title: t.sections.about.highlights.team.title,
       description: t.sections.about.highlights.team.desc,
       icon: Users,
-      accent: "text-orange-600",
-      borderHover: "hover:border-orange-300/60",
-      iconBg: "bg-orange-100",
+      accent: "text-orange-400",
+      borderHover: "hover:border-orange-400/40",
+      iconBg: "bg-orange-500/15",
     },
     {
       title: t.sections.about.highlights.problem.title,
       description: t.sections.about.highlights.problem.desc,
       icon: Rocket,
-      accent: "text-rose-600",
-      borderHover: "hover:border-rose-300/60",
-      iconBg: "bg-rose-100",
+      accent: "text-rose-400",
+      borderHover: "hover:border-rose-400/40",
+      iconBg: "bg-rose-500/15",
     },
     {
       title: t.sections.about.highlights.detail.title,
       description: t.sections.about.highlights.detail.desc,
       icon: Globe,
-      accent: "text-cyan-600",
-      borderHover: "hover:border-cyan-300/60",
-      iconBg: "bg-cyan-100",
+      accent: "text-cyan-400",
+      borderHover: "hover:border-cyan-400/40",
+      iconBg: "bg-cyan-500/15",
     },
   ];
 
@@ -69,16 +69,16 @@ export default function AboutSection({ personalInfo: initialPersonalInfo }: Abou
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="lg:col-span-2 rounded-2xl p-8 bg-white/55 border border-amber-200/40 hover:border-amber-300/60 transition-all backdrop-blur-xl shadow-[0_8px_30px_-16px_rgba(245,158,11,0.08)]"
+          className="lg:col-span-2 rounded-2xl p-8 bg-[rgba(15,15,40,0.65)] border border-amber-500/25 hover:border-amber-400/40 transition-all backdrop-blur-xl shadow-[0_8px_30px_-16px_rgba(245,158,11,0.20)]"
         >
           <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-amber-100 text-amber-600 shadow-sm">
+            <div className="p-2 rounded-lg bg-amber-500/15 text-amber-400 shadow-sm">
               <User className="w-6 h-6" />
             </div>
-            <span className="text-slate-800">Biography</span>
+            <span className="text-white">Biography</span>
           </h3>
 
-          <div className="prose prose-lg dark:prose-invert max-w-none text-zinc-400">
+          <div className="prose prose-lg dark:prose-invert max-w-none text-slate-400">
             {personalInfo.longBio.split("\n\n").map((paragraph: string, index: number) => (
               <p key={index} className="mb-4 last:mb-0 leading-relaxed">
                 {paragraph}
@@ -94,13 +94,13 @@ export default function AboutSection({ personalInfo: initialPersonalInfo }: Abou
           viewport={{ once: true }}
           transition={{ delay: 0.1 }}
           whileHover={{ y: -4 }}
-          className="rounded-2xl p-6 bg-white/55 border border-emerald-200/40 hover:border-emerald-300/60 transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(16,185,129,0.08)] flex flex-col justify-center items-center text-center"
+          className="rounded-2xl p-6 bg-[rgba(15,15,40,0.65)] border border-emerald-500/25 hover:border-emerald-400/40 transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(16,185,129,0.20)] flex flex-col justify-center items-center text-center"
         >
-          <div className="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center mb-4">
-            <Briefcase className="w-7 h-7 text-amber-600" />
+          <div className="w-14 h-14 rounded-2xl bg-amber-500/15 flex items-center justify-center mb-4">
+            <Briefcase className="w-7 h-7 text-amber-400" />
           </div>
-          <h4 className="text-lg font-semibold mb-1 text-slate-800">Current Status</h4>
-          <div className="px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 text-sm font-medium">
+          <h4 className="text-lg font-semibold mb-1 text-white">Current Status</h4>
+          <div className="px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 text-sm font-medium">
             {personalInfo.currentStatus || "Available"}
           </div>
         </motion.div>
@@ -112,13 +112,13 @@ export default function AboutSection({ personalInfo: initialPersonalInfo }: Abou
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
           whileHover={{ y: -4 }}
-          className="rounded-2xl p-6 bg-white/55 border border-amber-200/40 hover:border-amber-300/60 transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(245,158,11,0.08)] flex flex-col justify-center items-center text-center"
+          className="rounded-2xl p-6 bg-[rgba(15,15,40,0.65)] border border-amber-500/25 hover:border-amber-400/40 transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(245,158,11,0.20)] flex flex-col justify-center items-center text-center"
         >
-          <div className="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center mb-4">
-            <MapPin className="w-7 h-7 text-amber-600" />
+          <div className="w-14 h-14 rounded-2xl bg-amber-500/15 flex items-center justify-center mb-4">
+            <MapPin className="w-7 h-7 text-amber-400" />
           </div>
-          <h4 className="text-lg font-semibold mb-1 text-slate-800">Location</h4>
-          <p className="text-slate-500 font-medium">{personalInfo.location}</p>
+          <h4 className="text-lg font-semibold mb-1 text-white">Location</h4>
+          <p className="text-slate-400 font-medium">{personalInfo.location}</p>
         </motion.div>
 
         {/* 4. Highlights Cards */}
@@ -133,7 +133,7 @@ export default function AboutSection({ personalInfo: initialPersonalInfo }: Abou
               transition={{ delay: 0.3 + index * 0.1 }}
               whileHover={{ y: -4 }}
               className={cn(
-                "rounded-2xl p-6 bg-white/55 border border-amber-200/30 transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(245,158,11,0.06)] flex flex-col justify-between",
+                "rounded-2xl p-6 bg-[rgba(15,15,40,0.65)] border border-amber-500/20 transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(245,158,11,0.15)] flex flex-col justify-between",
                 item.borderHover
               )}
             >
@@ -141,8 +141,8 @@ export default function AboutSection({ personalInfo: initialPersonalInfo }: Abou
                 <Icon className={cn("w-6 h-6", item.accent)} />
               </div>
               <div>
-                <h4 className="font-bold text-lg mb-2 text-slate-800">{item.title}</h4>
-                <p className="text-sm text-slate-500 leading-relaxed">{item.description}</p>
+                <h4 className="font-bold text-lg mb-2 text-white">{item.title}</h4>
+                <p className="text-sm text-slate-400 leading-relaxed">{item.description}</p>
               </div>
             </motion.div>
           );
@@ -154,13 +154,13 @@ export default function AboutSection({ personalInfo: initialPersonalInfo }: Abou
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.6 }}
-          className="lg:col-span-2 rounded-2xl p-8 bg-white/55 border border-amber-200/30 backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(245,158,11,0.06)] flex flex-col sm:flex-row items-center justify-between gap-6"
+          className="lg:col-span-2 rounded-2xl p-8 bg-[rgba(15,15,40,0.65)] border border-amber-500/20 backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(245,158,11,0.15)] flex flex-col sm:flex-row items-center justify-between gap-6"
         >
           <div className="flex flex-col gap-2 text-center sm:text-left">
-            <h3 className="text-2xl font-bold text-slate-800">
+            <h3 className="text-2xl font-bold text-white">
               Let's Work Together
             </h3>
-            <p className="text-slate-500 max-w-md">
+            <p className="text-slate-400 max-w-md">
               I'm always open to discussing new projects, creative ideas or opportunities to be part of your visions.
             </p>
           </div>

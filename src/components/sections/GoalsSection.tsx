@@ -97,7 +97,7 @@ export default function GoalsSection({ goals }: GoalsSectionProps) {
               key={goal.id || index}
               variants={itemVariants}
               whileHover={{ y: -4 }}
-              className={`bg-white/55 backdrop-blur-xl border border-purple-200/30 hover:border-purple-300/50 rounded-2xl p-6 relative overflow-hidden group transition-all shadow-sm hover:shadow-lg hover:shadow-purple-200/15 border-t-2`}
+              className={`bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-purple-500/20 hover:border-purple-400/40 rounded-2xl p-6 relative overflow-hidden group transition-all shadow-sm hover:shadow-lg hover:shadow-purple-500/15 border-t-2`}
               style={{
                 borderTopColor: "transparent",
               }}
@@ -137,7 +137,7 @@ export default function GoalsSection({ goals }: GoalsSectionProps) {
                       } transition-all duration-1000 ease-out`}
                     />
                   </svg>
-                  <span className="absolute text-xs font-bold text-slate-600">
+                  <span className="absolute text-xs font-bold text-slate-300">
                     {progressPercent}%
                   </span>
                 </div>
@@ -150,7 +150,7 @@ export default function GoalsSection({ goals }: GoalsSectionProps) {
                     <Target className="text-white" size={22} />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-slate-800 group-hover:text-purple-600 transition-colors duration-300">
+                    <h3 className="text-xl font-bold text-white group-hover:text-purple-400 transition-colors duration-300">
                       {goal.title}
                     </h3>
                     <p className="text-sm text-slate-400">{goal.category}</p>
@@ -159,7 +159,7 @@ export default function GoalsSection({ goals }: GoalsSectionProps) {
               </div>
 
               {/* Description */}
-              <p className="text-slate-500 mb-4 leading-relaxed">
+              <p className="text-slate-400 mb-4 leading-relaxed">
                 {goal.description}
               </p>
 
@@ -167,7 +167,7 @@ export default function GoalsSection({ goals }: GoalsSectionProps) {
               <div className="flex flex-wrap gap-3 items-center">
                 {/* Timeframe */}
                 {goal.targetDate && (
-                  <span className="inline-flex items-center gap-2 px-3 py-1 bg-purple-50 border border-purple-200/40 rounded-full text-xs font-medium text-slate-600">
+                  <span className="inline-flex items-center gap-2 px-3 py-1 bg-purple-500/15 border border-purple-200/40 rounded-full text-xs font-medium text-slate-300">
                     <Clock size={14} />
                     {new Date(goal.targetDate).toLocaleDateString()}
                   </span>
@@ -175,7 +175,7 @@ export default function GoalsSection({ goals }: GoalsSectionProps) {
 
                 {/* Status */}
                 {goal.status && StatusIcon && (
-                  <span className="inline-flex items-center gap-2 px-3 py-1 bg-purple-100 text-purple-700 border border-purple-200/60 rounded-full text-xs font-medium">
+                  <span className="inline-flex items-center gap-2 px-3 py-1 bg-purple-500/20 text-purple-300 border border-purple-200/60 rounded-full text-xs font-medium">
                     <StatusIcon size={14} />
                     {goal.status}
                   </span>

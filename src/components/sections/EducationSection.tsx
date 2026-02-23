@@ -63,7 +63,7 @@ export default function EducationSection({ education: initialEducation }: Educat
             key={item.id || index}
             variants={itemVariants}
             whileHover={{ y: -4 }}
-            className="bg-white/55 border border-indigo-200/30 hover:border-indigo-300/60 border-t-2 border-t-indigo-500 rounded-2xl p-6 md:p-8 transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(99,102,241,0.08)]"
+            className="bg-[rgba(15,15,40,0.65)] border border-indigo-500/20 hover:border-indigo-400/40 border-t-2 border-t-indigo-500 rounded-2xl p-6 md:p-8 transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(99,102,241,0.20)]"
           >
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
@@ -78,15 +78,15 @@ export default function EducationSection({ education: initialEducation }: Educat
                   </motion.div>
                   <div>
                     {/* Degree */}
-                    <h3 className="text-slate-800 font-bold text-xl mb-1">
+                    <h3 className="text-white font-bold text-xl mb-1">
                       {item.degree}
                     </h3>
                     {item.field && (
-                      <p className="text-base text-indigo-600 font-semibold mb-1">
+                      <p className="text-base text-indigo-400 font-semibold mb-1">
                         {item.field}
                       </p>
                     )}
-                    <p className="text-sm text-slate-500 font-medium">
+                    <p className="text-sm text-slate-400 font-medium">
                       {item.institution}
                     </p>
                   </div>
@@ -95,7 +95,7 @@ export default function EducationSection({ education: initialEducation }: Educat
 
               {/* Current Badge */}
               {item.isCurrent && (
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-indigo-50 text-indigo-600 border border-indigo-200 rounded-full text-sm font-medium">
+                <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-indigo-500/15 text-indigo-400 border border-indigo-200 rounded-full text-sm font-medium">
                   <span className="w-2 h-2 bg-indigo-500 rounded-full" />
                   Current
                 </span>
@@ -103,7 +103,7 @@ export default function EducationSection({ education: initialEducation }: Educat
             </div>
 
             {/* Metadata Row */}
-            <div className="flex flex-wrap gap-4 mb-4 text-sm text-slate-500">
+            <div className="flex flex-wrap gap-4 mb-4 text-sm text-slate-400">
               {/* Date Range */}
               <div className="flex items-center gap-2">
                 <Calendar size={14} />
@@ -128,7 +128,7 @@ export default function EducationSection({ education: initialEducation }: Educat
               {item.grade && (
                 <div className="flex items-center gap-2">
                   <Award size={14} />
-                  <span className="font-semibold text-indigo-600">
+                  <span className="font-semibold text-indigo-400">
                     {item.grade}
                   </span>
                 </div>
@@ -137,7 +137,7 @@ export default function EducationSection({ education: initialEducation }: Educat
 
             {/* Description */}
             {item.description && (
-              <p className="text-slate-500 leading-relaxed">
+              <p className="text-slate-400 leading-relaxed">
                 {item.description}
               </p>
             )}

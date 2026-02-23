@@ -35,11 +35,11 @@ export default function ProjectModal({ project, isOpen, onClose }: ProjectModalP
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 pointer-events-none"
           >
-            <div className="bg-white/95 backdrop-blur-2xl border border-orange-200/30 w-full max-w-5xl max-h-[90vh] rounded-2xl overflow-hidden shadow-2xl flex flex-col pointer-events-auto relative">
+            <div className="bg-[rgba(12,12,30,0.95)] backdrop-blur-2xl border border-orange-200/30 w-full max-w-5xl max-h-[90vh] rounded-2xl overflow-hidden shadow-2xl flex flex-col pointer-events-auto relative">
               {/* Close Button */}
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 p-2 bg-white/80 hover:bg-white rounded-full text-slate-500 hover:text-slate-800 transition-colors z-10"
+                className="absolute top-4 right-4 p-2 bg-[rgba(12,12,30,0.95)] hover:bg-[rgba(12,12,30,0.95)] rounded-full text-slate-400 hover:text-white transition-colors z-10"
               >
                 <X size={24} />
               </button>
@@ -54,10 +54,10 @@ export default function ProjectModal({ project, isOpen, onClose }: ProjectModalP
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-white to-transparent" />
                 <div className="absolute bottom-0 left-0 p-6 sm:p-8">
-                  <h2 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">{project.title}</h2>
+                  <h2 className="text-3xl sm:text-4xl font-bold text-white mb-2">{project.title}</h2>
                   <div className="flex flex-wrap gap-2">
                     {project.category && (
-                      <span className="px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-sm font-medium border border-orange-200/60">
+                      <span className="px-3 py-1 bg-orange-500/15 text-orange-300 rounded-full text-sm font-medium border border-orange-200/60">
                         {project.category}
                       </span>
                     )}
@@ -77,7 +77,7 @@ export default function ProjectModal({ project, isOpen, onClose }: ProjectModalP
                   <div className="lg:col-span-2 space-y-8">
                     {/* Summary */}
                     <div>
-                      <p className="text-lg text-slate-500 leading-relaxed">
+                      <p className="text-lg text-slate-400 leading-relaxed">
                         {project.description || project.summary}
                       </p>
                     </div>
@@ -86,32 +86,32 @@ export default function ProjectModal({ project, isOpen, onClose }: ProjectModalP
                     {(project.problem || project.solution || project.challenges) && (
                       <div className="space-y-6">
                         {project.problem && (
-                          <div className="bg-red-50/50 border border-red-200/30 p-6 rounded-xl border-l-4 border-l-red-500">
-                            <h3 className="text-xl font-bold mb-3 flex items-center gap-2 text-slate-800">
+                          <div className="bg-red-500/15 border border-red-200/30 p-6 rounded-xl border-l-4 border-l-red-500">
+                            <h3 className="text-xl font-bold mb-3 flex items-center gap-2 text-white">
                               <AlertTriangle className="text-red-500" size={20} />
                               The Problem
                             </h3>
-                            <p className="text-slate-500">{project.problem}</p>
+                            <p className="text-slate-400">{project.problem}</p>
                           </div>
                         )}
 
                         {project.solution && (
-                          <div className="bg-green-50/50 border border-green-200/30 p-6 rounded-xl border-l-4 border-l-green-500">
-                            <h3 className="text-xl font-bold mb-3 flex items-center gap-2 text-slate-800">
+                          <div className="bg-green-500/15 border border-green-200/30 p-6 rounded-xl border-l-4 border-l-green-500">
+                            <h3 className="text-xl font-bold mb-3 flex items-center gap-2 text-white">
                               <Lightbulb className="text-green-500" size={20} />
                               The Solution
                             </h3>
-                            <p className="text-slate-500">{project.solution}</p>
+                            <p className="text-slate-400">{project.solution}</p>
                           </div>
                         )}
 
                         {project.challenges && (
-                          <div className="bg-orange-50/50 border border-orange-200/30 p-6 rounded-xl border-l-4 border-l-orange-500">
-                            <h3 className="text-xl font-bold mb-3 flex items-center gap-2 text-slate-800">
+                          <div className="bg-orange-500/15 border border-orange-200/30 p-6 rounded-xl border-l-4 border-l-orange-500">
+                            <h3 className="text-xl font-bold mb-3 flex items-center gap-2 text-white">
                               <Layers className="text-orange-500" size={20} />
                               Technical Challenges
                             </h3>
-                            <p className="text-slate-500">{project.challenges}</p>
+                            <p className="text-slate-400">{project.challenges}</p>
                           </div>
                         )}
                       </div>
@@ -127,7 +127,7 @@ export default function ProjectModal({ project, isOpen, onClose }: ProjectModalP
                           href={project.liveUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center justify-center gap-2 w-full py-3 bg-white text-zinc-900 rounded-xl font-bold transition-all hover:bg-zinc-200 hover:-translate-y-1"
+                          className="flex items-center justify-center gap-2 w-full py-3 bg-[rgba(12,12,30,0.95)] text-zinc-900 rounded-xl font-bold transition-all hover:bg-zinc-200 hover:-translate-y-1"
                         >
                           <ExternalLink size={20} />
                           View Live Demo
@@ -147,16 +147,16 @@ export default function ProjectModal({ project, isOpen, onClose }: ProjectModalP
                     </div>
 
                     {/* Tech Stack */}
-                    <div className="bg-white/60 backdrop-blur-sm border border-orange-200/30 p-5 rounded-xl">
-                      <h3 className="font-bold mb-4 flex items-center gap-2 text-slate-800">
-                        <Layers size={18} className="text-slate-500" />
+                    <div className="bg-[rgba(12,12,30,0.95)] backdrop-blur-sm border border-orange-200/30 p-5 rounded-xl">
+                      <h3 className="font-bold mb-4 flex items-center gap-2 text-white">
+                        <Layers size={18} className="text-slate-400" />
                         Tech Stack
                       </h3>
                       <div className="flex flex-wrap gap-2">
                         {project.techStack.map((tech) => (
                           <span
                             key={tech}
-                            className="bg-orange-50 border border-orange-200/40 text-orange-700 rounded-md px-2.5 py-1 text-sm font-medium"
+                            className="bg-orange-500/15 border border-orange-200/40 text-orange-300 rounded-md px-2.5 py-1 text-sm font-medium"
                           >
                             {tech}
                           </span>
@@ -166,13 +166,13 @@ export default function ProjectModal({ project, isOpen, onClose }: ProjectModalP
 
                     {/* Stack Details */}
                     {project.stackDetails && (
-                      <div className="bg-white/60 backdrop-blur-sm border border-orange-200/30 p-5 rounded-xl">
-                        <h3 className="font-bold mb-4 text-slate-800">Architecture Highlights</h3>
+                      <div className="bg-[rgba(12,12,30,0.95)] backdrop-blur-sm border border-orange-200/30 p-5 rounded-xl">
+                        <h3 className="font-bold mb-4 text-white">Architecture Highlights</h3>
                         <ul className="space-y-3">
                           {project.stackDetails.map((detail, idx) => (
                             <li key={idx} className="text-sm">
-                              <span className="font-bold text-slate-700 block mb-1">{detail.name}</span>
-                              <span className="text-slate-500">{detail.usage}</span>
+                              <span className="font-bold text-slate-200 block mb-1">{detail.name}</span>
+                              <span className="text-slate-400">{detail.usage}</span>
                             </li>
                           ))}
                         </ul>

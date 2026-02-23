@@ -126,7 +126,7 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
             <h3 className="text-2xl font-display font-bold mb-6">
               <span className="bg-gradient-to-r from-red-400 via-rose-400 to-red-300 bg-clip-text text-transparent">Let&apos;s Connect</span>
             </h3>
-            <p className="text-slate-500 leading-relaxed mb-6">
+            <p className="text-slate-400 leading-relaxed mb-6">
               {contactInfo.availability ||
                 "I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision."}
             </p>
@@ -139,14 +139,14 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
               <motion.a
                 href={`mailto:${contactInfo.email}`}
                 whileHover={{ y: -4 }}
-                className="flex items-center gap-5 p-5 bg-white/55 backdrop-blur-xl border border-red-200/30 hover:border-red-300/50 rounded-xl transition-all group shadow-sm hover:shadow-lg hover:shadow-red-200/15"
+                className="flex items-center gap-5 p-5 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all group shadow-sm hover:shadow-lg hover:shadow-red-500/15"
               >
                 <div className="p-3 bg-blue-100 rounded-xl border border-blue-200/40">
                   <Mail size={28} className="text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-slate-500 font-medium mb-0.5">Email</p>
-                  <p className="font-bold text-slate-700 group-hover:text-blue-600 transition-colors">{contactInfo.email}</p>
+                  <p className="text-sm text-slate-400 font-medium mb-0.5">Email</p>
+                  <p className="font-bold text-slate-200 group-hover:text-blue-600 transition-colors">{contactInfo.email}</p>
                 </div>
               </motion.a>
             )}
@@ -156,14 +156,14 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
               <motion.a
                 href={`tel:${contactInfo.phone}`}
                 whileHover={{ y: -4 }}
-                className="flex items-center gap-5 p-5 bg-white/55 backdrop-blur-xl border border-red-200/30 hover:border-red-300/50 rounded-xl transition-all group shadow-sm hover:shadow-lg hover:shadow-red-200/15"
+                className="flex items-center gap-5 p-5 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all group shadow-sm hover:shadow-lg hover:shadow-red-500/15"
               >
                 <div className="p-3 bg-purple-100 rounded-xl border border-purple-200/40">
                   <Phone size={28} className="text-purple-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-slate-500 font-medium mb-0.5">Phone</p>
-                  <p className="font-bold text-slate-700 group-hover:text-purple-600 transition-colors">{contactInfo.phone}</p>
+                  <p className="text-sm text-slate-400 font-medium mb-0.5">Phone</p>
+                  <p className="font-bold text-slate-200 group-hover:text-purple-600 transition-colors">{contactInfo.phone}</p>
                 </div>
               </motion.a>
             )}
@@ -172,14 +172,14 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
             {contactInfo.location && (
               <motion.div
                 whileHover={{ y: -4 }}
-                className="flex items-center gap-5 p-5 bg-white/55 backdrop-blur-xl border border-red-200/30 hover:border-red-300/50 rounded-xl transition-all group shadow-sm hover:shadow-lg hover:shadow-red-200/15"
+                className="flex items-center gap-5 p-5 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all group shadow-sm hover:shadow-lg hover:shadow-red-500/15"
               >
                 <div className="p-3 bg-emerald-100 rounded-xl border border-emerald-200/40">
                   <MapPin size={28} className="text-emerald-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-slate-500 font-medium mb-0.5">Location</p>
-                  <p className="font-bold text-slate-700 group-hover:text-emerald-600 transition-colors">{contactInfo.location}</p>
+                  <p className="text-sm text-slate-400 font-medium mb-0.5">Location</p>
+                  <p className="font-bold text-slate-200 group-hover:text-emerald-600 transition-colors">{contactInfo.location}</p>
                 </div>
               </motion.div>
             )}
@@ -188,14 +188,14 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
             {contactInfo.responseTime && (
               <motion.div
                 whileHover={{ y: -4 }}
-                className="flex items-center gap-5 p-5 bg-white/55 backdrop-blur-xl border border-red-200/30 hover:border-red-300/50 rounded-xl transition-all group shadow-sm hover:shadow-lg hover:shadow-red-200/15"
+                className="flex items-center gap-5 p-5 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all group shadow-sm hover:shadow-lg hover:shadow-red-500/15"
               >
                 <div className="p-3 bg-amber-100 rounded-xl border border-amber-200/40">
                   <Clock size={28} className="text-amber-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-slate-500 font-medium mb-0.5">Response Time</p>
-                  <p className="font-bold text-slate-700 group-hover:text-amber-600 transition-colors">{contactInfo.responseTime}</p>
+                  <p className="text-sm text-slate-400 font-medium mb-0.5">Response Time</p>
+                  <p className="font-bold text-slate-200 group-hover:text-amber-600 transition-colors">{contactInfo.responseTime}</p>
                 </div>
               </motion.div>
             )}
@@ -204,7 +204,7 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
           {/* Social Links */}
           {contactInfo.socialLinks && contactInfo.socialLinks.length > 0 && (
             <div>
-              <h4 className="text-lg font-semibold mb-4 text-slate-800">Follow Me</h4>
+              <h4 className="text-lg font-semibold mb-4 text-white">Follow Me</h4>
               <div className="flex gap-4">
                 {contactInfo.socialLinks.map((social) => {
                   const Icon = socialIconMap[social.platform];
@@ -218,10 +218,10 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
                       rel="noopener noreferrer"
                       whileHover={{ y: -4 }}
                       whileTap={{ scale: 0.95 }}
-                      className="p-4 bg-white/55 backdrop-blur-xl border border-red-200/30 hover:border-red-300/50 rounded-xl transition-all shadow-sm hover:shadow-md"
+                      className="p-4 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all shadow-sm hover:shadow-md"
                       aria-label={social.platform}
                     >
-                      <Icon size={24} className="text-slate-600" />
+                      <Icon size={24} className="text-slate-300" />
                     </motion.a>
                   );
                 })}
@@ -232,10 +232,10 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
 
         {/* Contact Form */}
         <motion.div variants={itemVariants}>
-          <form onSubmit={handleSubmit(onSubmit)} className="bg-white/55 backdrop-blur-xl border border-red-200/30 rounded-2xl p-6 space-y-6 shadow-sm">
+          <form onSubmit={handleSubmit(onSubmit)} className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 rounded-2xl p-6 space-y-6 shadow-sm">
             {/* Name Field */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium mb-2 ml-1 text-slate-600">
+              <label htmlFor="name" className="block text-sm font-medium mb-2 ml-1 text-slate-300">
                 {t.sections.contact.form.name}
               </label>
               <div className="relative">
@@ -243,9 +243,9 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
                   {...register("name")}
                   type="text"
                   id="name"
-                  className={`w-full bg-white/70 backdrop-blur-sm border ${
-                    errors.name ? "border-red-500" : "border-slate-200"
-                  } focus:border-red-500 rounded-lg px-4 py-3 text-slate-800 outline-none focus:ring-1 focus:ring-red-500/50 transition-all`}
+                  className={`w-full bg-[rgba(15,15,40,0.70)] backdrop-blur-sm border ${
+                    errors.name ? "border-red-500" : "border-white/10"
+                  } focus:border-red-500 rounded-lg px-4 py-3 text-white outline-none focus:ring-1 focus:ring-red-500/50 transition-all`}
                   placeholder={t.sections.contact.form.name}
                 />
                 {errors.name && (
@@ -261,7 +261,7 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
 
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-2 ml-1 text-slate-600">
+              <label htmlFor="email" className="block text-sm font-medium mb-2 ml-1 text-slate-300">
                 {t.sections.contact.form.email}
               </label>
               <div className="relative">
@@ -269,9 +269,9 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
                   {...register("email")}
                   type="email"
                   id="email"
-                  className={`w-full bg-white/70 backdrop-blur-sm border ${
-                    errors.email ? "border-red-500" : "border-slate-200"
-                  } focus:border-red-500 rounded-lg px-4 py-3 text-slate-800 outline-none focus:ring-1 focus:ring-red-500/50 transition-all`}
+                  className={`w-full bg-[rgba(15,15,40,0.70)] backdrop-blur-sm border ${
+                    errors.email ? "border-red-500" : "border-white/10"
+                  } focus:border-red-500 rounded-lg px-4 py-3 text-white outline-none focus:ring-1 focus:ring-red-500/50 transition-all`}
                   placeholder="john@example.com"
                 />
                 {errors.email && (
@@ -287,7 +287,7 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
 
             {/* Subject Field */}
             <div>
-              <label htmlFor="subject" className="block text-sm font-medium mb-2 ml-1 text-slate-600">
+              <label htmlFor="subject" className="block text-sm font-medium mb-2 ml-1 text-slate-300">
                 {t.sections.contact.form.subject}
               </label>
               <div className="relative">
@@ -295,9 +295,9 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
                   {...register("subject")}
                   type="text"
                   id="subject"
-                  className={`w-full bg-white/70 backdrop-blur-sm border ${
-                    errors.subject ? "border-red-500" : "border-slate-200"
-                  } focus:border-red-500 rounded-lg px-4 py-3 text-slate-800 outline-none focus:ring-1 focus:ring-red-500/50 transition-all`}
+                  className={`w-full bg-[rgba(15,15,40,0.70)] backdrop-blur-sm border ${
+                    errors.subject ? "border-red-500" : "border-white/10"
+                  } focus:border-red-500 rounded-lg px-4 py-3 text-white outline-none focus:ring-1 focus:ring-red-500/50 transition-all`}
                   placeholder={t.sections.contact.form.subject}
                 />
                 {errors.subject && (
@@ -313,7 +313,7 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
 
             {/* Message Field */}
             <div>
-              <label htmlFor="message" className="block text-sm font-medium mb-2 ml-1 text-slate-600">
+              <label htmlFor="message" className="block text-sm font-medium mb-2 ml-1 text-slate-300">
                 {t.sections.contact.form.message}
               </label>
               <div className="relative">
@@ -321,9 +321,9 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
                   {...register("message")}
                   id="message"
                   rows={5}
-                  className={`w-full bg-white/70 backdrop-blur-sm border ${
-                    errors.message ? "border-red-500" : "border-slate-200"
-                  } focus:border-red-500 rounded-lg px-4 py-3 text-slate-800 outline-none focus:ring-1 focus:ring-red-500/50 transition-all resize-none`}
+                  className={`w-full bg-[rgba(15,15,40,0.70)] backdrop-blur-sm border ${
+                    errors.message ? "border-red-500" : "border-white/10"
+                  } focus:border-red-500 rounded-lg px-4 py-3 text-white outline-none focus:ring-1 focus:ring-red-500/50 transition-all resize-none`}
                   placeholder={t.sections.contact.form.message}
                 />
                 {errors.message && (
@@ -385,10 +385,10 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
           {/* Scheduling & Alternative Contact Options */}
           <motion.div
             variants={itemVariants}
-            className="mt-6 p-6 bg-white/55 backdrop-blur-xl border border-red-200/30 rounded-2xl"
+            className="mt-6 p-6 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 rounded-2xl"
           >
-            <h4 className="text-lg font-semibold mb-4 text-slate-800">Prefer to schedule a call?</h4>
-            <p className="text-sm text-slate-500 mb-4">
+            <h4 className="text-lg font-semibold mb-4 text-white">Prefer to schedule a call?</h4>
+            <p className="text-sm text-slate-400 mb-4">
               Book a time that works for you, and let&apos;s chat!
             </p>
             <div className="flex flex-wrap gap-3">
@@ -399,7 +399,7 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex items-center gap-2 px-4 py-2 bg-white/70 border border-red-200/30 hover:border-red-300/50 rounded-lg transition-all text-sm font-medium text-slate-600"
+                className="flex items-center gap-2 px-4 py-2 bg-[rgba(15,15,40,0.70)] border border-red-500/20 hover:border-red-400/40 rounded-lg transition-all text-sm font-medium text-slate-300"
               >
                 <Clock size={16} />
                 <span>Schedule on Calendly</span>
@@ -408,7 +408,7 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
                 href={`mailto:${contactInfo.email}`}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex items-center gap-2 px-4 py-2 bg-white/70 border border-red-200/30 hover:border-red-300/50 rounded-lg transition-all text-sm font-medium text-slate-600"
+                className="flex items-center gap-2 px-4 py-2 bg-[rgba(15,15,40,0.70)] border border-red-500/20 hover:border-red-400/40 rounded-lg transition-all text-sm font-medium text-slate-300"
               >
                 <Mail size={16} />
                 <span>Email Directly</span>
