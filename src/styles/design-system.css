@@ -728,10 +728,49 @@
   .parallax-slow, .parallax-medium, .parallax-fast {
     will-change: auto !important;
   }
-  /* Reduce heavy glass panels on mobile */
+  /* Drastically simplify glass panels on mobile — backdrop-blur is GPU-killer */
   .glass-ultra {
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(15, 15, 40, 0.92) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  }
+  .glass-frosted {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(12, 12, 30, 0.90) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+  }
+  .glass-panel-dark {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  /* Kill holographic animation on mobile */
+  .holographic::before {
+    display: none !important;
+  }
+  /* Disable all transition-all on cards (causes jank on scroll) */
+  .transition-all {
+    transition-property: opacity, color, border-color !important;
+    transition-duration: 0.2s !important;
+  }
+  /* Kill section-shell inner gradient pulses */
+  .section-shell::before,
+  .section-shell::after {
+    display: none !important;
+  }
+  /* Reduce inline backdrop-blur-xl to none */
+  [class*="backdrop-blur"] {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  /* Disable neon-glow box-shadows on mobile */
+  .neon-glow {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  }
+  /* Simplify shimmer effects */
+  .shimmer::after {
+    display: none !important;
   }
 }
 

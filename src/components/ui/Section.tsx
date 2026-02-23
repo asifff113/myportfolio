@@ -38,8 +38,8 @@ export default function Section({
       {/* Floating ambient orbs for depth */}
       <FloatingOrbs count={3} />
 
-      {/* Section-colored ambient glow orbs */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-40 opacity-70">
+      {/* Section-colored ambient glow orbs — desktop only (blur-3xl is expensive on mobile GPU) */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-40 opacity-70 hidden md:block">
         <div className="absolute left-[6%] top-4 h-24 w-24 rounded-full blur-3xl bg-[rgba(var(--section-rgb),0.18)]" />
         <div className="absolute right-[8%] top-10 h-20 w-32 rounded-full blur-3xl bg-[rgba(var(--section-rgb),0.14)]" />
         <div className="absolute left-[40%] -top-4 h-16 w-40 rounded-full blur-3xl bg-[rgba(var(--section-rgb),0.10)]" />

@@ -2,6 +2,7 @@
 
 import React, { ReactNode } from "react";
 import { motion, Variants } from "framer-motion";
+import useIsMobile from "@/hooks/useIsMobile";
 
 type RevealDirection = "up" | "down" | "left" | "right" | "scale" | "none";
 
@@ -65,6 +66,13 @@ export default function ScrollReveal({
   once = true,
   amount = 0.15,
 }: ScrollRevealProps) {
+  const isMobile = useIsMobile();
+
+  // On mobile, skip animation entirely to avoid IntersectionObserver + transform overhead
+  if (isMobile) {
+    return <div className={className}>{children}</div>;
+  }
+
   return (
     <motion.div
       variants={getVariants(direction, duration)}
@@ -95,6 +103,13 @@ export function StaggerContainer({
   className = "",
   once = true,
 }: StaggerContainerProps) {
+  const isMobile = useIsMobile();
+
+  // On mobile, render children directly without stagger animations
+  if (isMobile) {
+    return <div className={className}>{children}</div>;
+  }
+
   return (
     <motion.div
       initial="hidden"

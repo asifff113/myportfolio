@@ -3,6 +3,7 @@
 import { useRef, useState, MouseEvent, ReactNode } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import useIsMobile from "@/hooks/useIsMobile";
 
 interface Card3DProps {
   children: ReactNode;
@@ -23,6 +24,7 @@ export default function Card3D({
   enableGlow = true,
   onClick,
 }: Card3DProps) {
+  const isMobile = useIsMobile();
   const cardRef = useRef<HTMLDivElement>(null);
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
@@ -39,7 +41,7 @@ export default function Card3D({
   const maxRotation = intensityMap[intensity];
 
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    if (!enableTilt || !cardRef.current) return;
+    if (!enableTilt || !cardRef.current || isMobile) return;
 
     const card = cardRef.current;
     const rect = card.getBoundingClientRect();
@@ -48,14 +50,12 @@ export default function Card3D({
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    // Calculate rotation
     const rotateXValue = ((y - centerY) / centerY) * -maxRotation;
     const rotateYValue = ((x - centerX) / centerX) * maxRotation;
 
     setRotateX(rotateXValue);
     setRotateY(rotateYValue);
 
-    // Calculate glow position
     const glowXPercent = (x / rect.width) * 100;
     const glowYPercent = (y / rect.height) * 100;
     setGlowX(glowXPercent);
@@ -69,6 +69,23 @@ export default function Card3D({
     setGlowX(50);
     setGlowY(50);
   };
+
+  // Mobile: render a simple div wrapper without 3D transforms, overlays, or Framer Motion
+  if (isMobile) {
+    return (
+      <div
+        ref={cardRef}
+        onClick={onClick}
+        className={cn(
+          "relative rounded-2xl",
+          onClick && "cursor-pointer",
+          className
+        )}
+      >
+        <div className="relative z-10">{children}</div>
+      </div>
+    );
+  }
 
   return (
     <motion.div
