@@ -42,6 +42,22 @@ export default function AnimatedBackground({ variant = "default" }: AnimatedBack
       <div className="aurora-blob top-[35%] left-[45%] h-[28rem] w-[28rem] bg-rose-500/15" />
       <div className="aurora-blob delay-2 top-[60%] left-[20%] h-[24rem] w-[24rem] bg-indigo-500/20" />
 
+      {/* Rotating conic halo ring */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-25">
+        <div className="w-[min(96vw,72rem)] h-[min(96vw,72rem)] rounded-full border border-violet-500/10 relative">
+          <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,transparent,rgba(124,58,237,0.2),transparent,rgba(6,182,212,0.16),transparent)] animate-[spin_30s_linear_infinite]" />
+          <div className="absolute inset-10 rounded-full border border-cyan-500/10 animate-[spin_22s_linear_infinite_reverse]" />
+        </div>
+      </div>
+
+      {/* Drifting neon dots */}
+      <div className="absolute inset-0">
+        <div className="absolute top-[22%] left-[12%] w-2 h-2 rounded-full bg-cyan-400/70 blur-[1px] float-y-slow" />
+        <div className="absolute top-[30%] right-[16%] w-1.5 h-1.5 rounded-full bg-violet-400/70 blur-[1px] float-y-slow delay-1" />
+        <div className="absolute bottom-[18%] left-[20%] w-2 h-2 rounded-full bg-orange-400/60 blur-[1px] float-y-slow delay-2" />
+        <div className="absolute bottom-[24%] right-[22%] w-1.5 h-1.5 rounded-full bg-emerald-400/70 blur-[1px] float-y-slow" />
+      </div>
+
       {/* Decorative light beams */}
       <div className="absolute inset-0 opacity-40">
         <div className="absolute top-20 left-1/2 h-px w-[min(90vw,75rem)] -translate-x-1/2 bg-gradient-to-r from-transparent via-violet-500/50 to-transparent" />

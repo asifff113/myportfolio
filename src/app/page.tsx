@@ -16,6 +16,7 @@ import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import GuestbookSection from "@/components/sections/GuestbookSection";
 import ContactSection from "@/components/sections/ContactSection";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import SectionDivider from "@/components/ui/SectionDivider";
 
 // Force dynamic rendering - no caching
 export const dynamic = 'force-dynamic';
@@ -42,48 +43,62 @@ export default async function HomePage() {
     <div className="relative">
       {/* Hero Section */}
       <HeroSection personalInfo={content.personalInfo} />
+      <SectionDivider />
 
       {/* About Section */}
       <AboutSection personalInfo={content.personalInfo} />
+      <SectionDivider />
 
       {/* Skills Section */}
       <SkillsSection 
         skillCategories={content.skillCategories} 
         projects={content.projects}
       />
+      <SectionDivider />
 
       {/* Education Section */}
       <EducationSection education={content.education} />
+      <SectionDivider />
 
       {/* Experience Section */}
       <ExperienceSection experience={content.experience} />
+      <SectionDivider />
 
       {/* Projects Section */}
       <ProjectsSection projects={content.projects} />
+      <SectionDivider />
 
       {/* Achievements Section */}
       <AchievementsSection achievements={content.achievements} />
+      <SectionDivider />
 
       {/* Certificates Section */}
       <CertificatesSection certificates={content.certificates} />
+      <SectionDivider />
 
       {/* Gallery Section */}
       <GallerySection gallery={content.gallery} />
+      <SectionDivider />
 
       {/* Hobbies Section */}
       <HobbiesSection hobbies={content.hobbies} />
+      <SectionDivider />
 
       {/* Future Goals Section */}
       <GoalsSection goals={content.futureGoals} />
+      <SectionDivider />
 
       {/* Blog Section */}
       <BlogSection blogPosts={content.blogPosts} />
+      <SectionDivider />
 
       {/* Testimonials Section */}
       <TestimonialsSection testimonials={content.testimonials} />
+      <SectionDivider />
 
       {/* Guestbook Section */}
       <GuestbookSection />
+      <SectionDivider />
 
       {/* Contact Section */}
       {content.contactInfo && <ContactSection contactInfo={content.contactInfo} />}

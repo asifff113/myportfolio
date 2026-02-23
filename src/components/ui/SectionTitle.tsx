@@ -51,11 +51,11 @@ export default function SectionTitle({
           align === "right" && "ml-auto"
         )}
       >
-        <span className="h-1.5 w-1.5 rounded-full bg-[rgba(var(--section-rgb),0.95)] shadow-[0_0_0_4px_rgba(var(--section-rgb),0.12)]" />
+        <span className="data-dot text-[rgba(var(--section-rgb),0.95)]" />
         Section
       </motion.div>
 
-      {/* Title */}
+      {/* Title with animated gradient */}
       <motion.h2
         initial={{ scale: 0.95 }}
         whileInView={{ scale: 1 }}
@@ -65,7 +65,7 @@ export default function SectionTitle({
       >
         <span
           className={cn(
-            gradient ? "bg-gradient-to-r bg-clip-text text-transparent" : "text-gradient",
+            gradient ? "bg-gradient-to-r bg-clip-text text-transparent" : "gradient-text-animated",
             gradient && gradientClass
           )}
         >

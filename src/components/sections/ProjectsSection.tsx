@@ -7,6 +7,7 @@ import { Github, ExternalLink, Code2, Star, Calendar, ArrowRight } from "lucide-
 import { Project } from "@/lib/content-types";
 import Section from "@/components/ui/Section";
 import SectionTitle from "@/components/ui/SectionTitle";
+import Card3D from "@/components/ui/Card3D";
 import { formatDate } from "@/lib/utils";
 import ProjectModal from "./ProjectModal";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
@@ -104,17 +105,22 @@ export default function ProjectsSection({ projects: initialProjects }: ProjectsS
         className="flex flex-wrap justify-center gap-3 mb-12"
       >
         {types.map((type) => (
-          <button
+          <motion.button
             key={type}
             onClick={() => setFilter(type)}
+            whileHover={{ y: -2, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
               filter === type
-                ? "bg-gradient-to-r from-orange-500 to-rose-500 text-white shadow-lg shadow-orange-200/30"
-                : "bg-[rgba(15,15,40,0.65)] backdrop-blur-sm border border-orange-500/20 text-slate-400 hover:text-white hover:border-orange-400/40"
+                ? "border-beam bg-gradient-to-r from-orange-500 to-rose-500 text-white shadow-lg shadow-orange-500/30"
+                : "border-beam bg-[rgba(15,15,40,0.65)] backdrop-blur-sm border border-orange-500/20 text-slate-400 hover:text-white hover:border-orange-400/40"
             }`}
           >
-            {type === "All" ? t.sections.projects.filterAll : type}
-          </button>
+            <span className="inline-flex items-center gap-2">
+              {filter === type && <span className="w-1.5 h-1.5 rounded-full bg-white pulse-soft" />}
+              {type === "All" ? t.sections.projects.filterAll : type}
+            </span>
+          </motion.button>
         ))}
       </motion.div>
 
@@ -174,9 +180,10 @@ export default function ProjectsSection({ projects: initialProjects }: ProjectsS
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center py-12 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-orange-500/20 rounded-2xl"
+          className="text-center py-12 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-orange-500/20 rounded-2xl border-beam"
         >
           <p className="text-slate-400">
+            No projects found in this category.
           </p>
         </motion.div>
       )}
@@ -201,24 +208,29 @@ interface ProjectCardProps {
 function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
   const [imageError, setImageError] = useState(false);
   const statusColor = statusColors[project.category || "Completed"] || statusColors["Completed"];
-  const typeColor = typeColors[project.category || "Personal"] || typeColors["Personal"];
+  const typeColor = typeColors[project.type || "Personal"] || typeColors["Personal"];
 
   return (
-    <motion.div
-      variants={itemVariants}
-      whileHover={{ y: -10, scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      className={`bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border rounded-2xl overflow-hidden group relative cursor-pointer transition-all duration-300 shadow-sm hover:shadow-[0_20px_40px_-15px_rgba(249,115,22,0.4)] ${
-        featured
-          ? "border-2 border-orange-500/30 hover:border-orange-400/50"
-          : "border-orange-500/20 hover:border-orange-400/40"
-      }`}
-      onClick={() => onClick(project)}
-    >
+    <motion.div variants={itemVariants} className="h-full">
+      <Card3D
+        onClick={() => onClick(project)}
+        glowColor="section"
+        intensity={featured ? "high" : "medium"}
+        className={`group border-beam h-full overflow-hidden transition-all duration-300 shadow-sm hover:shadow-[0_20px_40px_-15px_rgba(249,115,22,0.4)] ${
+          featured
+            ? "border-2 border-orange-500/30 hover:border-orange-400/50"
+            : "border border-orange-500/20 hover:border-orange-400/40"
+        }`}
+      >
+        <div className="relative h-full flex flex-col">
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-orange-400/55 to-transparent" />
+          <div className="absolute -top-14 -right-12 h-24 w-24 rounded-full bg-orange-500/15 blur-2xl group-hover:scale-110 transition-transform duration-500" />
+          <div className="absolute -bottom-14 -left-10 h-24 w-24 rounded-full bg-rose-500/10 blur-2xl group-hover:scale-110 transition-transform duration-500" />
+
       {/* Featured Badge */}
       {featured && (
         <div className="absolute top-4 left-4 z-20">
-          <span className="inline-flex items-center gap-1.5 bg-orange-500 text-white font-semibold px-3 py-1 rounded-full text-xs shadow-lg">
+          <span className="inline-flex items-center gap-1.5 bg-orange-500 text-white font-semibold px-3 py-1 rounded-full text-xs shadow-lg pulse-ring">
             <Star size={12} fill="currentColor" />
             Featured
           </span>
@@ -227,12 +239,13 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
 
       {/* Project Image */}
       <div className="relative h-48 md:h-56 bg-orange-500/15 overflow-hidden">
+        <div className="absolute inset-0 holo-grid opacity-40 group-hover:opacity-70 transition-opacity duration-300 z-[1]" />
         {!imageError && project.imageUrl ? (
           <Image
             src={project.imageUrl}
             alt={project.title}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-110"
+            className="object-cover transition-transform duration-700 group-hover:scale-110 group-hover:rotate-[0.6deg]"
             onError={() => setImageError(true)}
             sizes={featured ? "(max-width: 1024px) 100vw, 50vw" : "(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"}
           />
@@ -242,8 +255,12 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
           </div>
         )}
 
+        <div className="absolute top-4 right-4 z-10 h-10 w-10 rounded-full border border-white/10 bg-[rgba(10,10,26,0.5)] backdrop-blur-md flex items-center justify-center">
+          <div className="h-5 w-5 rounded-full border border-orange-400/40 border-t-orange-300 border-r-rose-400 animate-spin" />
+        </div>
+
         {/* Overlay on Hover */}
-        <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/60 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center pb-6 gap-4">
+        <div className="absolute inset-0 bg-gradient-to-t from-[rgba(8,8,20,0.95)] via-[rgba(8,8,20,0.50)] to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center pb-6 gap-4">
           {project.githubUrl && (
               <motion.a
                 whileHover={{ scale: 1.1, y: -2 }}
@@ -252,7 +269,7 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="p-3 bg-white/80 border border-orange-200/40 text-slate-700 rounded-full shadow-[0_8px_16px_-6px_rgba(249,115,22,0.5)] hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-colors"
+                className="p-3 bg-[rgba(10,10,24,0.75)] border border-orange-400/30 text-slate-200 rounded-full shadow-[0_8px_16px_-6px_rgba(249,115,22,0.5)] hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-colors"
                 aria-label="View GitHub Repository"
               >
                 <Github size={20} />
@@ -266,7 +283,7 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="p-3 bg-white/80 border border-orange-200/40 text-slate-700 rounded-full shadow-[0_8px_16px_-6px_rgba(249,115,22,0.5)] hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-colors"
+                className="p-3 bg-[rgba(10,10,24,0.75)] border border-orange-400/30 text-slate-200 rounded-full shadow-[0_8px_16px_-6px_rgba(249,115,22,0.5)] hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-colors"
                 aria-label="View Live Demo"
               >
                 <ExternalLink size={20} />
@@ -276,10 +293,11 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
       </div>
 
       {/* Content */}
-      <div className="p-6">
+      <div className="p-6 relative">
+        <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-orange-500/20 to-transparent" />
         {/* Header */}
         <div className="mb-3">
-          <h3 className="text-xl font-bold mb-2 text-white group-hover:text-orange-400 transition-colors duration-300">
+          <h3 className="text-xl font-bold mb-2 text-white group-hover:text-orange-300 transition-colors duration-300">
             {project.title}
           </h3>
           <p className="text-sm text-slate-400 line-clamp-2 leading-relaxed">
@@ -291,7 +309,7 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
         <div className="flex flex-wrap gap-2 mb-4">
           {/* Type Badge */}
           {project.type && (
-            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${typeColors[project.type] || typeColors.Personal}`}>
+            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${typeColor}`}>
               {project.type}
             </span>
           )}
@@ -364,13 +382,15 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
 
           <button
             onClick={() => onClick(project)}
-            className="inline-flex items-center gap-1 text-orange-400 font-bold hover:underline group/btn"
+            className="inline-flex items-center gap-1 text-orange-300 font-bold hover:text-orange-200 transition-colors group/btn"
           >
             View Details
             <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
           </button>
         </div>
       </div>
+        </div>
+      </Card3D>
     </motion.div>
   );
 }

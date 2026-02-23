@@ -12,6 +12,16 @@ const GoogleTranslateWidget = dynamic(
   { ssr: false }
 );
 
+const AnimatedBackground = dynamic(
+  () => import("@/components/ui/AnimatedBackground"),
+  { ssr: false }
+);
+
+const ParticleField = dynamic(
+  () => import("@/components/ui/ParticleField"),
+  { ssr: false }
+);
+
 import GoogleTranslateFix from "@/components/ui/GoogleTranslateFix";
 import { getAllPublicContent } from "@/lib/content";
 
@@ -72,6 +82,8 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${orbitron.variable} ${spaceGrotesk.variable}`}>
       <body className="min-h-screen">
         <HydrationSafety />
+        <AnimatedBackground />
+        <ParticleField />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

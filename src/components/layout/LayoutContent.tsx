@@ -1,11 +1,14 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import dynamic from "next/dynamic";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { CommandMenu } from "@/components/ui/CommandMenu";
 import CustomCursor from "@/components/ui/CustomCursor";
 import ChatWidget from "@/components/ui/ChatWidget";
+
+const ScrollProgress = dynamic(() => import("@/components/ui/ScrollProgress"), { ssr: false });
 
 import { PortfolioContent } from "@/lib/content-types";
 

@@ -14,6 +14,7 @@ interface SectionProps {
 /**
  * Reusable section wrapper component
  * Provides consistent spacing, structure, and data-section for color cascade
+ * Enhanced with futuristic holo-grid, section dividers, and ambient glow
  */
 export default function Section({
   children,
@@ -40,8 +41,11 @@ export default function Section({
         <div className="absolute left-[40%] -top-4 h-16 w-40 rounded-full blur-3xl bg-[rgba(var(--section-rgb),0.10)]" />
       </div>
 
+      {/* Bottom section divider line */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[rgba(var(--section-rgb),0.25)] to-transparent" />
+
       <Container size={containerSize} className="relative z-10">
-        <div className="section-shell">
+        <div className="section-shell holo-card">
           {children}
         </div>
       </Container>
