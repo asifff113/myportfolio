@@ -157,35 +157,36 @@ export default function AchievementsSection({ achievements }: AchievementsSectio
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ delay: 0.5 }}
-        className="mt-12 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-amber-500/20 p-8 md:p-10 rounded-xl"
+        className="mt-12 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-amber-500/20 p-8 md:p-10 rounded-xl relative overflow-hidden holo-shimmer breathing-glow"
       >
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          <motion.div whileHover={{ scale: 1.02 }}>
-            <div className="text-5xl font-display font-bold bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-300 bg-clip-text text-transparent mb-2">
+        <div className="absolute inset-0 holo-grid opacity-15 pointer-events-none rounded-xl" />
+        <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          <motion.div whileHover={{ scale: 1.05, y: -4 }} transition={{ type: "spring", stiffness: 300 }}>
+            <div className="text-5xl font-display font-bold bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-300 bg-clip-text text-transparent mb-2 stat-glow">
               {achievements.length}
             </div>
             <div className="text-sm text-slate-400">
               Total Achievements
             </div>
           </motion.div>
-          <motion.div whileHover={{ scale: 1.02 }}>
-            <div className="text-5xl font-display font-bold bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-300 bg-clip-text text-transparent mb-2">
+          <motion.div whileHover={{ scale: 1.05, y: -4 }} transition={{ type: "spring", stiffness: 300 }}>
+            <div className="text-5xl font-display font-bold bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-300 bg-clip-text text-transparent mb-2 stat-glow">
               {achievements.filter(a => a.category === "Competition").length}
             </div>
             <div className="text-sm text-slate-400">
               Competitions Won
             </div>
           </motion.div>
-          <motion.div whileHover={{ scale: 1.02 }}>
-            <div className="text-5xl font-display font-bold bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-300 bg-clip-text text-transparent mb-2">
+          <motion.div whileHover={{ scale: 1.05, y: -4 }} transition={{ type: "spring", stiffness: 300 }}>
+            <div className="text-5xl font-display font-bold bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-300 bg-clip-text text-transparent mb-2 stat-glow">
               {achievements.filter(a => a.category === "Award").length}
             </div>
             <div className="text-sm text-slate-400">
               Awards Received
             </div>
           </motion.div>
-          <motion.div whileHover={{ scale: 1.02 }}>
-            <div className="text-5xl font-display font-bold bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-300 bg-clip-text text-transparent mb-2">
+          <motion.div whileHover={{ scale: 1.05, y: -4 }} transition={{ type: "spring", stiffness: 300 }}>
+            <div className="text-5xl font-display font-bold bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-300 bg-clip-text text-transparent mb-2 stat-glow">
               {achievements.filter(a => a.category === "Recognition").length}
             </div>
             <div className="text-sm text-slate-400">

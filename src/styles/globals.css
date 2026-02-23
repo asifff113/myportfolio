@@ -213,6 +213,32 @@ body {
     box-shadow: none !important;
 }
 
+/* Prevent Google Translate hover tooltips and popups */
+.goog-tooltip,
+.goog-tooltip:hover,
+.goog-te-menu-frame,
+#goog-gt-tt,
+.goog-te-balloon-frame,
+.goog-text-highlight,
+.jfk-tooltip,
+.jfk-tooltip-contentId,
+.jfk-tooltip-arrow {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Prevent translated text font styling changes */
+font[style] > font,
+.translated-ltr font,
+.translated-rtl font,
+font > font {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
 @layer base {
   * {
     @apply border-border;

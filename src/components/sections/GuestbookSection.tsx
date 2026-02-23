@@ -119,9 +119,10 @@ export default function GuestbookSection() {
           viewport={{ once: true }}
           className="mb-12"
         >
-          <div className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-sky-500/20 p-6 md:p-8 rounded-2xl relative overflow-hidden shadow-sm">
+          <div className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-sky-500/20 p-6 md:p-8 rounded-2xl relative overflow-hidden shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(14,165,233,0.2)] transition-all holo-shimmer">
             {/* Top gradient bar: sky-blue to lavender */}
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-sky-400 to-violet-400" />
+            <div className="absolute inset-0 holo-grid opacity-15 pointer-events-none rounded-2xl" />
 
             <form onSubmit={handleSubmit} className="relative z-10">
               <div className="flex flex-col md:flex-row items-start gap-4">
@@ -233,9 +234,11 @@ export default function GuestbookSection() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ delay: index * 0.05 }}
-                    className="bg-[rgba(15,15,40,0.60)] backdrop-blur-sm border border-sky-500/20 p-4 rounded-xl hover:border-sky-400/40 transition-all group"
+                    whileHover={{ y: -3, scale: 1.01 }}
+                    className="bg-[rgba(15,15,40,0.60)] backdrop-blur-sm border border-sky-500/20 p-4 rounded-xl hover:border-sky-400/40 transition-all group hover:shadow-[0_12px_24px_-10px_rgba(14,165,233,0.25)] holo-shimmer relative overflow-hidden"
                   >
-                    <div className="flex items-start gap-3">
+                    <div className="absolute inset-0 holo-grid opacity-10 pointer-events-none rounded-xl group-hover:opacity-20 transition-opacity" />
+                    <div className="flex items-start gap-3 relative z-10">
                       <Avatar
                         src={msg.user_avatar}
                         alt={msg.user_name}

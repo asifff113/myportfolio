@@ -12,13 +12,13 @@ declare global {
 
 export default function GoogleTranslateWidget() {
   const [mounted, setMounted] = useState(false);
+  const [scriptLoaded, setScriptLoaded] = useState(false);
   const { locale } = useLanguage();
 
   useEffect(() => {
     setMounted(true);
 
-    // Clear Google Translate cookies to prevent auto-translation
-    // This ensures the app starts in its "real shape" (English) unless explicitly changed
+    // Clear Google Translate cookies to prevent auto-translation on page load
     const clearGoogleCookies = () => {
       const cookies = document.cookie.split(";");
       for (let i = 0; i < cookies.length; i++) {
@@ -46,55 +46,67 @@ export default function GoogleTranslateWidget() {
           },
           "google_translate_element"
         );
+        setScriptLoaded(true);
+      }
+    };
+  }, []);
+
+  // Only inject Google Translate script when a non-English language is selected
+  useEffect(() => {
+    if (!mounted) return;
+    
+    const scriptId = "google-translate-script";
+    
+    if (locale !== "en") {
+      // Load script if not already loaded
+      if (!document.getElementById(scriptId)) {
+        const script = document.createElement("script");
+        script.id = scriptId;
+        script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+        script.async = true;
+        document.body.appendChild(script);
+      }
+    } else {
+      // When switching back to English, restore original page
+      const googleTranslateCombo = document.querySelector('.goog-te-combo') as HTMLSelectElement;
+      if (googleTranslateCombo) {
+        googleTranslateCombo.value = 'en';
+        googleTranslateCombo.dispatchEvent(new Event('change'));
+      }
+      // Clear translation cookies
+      document.cookie = "googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+      document.cookie = "googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;domain=." + document.location.hostname + ";path=/";
+    }
+  }, [locale, mounted]);
+
+  // Sync Google Translate combo with LanguageContext when widget is loaded
+  useEffect(() => {
+    if (!mounted || locale === 'en' || !scriptLoaded) return;
+
+    const syncLanguage = () => {
+      const googleTranslateCombo = document.querySelector('.goog-te-combo') as HTMLSelectElement;
+      if (googleTranslateCombo) {
+        if (googleTranslateCombo.value !== locale) {
+          googleTranslateCombo.value = locale;
+          googleTranslateCombo.dispatchEvent(new Event('change'));
+        }
       }
     };
 
-    // Inject the Google Translate script
-    const scriptId = "google-translate-script";
-    if (!document.getElementById(scriptId)) {
-      const script = document.createElement("script");
-      script.id = scriptId;
-      script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-      script.async = true;
-      document.body.appendChild(script);
-    }
-  }, []);
+    // Try immediately
+    syncLanguage();
 
-  // Sync Google Translate with LanguageContext
-  useEffect(() => {
-    if (mounted) {
-      const syncLanguage = () => {
-        const googleTranslateCombo = document.querySelector('.goog-te-combo') as HTMLSelectElement;
-        if (googleTranslateCombo) {
-          if (googleTranslateCombo.value !== locale) {
-            googleTranslateCombo.value = locale;
-            googleTranslateCombo.dispatchEvent(new Event('change'));
-          }
-          
-          // If locale is English, we want to ensure we're not stuck in a translated state
-          if (locale === 'en') {
-             // Sometimes simply setting value to 'en' isn't enough if cookies persist
-             // We can try to clear cookies here too, but it might require a reload to fully detach
-             // For now, relying on the combo change is the standard way
-          }
-        }
-      };
+    // Retry a few times in case the widget is still loading
+    const intervalId = setInterval(syncLanguage, 1000);
+    
+    // Clear interval after 10 seconds
+    const timeoutId = setTimeout(() => clearInterval(intervalId), 10000);
 
-      // Try immediately
-      syncLanguage();
-
-      // Retry a few times in case the widget is still loading
-      const intervalId = setInterval(syncLanguage, 1000);
-      
-      // Clear interval after 10 seconds
-      const timeoutId = setTimeout(() => clearInterval(intervalId), 10000);
-
-      return () => {
-        clearInterval(intervalId);
-        clearTimeout(timeoutId);
-      };
-    }
-  }, [locale, mounted]);
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(timeoutId);
+    };
+  }, [locale, mounted, scriptLoaded]);
 
   if (!mounted) return null;
 

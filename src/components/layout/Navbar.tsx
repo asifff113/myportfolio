@@ -187,7 +187,7 @@ export default function Navbar() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             onClick={scrollToTop}
-            className="fixed bottom-8 right-8 z-40 p-3 rounded-2xl bg-[rgba(10,10,30,0.80)] border border-indigo-500/20 shadow-[0_16px_40px_-20px_rgba(99,102,241,0.35)] hover:bg-[rgba(10,10,30,0.90)] hover:shadow-[0_20px_48px_-20px_rgba(99,102,241,0.45)] transition-all hover:scale-110 group backdrop-blur-xl"
+            className="fixed bottom-8 right-8 z-40 p-3 rounded-2xl bg-[rgba(10,10,30,0.80)] border border-indigo-500/20 shadow-[0_16px_40px_-20px_rgba(99,102,241,0.35)] hover:bg-[rgba(10,10,30,0.90)] hover:shadow-[0_20px_48px_-20px_rgba(99,102,241,0.45)] transition-all hover:scale-110 group backdrop-blur-xl cyber-border-glow breathing-glow"
             title="Back to top"
           >
             <ArrowUp size={20} className="text-indigo-400 group-hover:text-indigo-300 group-hover:-translate-y-0.5 transition-all" />

@@ -125,7 +125,7 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
         >
           <div>
             <h3 className="text-2xl font-display font-bold mb-6">
-              <span className="bg-gradient-to-r from-red-400 via-rose-400 to-red-300 bg-clip-text text-transparent">Let&apos;s Connect</span>
+              <span className="bg-gradient-to-r from-red-400 via-rose-400 to-red-300 bg-clip-text text-transparent gradient-text-animated">Let&apos;s Connect</span>
             </h3>
             <p className="text-slate-400 leading-relaxed mb-6">
               {contactInfo.availability ||
@@ -140,7 +140,7 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
               <motion.a
                 href={`mailto:${contactInfo.email}`}
                 whileHover={{ y: -6, scale: 1.02 }}
-                className="flex items-center gap-5 p-5 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all group shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(244,63,94,0.3)]"
+                className="flex items-center gap-5 p-5 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all group shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(244,63,94,0.3)] holo-shimmer relative overflow-hidden"
               >
                 <div className="p-3 bg-blue-100 rounded-xl border border-blue-200/40">
                   <Mail size={28} className="text-blue-600" />
@@ -157,7 +157,7 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
               <motion.a
                 href={`tel:${contactInfo.phone}`}
                 whileHover={{ y: -6, scale: 1.02 }}
-                className="flex items-center gap-5 p-5 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all group shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(244,63,94,0.3)]"
+                className="flex items-center gap-5 p-5 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all group shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(244,63,94,0.3)] holo-shimmer relative overflow-hidden"
               >
                 <div className="p-3 bg-purple-100 rounded-xl border border-purple-200/40">
                   <Phone size={28} className="text-purple-600" />
@@ -173,7 +173,7 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
             {contactInfo.location && (
               <motion.div
                 whileHover={{ y: -6, scale: 1.02 }}
-                className="flex items-center gap-5 p-5 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all group shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(244,63,94,0.3)]"
+                className="flex items-center gap-5 p-5 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all group shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(244,63,94,0.3)] holo-shimmer relative overflow-hidden"
               >
                 <div className="p-3 bg-emerald-100 rounded-xl border border-emerald-200/40">
                   <MapPin size={28} className="text-emerald-600" />
@@ -189,7 +189,7 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
             {contactInfo.responseTime && (
               <motion.div
                 whileHover={{ y: -6, scale: 1.02 }}
-                className="flex items-center gap-5 p-5 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all group shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(244,63,94,0.3)]"
+                className="flex items-center gap-5 p-5 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all group shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(244,63,94,0.3)] holo-shimmer relative overflow-hidden"
               >
                 <div className="p-3 bg-amber-100 rounded-xl border border-amber-200/40">
                   <Clock size={28} className="text-amber-600" />
@@ -219,7 +219,7 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
                       rel="noopener noreferrer"
                       whileHover={{ y: -6, scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
-                      className="p-4 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all shadow-sm hover:shadow-[0_10px_20px_-5px_rgba(244,63,94,0.4)]"
+                      className="p-4 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all shadow-sm hover:shadow-[0_10px_20px_-5px_rgba(244,63,94,0.4)] cyber-border-glow"
                       aria-label={social.platform}
                     >
                       <Icon size={24} className="text-slate-300" />
@@ -235,7 +235,7 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
         <motion.div variants={itemVariants} className="h-full">
           <Card3D glowColor="rose" intensity="low" className="h-full border-beam">
           <form onSubmit={handleSubmit(onSubmit)} className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 rounded-2xl p-6 shadow-sm relative h-full">
-            <div className="absolute inset-0 holo-grid opacity-20 pointer-events-none" />
+            <div className="absolute inset-0 holo-grid opacity-15 pointer-events-none rounded-2xl" />
             <div className="relative z-10 space-y-6">
             {/* Name Field */}
             <div>

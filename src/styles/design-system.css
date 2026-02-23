@@ -990,3 +990,206 @@
   0% { left: -10%; }
   100% { left: 110%; }
 }
+
+/* ============================================================================
+   FUTURISTIC ENHANCEMENT PACK — Phase 2
+   ============================================================================ */
+
+/* ─── Magnetic Card Lift with perspective ─── */
+.card-magnetic-lift {
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+.card-magnetic-lift:hover {
+  transform: translateY(-8px) scale(1.015);
+  box-shadow:
+    0 30px 60px -20px rgba(var(--section-rgb), 0.25),
+    0 0 0 1px rgba(var(--section-rgb), 0.08);
+}
+
+/* ─── Neon Underline on Hover ─── */
+.neon-underline {
+  position: relative;
+}
+.neon-underline::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(var(--section-rgb), 0.8), rgba(var(--section-rgb), 0.4));
+  box-shadow: 0 0 10px rgba(var(--section-rgb), 0.5);
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.neon-underline:hover::after {
+  width: 100%;
+}
+
+/* ─── Holographic Shimmer Sweep ─── */
+.holo-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.holo-shimmer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.06) 45%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.06) 55%,
+    transparent 65%
+  );
+  transform: translateX(-150%);
+  transition: transform 0s;
+  pointer-events: none;
+  z-index: 5;
+}
+.holo-shimmer:hover::before {
+  transform: translateX(150%);
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ─── Cyber Border Glow Animation ─── */
+.cyber-border-glow {
+  position: relative;
+}
+.cyber-border-glow::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    rgba(var(--section-rgb), 0.5) 25%,
+    transparent 50%,
+    rgba(var(--section-rgb), 0.3) 75%,
+    transparent 100%
+  );
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  animation: cyber-rotate 4s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.cyber-border-glow:hover::before {
+  opacity: 1;
+}
+@keyframes cyber-rotate {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Floating Tag Hover ─── */
+.tag-futuristic {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.tag-futuristic:hover {
+  box-shadow: 0 0 12px rgba(var(--section-rgb), 0.3),
+              inset 0 0 12px rgba(var(--section-rgb), 0.08);
+  transform: translateY(-1px);
+}
+
+/* ─── Glowing Stats Number ─── */
+.stat-glow {
+  text-shadow: 0 0 20px rgba(var(--section-rgb), 0.3),
+               0 0 40px rgba(var(--section-rgb), 0.15);
+}
+
+/* ─── Radar Ping (for live/active indicators) ─── */
+.radar-ping {
+  position: relative;
+}
+.radar-ping::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  animation: radar-expand 2s ease-out infinite;
+  pointer-events: none;
+}
+@keyframes radar-expand {
+  0% { transform: scale(0.8); opacity: 0.6; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+/* ─── Typewriter cursor for inputs ─── */
+.input-futuristic:focus {
+  box-shadow: 0 0 0 1px rgba(var(--section-rgb), 0.4),
+              0 0 20px -5px rgba(var(--section-rgb), 0.2);
+}
+
+/* ─── Gradient Border Bottom (for nav items) ─── */
+.gradient-border-bottom {
+  border-image: linear-gradient(90deg, transparent, rgba(var(--section-rgb), 0.5), transparent) 1;
+}
+
+/* ─── Hexagonal Icon Container ─── */
+.hex-icon {
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+/* ─── Card Breathing Glow (subtle idle animation) ─── */
+.breathing-glow {
+  animation: breathe-glow 4s ease-in-out infinite;
+}
+@keyframes breathe-glow {
+  0%, 100% { box-shadow: 0 0 20px -10px rgba(var(--section-rgb), 0.1); }
+  50% { box-shadow: 0 0 30px -8px rgba(var(--section-rgb), 0.2); }
+}
+
+/* ─── Matrix Rain Text Effect ─── */
+.matrix-text {
+  background: linear-gradient(
+    180deg,
+    rgba(var(--section-rgb), 1) 0%,
+    rgba(var(--section-rgb), 0.6) 50%,
+    rgba(var(--section-rgb), 0.2) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ─── Corner Brackets (HUD style) ─── */
+.hud-brackets {
+  position: relative;
+}
+.hud-brackets::before,
+.hud-brackets::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: rgba(var(--section-rgb), 0.3);
+  pointer-events: none;
+  transition: border-color 0.3s ease;
+}
+.hud-brackets::before {
+  top: 6px;
+  left: 6px;
+  border-left: 2px solid;
+  border-top: 2px solid;
+  border-color: inherit;
+}
+.hud-brackets::after {
+  bottom: 6px;
+  right: 6px;
+  border-right: 2px solid;
+  border-bottom: 2px solid;
+  border-color: inherit;
+}
+.hud-brackets:hover::before,
+.hud-brackets:hover::after {
+  border-color: rgba(var(--section-rgb), 0.6);
+}

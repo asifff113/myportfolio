@@ -170,17 +170,25 @@ function GalleryCard({ item, onClick }: GalleryCardProps) {
   return (
     <motion.div
       variants={itemVariants}
-      whileHover={{ y: -4, scale: 1.02 }}
+      whileHover={{ y: -6, scale: 1.03 }}
       onClick={onClick}
-      className="relative aspect-square bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-rose-500/20 rounded-2xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-lg hover:shadow-rose-500/15"
+      className="relative aspect-square bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-rose-500/20 hover:border-rose-400/40 rounded-2xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-[0_20px_40px_-15px_rgba(244,63,94,0.3)] transition-all duration-300 holo-shimmer"
     >
+      {/* HUD Corner Accents */}
+      <div className="pointer-events-none absolute inset-0 rounded-2xl z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div className="absolute left-2 top-2 h-4 w-4 border-l-2 border-t-2 border-rose-400/50 rounded-tl" />
+        <div className="absolute right-2 top-2 h-4 w-4 border-r-2 border-t-2 border-rose-400/40 rounded-tr" />
+        <div className="absolute left-2 bottom-2 h-4 w-4 border-l-2 border-b-2 border-rose-400/40 rounded-bl" />
+        <div className="absolute right-2 bottom-2 h-4 w-4 border-r-2 border-b-2 border-rose-400/50 rounded-br" />
+      </div>
+
       {/* Image */}
       {!imageError ? (
         <Image
           src={item.imageUrl}
           alt={item.title}
           fill
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          className="object-cover transition-transform duration-700 group-hover:scale-110"
           onError={() => setImageError(true)}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
         />
@@ -199,7 +207,7 @@ function GalleryCard({ item, onClick }: GalleryCardProps) {
           </p>
         )}
         {item.category && (
-          <span className="inline-block mt-2 px-3 py-1 bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-full text-xs font-medium w-fit">
+          <span className="inline-block mt-2 px-3 py-1 bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-full text-xs font-medium w-fit tag-futuristic">
             {item.category}
           </span>
         )}
@@ -207,9 +215,12 @@ function GalleryCard({ item, onClick }: GalleryCardProps) {
 
       {/* Expand Icon */}
       <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-        <div className="p-2 bg-[rgba(15,15,40,0.70)] border border-rose-500/30 rounded-full">
+        <motion.div
+          whileHover={{ scale: 1.2, rotate: 90 }}
+          className="p-2 bg-[rgba(15,15,40,0.70)] border border-rose-500/30 rounded-full"
+        >
           <Maximize2 size={16} className="text-slate-300" />
-        </div>
+        </motion.div>
       </div>
     </motion.div>
   );

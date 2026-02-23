@@ -6,6 +6,7 @@ import { MapPin, Mail, Briefcase, User, Compass, Users, Rocket, Globe } from "lu
 import { PersonalInfo } from "@/lib/content-types";
 import Section from "@/components/ui/Section";
 import SectionTitle from "@/components/ui/SectionTitle";
+import Card3D from "@/components/ui/Card3D";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { useTranslatedPersonalInfo } from "@/lib/i18n/useTranslatedContent";
@@ -69,8 +70,11 @@ export default function AboutSection({ personalInfo: initialPersonalInfo }: Abou
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="lg:col-span-2 rounded-2xl p-8 bg-[rgba(15,15,40,0.65)] border border-amber-500/25 hover:border-amber-400/40 transition-all backdrop-blur-xl shadow-[0_8px_30px_-16px_rgba(245,158,11,0.20)]"
+          className="lg:col-span-2"
         >
+          <Card3D glowColor="amber" intensity="medium" className="rounded-2xl p-8 bg-[rgba(15,15,40,0.65)] border border-amber-500/25 hover:border-amber-400/40 transition-all backdrop-blur-xl shadow-[0_8px_30px_-16px_rgba(245,158,11,0.20)] holo-shimmer breathing-glow">
+            <div className="absolute inset-0 holo-grid opacity-15 pointer-events-none transition-opacity duration-300 group-hover:opacity-30 rounded-2xl" />
+            <div className="relative z-10">
           <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
             <motion.div 
               whileHover={{ rotate: 180, scale: 1.2 }}
@@ -79,7 +83,7 @@ export default function AboutSection({ personalInfo: initialPersonalInfo }: Abou
             >
               <User className="w-6 h-6" />
             </motion.div>
-            <span className="text-white">Biography</span>
+            <span className="text-white neon-underline">Biography</span>
           </h3>
 
           <div className="prose prose-lg dark:prose-invert max-w-none text-slate-400">
@@ -89,6 +93,8 @@ export default function AboutSection({ personalInfo: initialPersonalInfo }: Abou
               </p>
             ))}
           </div>
+            </div>
+          </Card3D>
         </motion.div>
 
         {/* 2. Status Card */}
@@ -97,9 +103,11 @@ export default function AboutSection({ personalInfo: initialPersonalInfo }: Abou
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1 }}
-          whileHover={{ y: -4 }}
-          className="rounded-2xl p-6 bg-[rgba(15,15,40,0.65)] border border-emerald-500/25 hover:border-emerald-400/40 transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(16,185,129,0.20)] flex flex-col justify-center items-center text-center"
+          className="h-full"
         >
+          <Card3D glowColor="emerald" intensity="medium" className="rounded-2xl p-6 bg-[rgba(15,15,40,0.65)] border border-emerald-500/25 hover:border-emerald-400/40 transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(16,185,129,0.20)] flex flex-col justify-center items-center text-center h-full holo-shimmer">
+            <div className="absolute inset-0 holo-grid opacity-15 pointer-events-none rounded-2xl" />
+            <div className="relative z-10 flex flex-col items-center">
           <motion.div 
             whileHover={{ scale: 1.1, rotate: [-10, 10, -10, 0] }}
             transition={{ duration: 0.5 }}
@@ -108,9 +116,12 @@ export default function AboutSection({ personalInfo: initialPersonalInfo }: Abou
             <Briefcase className="w-7 h-7 text-amber-400" />
           </motion.div>
           <h4 className="text-lg font-semibold mb-1 text-white">Current Status</h4>
-          <div className="px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 text-sm font-medium">
+          <div className="px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 text-sm font-medium inline-flex items-center gap-2">
+            <span className="w-2 h-2 bg-emerald-400 rounded-full radar-ping" />
             {personalInfo.currentStatus || "Available"}
           </div>
+            </div>
+          </Card3D>
         </motion.div>
 
         {/* 3. Location Card */}
@@ -119,9 +130,11 @@ export default function AboutSection({ personalInfo: initialPersonalInfo }: Abou
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
-          whileHover={{ y: -4 }}
-          className="rounded-2xl p-6 bg-[rgba(15,15,40,0.65)] border border-amber-500/25 hover:border-amber-400/40 transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(245,158,11,0.20)] flex flex-col justify-center items-center text-center"
+          className="h-full"
         >
+          <Card3D glowColor="amber" intensity="medium" className="rounded-2xl p-6 bg-[rgba(15,15,40,0.65)] border border-amber-500/25 hover:border-amber-400/40 transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(245,158,11,0.20)] flex flex-col justify-center items-center text-center h-full holo-shimmer">
+            <div className="absolute inset-0 holo-grid opacity-15 pointer-events-none rounded-2xl" />
+            <div className="relative z-10 flex flex-col items-center">
           <motion.div 
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
@@ -131,6 +144,8 @@ export default function AboutSection({ personalInfo: initialPersonalInfo }: Abou
           </motion.div>
           <h4 className="text-lg font-semibold mb-1 text-white">Location</h4>
           <p className="text-slate-400 font-medium">{personalInfo.location}</p>
+            </div>
+          </Card3D>
         </motion.div>
 
         {/* 4. Highlights Cards */}
@@ -143,12 +158,14 @@ export default function AboutSection({ personalInfo: initialPersonalInfo }: Abou
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 + index * 0.1 }}
-              whileHover={{ y: -4 }}
-              className={cn(
-                "rounded-2xl p-6 bg-[rgba(15,15,40,0.65)] border border-amber-500/20 transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(245,158,11,0.15)] flex flex-col justify-between",
-                item.borderHover
-              )}
+              className="h-full"
             >
+              <Card3D glowColor="amber" intensity="medium" className={cn(
+                "rounded-2xl p-6 bg-[rgba(15,15,40,0.65)] border border-amber-500/20 transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(245,158,11,0.15)] flex flex-col justify-between h-full holo-shimmer",
+                item.borderHover
+              )}>
+                <div className="absolute inset-0 holo-grid opacity-15 pointer-events-none rounded-2xl" />
+                <div className="relative z-10">
               <motion.div 
                 whileHover={{ scale: 1.15, rotate: 10 }}
                 className={cn("w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-sm", item.iconBg)}
@@ -159,6 +176,8 @@ export default function AboutSection({ personalInfo: initialPersonalInfo }: Abou
                 <h4 className="font-bold text-lg mb-2 text-white">{item.title}</h4>
                 <p className="text-sm text-slate-400 leading-relaxed">{item.description}</p>
               </div>
+                </div>
+              </Card3D>
             </motion.div>
           );
         })}
@@ -169,26 +188,33 @@ export default function AboutSection({ personalInfo: initialPersonalInfo }: Abou
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.6 }}
-          className="lg:col-span-2 rounded-2xl p-8 bg-[rgba(15,15,40,0.65)] border border-amber-500/20 backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(245,158,11,0.15)] flex flex-col sm:flex-row items-center justify-between gap-6"
+          className="lg:col-span-2"
         >
+          <Card3D glowColor="amber" intensity="low" className="rounded-2xl p-8 bg-[rgba(15,15,40,0.65)] border border-amber-500/20 backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(245,158,11,0.15)] holo-shimmer">
+            <div className="absolute inset-0 holo-grid opacity-15 pointer-events-none rounded-2xl" />
+            <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex flex-col gap-2 text-center sm:text-left">
             <h3 className="text-2xl font-bold text-white">
-              Let's Work Together
+              Let&apos;s Work Together
             </h3>
             <p className="text-slate-400 max-w-md">
-              I'm always open to discussing new projects, creative ideas or opportunities to be part of your visions.
+              I&apos;m always open to discussing new projects, creative ideas or opportunities to be part of your visions.
             </p>
           </div>
 
           <div className="flex gap-3">
-            <a
+            <motion.a
               href={`mailto:${personalInfo.email}`}
+              whileHover={{ scale: 1.05, boxShadow: "0px 15px 30px -10px rgba(245,158,11,0.4)" }}
+              whileTap={{ scale: 0.98 }}
               className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium hover:from-amber-600 hover:to-orange-600 transition-all shadow-[0_10px_24px_-10px_rgba(245,158,11,0.3)] flex items-center gap-2"
             >
               <Mail className="w-4 h-4" />
               Email Me
-            </a>
+            </motion.a>
           </div>
+            </div>
+          </Card3D>
         </motion.div>
       </div>
     </Section>

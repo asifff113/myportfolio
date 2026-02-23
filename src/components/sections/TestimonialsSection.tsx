@@ -6,6 +6,7 @@ import { Star, Linkedin } from "lucide-react";
 import { Testimonial } from "@/lib/content-types";
 import Section from "@/components/ui/Section";
 import SectionTitle from "@/components/ui/SectionTitle";
+import Card3D from "@/components/ui/Card3D";
 import Avatar from "@/components/ui/Avatar";
 
 interface TestimonialsSectionProps {
@@ -70,9 +71,11 @@ function TestimonialCard({ testimonial }: TestimonialCardProps) {
   return (
     <motion.div
       variants={itemVariants}
-      whileHover={{ y: -4 }}
-      className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-orange-500/20 hover:border-orange-400/40 p-6 rounded-2xl relative overflow-hidden group border-l-[3px] border-l-orange-400 transition-all shadow-sm hover:shadow-lg hover:shadow-orange-500/15"
+      className="h-full"
     >
+      <Card3D glowColor="orange" intensity="medium" className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-orange-500/20 hover:border-orange-400/40 p-6 rounded-2xl relative overflow-hidden group border-l-[3px] border-l-orange-400 transition-all shadow-sm hover:shadow-lg hover:shadow-orange-500/15 border-beam h-full holo-shimmer">
+        <div className="absolute inset-0 holo-grid opacity-15 pointer-events-none transition-opacity duration-300 group-hover:opacity-30 rounded-2xl" />
+        <div className="relative z-10">
       {/* Quote Icon - static SVG in warm orange */}
       <div className="absolute top-6 right-6 opacity-20 group-hover:opacity-40 transition-opacity">
         <svg
@@ -100,8 +103,8 @@ function TestimonialCard({ testimonial }: TestimonialCardProps) {
               size={18}
               className={
                 i < testimonial.rating!
-                  ? "text-amber-400 fill-amber-400"
-                  : "text-slate-200"
+                  ? "text-amber-400 fill-amber-400 drop-shadow-[0_0_4px_rgba(245,158,11,0.5)]"
+                  : "text-slate-600"
               }
             />
           ))}
@@ -151,6 +154,8 @@ function TestimonialCard({ testimonial }: TestimonialCardProps) {
           )}
         </div>
       </div>
+        </div>
+      </Card3D>
     </motion.div>
   );
 }
