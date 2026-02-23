@@ -28,6 +28,7 @@ export default function Card3D({
   const [rotateY, setRotateY] = useState(0);
   const [glowX, setGlowX] = useState(50);
   const [glowY, setGlowY] = useState(50);
+  const [hovered, setHovered] = useState(false);
 
   const intensityMap = {
     low: 5,
@@ -62,6 +63,7 @@ export default function Card3D({
   };
 
   const handleMouseLeave = () => {
+    setHovered(false);
     setRotateX(0);
     setRotateY(0);
     setGlowX(50);
@@ -71,7 +73,10 @@ export default function Card3D({
   return (
     <motion.div
       ref={cardRef}
-      onMouseMove={handleMouseMove}
+      onMouseMove={(e) => {
+        setHovered(true);
+        handleMouseMove(e);
+      }}
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
       style={{
@@ -99,6 +104,30 @@ export default function Card3D({
           }}
         />
       )}
+
+      {/* Corner HUD accents */}
+      <div className="pointer-events-none absolute inset-0 rounded-2xl">
+        <div className="absolute left-3 top-3 h-4 w-4 border-l border-t border-[rgba(var(--section-rgb),0.32)] rounded-tl-md opacity-70" />
+        <div className="absolute right-3 top-3 h-4 w-4 border-r border-t border-[rgba(var(--section-rgb),0.26)] rounded-tr-md opacity-55" />
+        <div className="absolute left-3 bottom-3 h-4 w-4 border-l border-b border-[rgba(var(--section-rgb),0.26)] rounded-bl-md opacity-55" />
+        <div className="absolute right-3 bottom-3 h-4 w-4 border-r border-b border-[rgba(var(--section-rgb),0.32)] rounded-br-md opacity-70" />
+      </div>
+
+      {/* Scan streak */}
+      <div
+        className={cn(
+          "absolute inset-0 pointer-events-none rounded-2xl overflow-hidden transition-opacity duration-300",
+          hovered ? "opacity-100" : "opacity-0"
+        )}
+      >
+        <div
+          className="absolute inset-y-0 -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-white/15 to-transparent"
+          style={{
+            transform: `translateX(${hovered ? 320 : 0}%) skewX(-16deg)`,
+            transition: "transform 700ms cubic-bezier(0.22, 1, 0.36, 1)",
+          }}
+        />
+      </div>
 
       {/* Content */}
       <div

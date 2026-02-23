@@ -53,7 +53,7 @@ export default function SkillCard({
       onBlur={() => setIsHovered(false)}
       tabIndex={0}
       className={cn(
-        "card-lift glass-ultra p-6 md:p-8 rounded-2xl transition-all duration-300",
+        "group relative overflow-hidden card-lift glass-ultra p-6 md:p-8 rounded-2xl transition-all duration-300 border-beam",
         "neon-glow-hover",
         "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background",
         isHovered && "border-gradient shimmer"
@@ -62,15 +62,29 @@ export default function SkillCard({
         borderColor: isHovered ? categoryColor : undefined,
       }}
     >
+      <div className="pointer-events-none absolute inset-0 holo-grid opacity-30" />
+      <div className="pointer-events-none absolute -top-14 -right-10 h-24 w-24 rounded-full blur-2xl bg-[rgba(var(--section-rgb),0.14)] group-hover:scale-110 transition-transform duration-500" />
+      <div className="pointer-events-none absolute -bottom-16 -left-8 h-24 w-24 rounded-full blur-2xl bg-[rgba(var(--section-rgb),0.10)]" />
+      <div className="pointer-events-none absolute top-4 right-4 flex items-center gap-1.5 opacity-70">
+        <span className="h-1.5 w-1.5 rounded-full bg-[rgba(var(--section-rgb),0.9)] twinkle" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[rgba(var(--section-rgb),0.6)] twinkle delay-1" />
+        <span className="h-1.5 w-1.5 rounded-full bg-[rgba(var(--section-rgb),0.45)] twinkle delay-2" />
+      </div>
+
       {/* Category Header */}
-      <div className="mb-6">
+      <div className="mb-6 relative z-10">
         {/* Category Icon/Emoji */}
         {category.name && (
-          <div className="mb-3">
+          <motion.div
+            className="mb-3 inline-flex items-center gap-3 rounded-2xl bg-[rgba(255,255,255,0.03)] border border-white/5 px-3 py-2"
+            animate={isHovered ? { y: -2 } : { y: 0 }}
+            transition={{ type: "spring", stiffness: 220, damping: 18 }}
+          >
             <span className="text-3xl" role="img" aria-label={category.name}>
               {getCategoryIcon(category.name)}
             </span>
-          </div>
+            <span className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Category</span>
+          </motion.div>
         )}
 
         {/* Category Name */}
@@ -85,10 +99,10 @@ export default function SkillCard({
       </div>
 
       {/* Divider */}
-      <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent mb-6" />
+      <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent mb-6 relative z-10" />
 
       {/* Skills List */}
-      <div className="space-y-4">
+      <div className="space-y-4 relative z-10">
         {category.skills.map((skill, skillIndex) => (
           <motion.div
             key={skill.id || skillIndex}
@@ -99,8 +113,8 @@ export default function SkillCard({
             viewport={{ once: true }}
             onClick={() => onSkillClick?.(skill.name, skill)}
             className={cn(
-              "space-y-2 p-3 rounded-lg transition-colors duration-200",
-              onSkillClick && "cursor-pointer hover:bg-secondary/50"
+              "space-y-2 p-3 rounded-xl transition-all duration-200 border border-transparent",
+              onSkillClick && "cursor-pointer hover:bg-secondary/20 hover:border-white/10 hover:translate-x-1"
             )}
             role={onSkillClick ? "button" : undefined}
             tabIndex={onSkillClick ? 0 : undefined}
@@ -119,10 +133,10 @@ export default function SkillCard({
                     {skill.icon}
                   </span>
                 )}
-                <span className="font-semibold">{skill.name}</span>
+                <span className="font-semibold text-white/95">{skill.name}</span>
               </div>
               {skill.level !== undefined && (
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm text-muted-foreground tabular-nums">
                   {skill.level}%
                 </span>
               )}
