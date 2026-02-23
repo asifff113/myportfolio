@@ -31,6 +31,7 @@ export default function ParticleField() {
   const animRef = useRef<number>(0);
   const particles = useRef<Particle[]>([]);
   const mouseRef = useRef({ x: -1000, y: -1000 });
+  const isMobileRef = useRef(false);
 
   const initParticles = useCallback((width: number, height: number) => {
     const count = Math.min(Math.floor((width * height) / 18000), 100);
@@ -48,6 +49,13 @@ export default function ParticleField() {
   }, []);
 
   useEffect(() => {
+    // Skip entirely on mobile / touch devices
+    const mobile =
+      window.matchMedia("(max-width: 768px)").matches ||
+      window.matchMedia("(pointer: coarse)").matches;
+    isMobileRef.current = mobile;
+    if (mobile) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -153,7 +161,7 @@ export default function ParticleField() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-[1] opacity-60"
+      className="fixed inset-0 pointer-events-none z-[1] opacity-60 hidden md:block"
       style={{ mixBlendMode: "screen" }}
     />
   );

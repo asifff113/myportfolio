@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import useIsMobile from "@/hooks/useIsMobile";
 
 interface FloatingOrbsProps {
   count?: number;
@@ -11,13 +12,17 @@ interface FloatingOrbsProps {
 
 /**
  * Ambient floating orbs that add depth and atmosphere to sections.
- * Uses CSS-only animations (no JS runtime cost).
+ * Disabled on mobile devices to prevent performance issues.
  */
 export default function FloatingOrbs({
   count = 3,
   className,
   color,
 }: FloatingOrbsProps) {
+  const isMobile = useIsMobile();
+
+  // Skip rendering on mobile — too many instances running simultaneously
+  if (isMobile) return null;
   const orbs = Array.from({ length: count }, (_, i) => ({
     id: i,
     size: 60 + Math.random() * 120,
