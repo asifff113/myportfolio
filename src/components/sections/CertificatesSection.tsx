@@ -7,6 +7,7 @@ import { FileText, Award, Calendar, Eye, Globe, X } from "lucide-react";
 import { Certificate } from "@/lib/content-types";
 import Section from "@/components/ui/Section";
 import SectionTitle from "@/components/ui/SectionTitle";
+import Card3D from "@/components/ui/Card3D";
 import { formatDate } from "@/lib/utils";
 
 interface CertificatesSectionProps {
@@ -211,9 +212,11 @@ function CertificateCard({ certificate, onView }: CertificateCardProps) {
   return (
     <motion.div
       variants={itemVariants}
-      whileHover={{ y: -8, scale: 1.02 }}
-      className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-cyan-500/20 hover:border-cyan-400/40 rounded-2xl overflow-hidden group relative transition-all duration-300 flex flex-col h-full shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(6,182,212,0.3)]"
+      className="h-full flex flex-col"
     >
+      <Card3D glowColor="cyan" intensity="medium" className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-cyan-500/20 hover:border-cyan-400/40 rounded-2xl overflow-hidden group relative transition-all duration-300 flex flex-col h-full shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(6,182,212,0.3)] border-beam">
+        <div className="absolute inset-0 holo-grid opacity-20 pointer-events-none transition-opacity duration-300 group-hover:opacity-40" />
+        <div className="h-full flex flex-col relative z-10 w-full m-0 p-0">
       {/* Certified Pill Badge */}
       <div className="absolute top-3 left-3 z-20">
         <span className="bg-cyan-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
@@ -340,6 +343,8 @@ function CertificateCard({ certificate, onView }: CertificateCardProps) {
           </button>
         </div>
       </div>
+      </div>
+      </Card3D>
     </motion.div>
   );
 }

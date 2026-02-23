@@ -6,6 +6,7 @@ import { Target, Clock, CheckCircle2, Circle } from "lucide-react";
 import { FutureGoal } from "@/lib/content-types";
 import Section from "@/components/ui/Section";
 import SectionTitle from "@/components/ui/SectionTitle";
+import Card3D from "@/components/ui/Card3D";
 
 interface GoalsSectionProps {
   goals: FutureGoal[];
@@ -96,12 +97,11 @@ export default function GoalsSection({ goals }: GoalsSectionProps) {
             <motion.div
               key={goal.id || index}
               variants={itemVariants}
-              whileHover={{ y: -8, scale: 1.02 }}
-              className={`bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-purple-500/20 hover:border-purple-400/40 rounded-2xl p-6 relative overflow-hidden group transition-all shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(168,85,247,0.3)] border-t-2`}
-              style={{
-                borderTopColor: "transparent",
-              }}
+              className="h-full"
             >
+              <Card3D glowColor="purple" intensity="medium" className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-purple-500/20 hover:border-purple-400/40 rounded-2xl p-6 relative overflow-hidden group transition-all shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(168,85,247,0.3)] border-t-2 border-t-transparent border-beam h-full">
+                <div className="absolute inset-0 holo-grid opacity-20 pointer-events-none transition-opacity duration-300 group-hover:opacity-40" />
+                <div className="relative z-10 flex flex-col h-full">
               {/* Category Gradient Top Border */}
               <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${gradientColor}`} />
 
@@ -185,6 +185,8 @@ export default function GoalsSection({ goals }: GoalsSectionProps) {
                   </span>
                 )}
               </div>
+              </div>
+              </Card3D>
             </motion.div>
           );
         })}

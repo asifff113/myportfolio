@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Hobby } from "@/lib/content-types";
 import Section from "@/components/ui/Section";
 import SectionTitle from "@/components/ui/SectionTitle";
+import Card3D from "@/components/ui/Card3D";
 
 interface HobbiesSectionProps {
   hobbies: Hobby[];
@@ -71,9 +72,11 @@ export default function HobbiesSection({ hobbies }: HobbiesSectionProps) {
             <motion.div
               key={hobby.id || index}
               variants={itemVariants}
-              whileHover={{ y: -8, scale: 1.02 }}
-              className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-lime-500/20 hover:border-lime-400/40 rounded-2xl overflow-hidden relative group transition-all shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(132,204,22,0.3)]"
+              className="h-full"
             >
+              <Card3D glowColor="lime" intensity="medium" className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-lime-500/20 hover:border-lime-400/40 rounded-2xl overflow-hidden relative group transition-all shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(132,204,22,0.3)] border-beam h-full">
+                <div className="absolute inset-0 holo-grid opacity-20 pointer-events-none transition-opacity duration-300 group-hover:opacity-40" />
+                <div className="relative z-10 flex flex-col h-full">
               {/* Top gradient bar */}
               <div className={`h-1 bg-gradient-to-r ${hobbyColor} rounded-t-2xl`} />
 
@@ -110,6 +113,8 @@ export default function HobbiesSection({ hobbies }: HobbiesSectionProps) {
                   {hobby.description}
                 </p>
               </div>
+              </div>
+              </Card3D>
             </motion.div>
           );
         })}

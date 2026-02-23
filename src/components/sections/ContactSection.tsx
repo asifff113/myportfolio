@@ -10,6 +10,7 @@ import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
 import { ContactInfo } from "@/lib/content-types";
 import Section from "@/components/ui/Section";
 import SectionTitle from "@/components/ui/SectionTitle";
+import Card3D from "@/components/ui/Card3D";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 interface ContactSectionProps {
@@ -231,8 +232,11 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
         </motion.div>
 
         {/* Contact Form */}
-        <motion.div variants={itemVariants}>
-          <form onSubmit={handleSubmit(onSubmit)} className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 rounded-2xl p-6 space-y-6 shadow-sm">
+        <motion.div variants={itemVariants} className="h-full">
+          <Card3D glowColor="rose" intensity="low" className="h-full border-beam">
+          <form onSubmit={handleSubmit(onSubmit)} className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 rounded-2xl p-6 shadow-sm relative h-full">
+            <div className="absolute inset-0 holo-grid opacity-20 pointer-events-none" />
+            <div className="relative z-10 space-y-6">
             {/* Name Field */}
             <div>
               <label htmlFor="name" className="block text-sm font-medium mb-2 ml-1 text-slate-300">
@@ -380,7 +384,9 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
                 <p className="font-medium">{errorMessage || t.sections.contact.form.error}</p>
               </motion.div>
             )}
+            </div>
           </form>
+          </Card3D>
 
           {/* Scheduling & Alternative Contact Options */}
           <motion.div

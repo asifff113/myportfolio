@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { SkillCategory, Skill, Project } from "@/lib/content-types";
 import Section from "@/components/ui/Section";
 import SectionTitle from "@/components/ui/SectionTitle";
+import Card3D from "@/components/ui/Card3D";
 import DisplayModeToggle, { DisplayMode } from "@/components/skills/DisplayModeToggle";
 import GridView from "@/components/skills/GridView";
 import TagCloudView from "@/components/skills/TagCloudView";
@@ -180,45 +181,49 @@ export default function SkillsSection({
           {/* Total Skills */}
           <motion.div
             whileHover={{ y: -6, scale: 1.02 }}
-            className="bg-[rgba(15,15,40,0.65)] border border-emerald-500/25 hover:border-emerald-400/40 p-6 rounded-2xl text-center transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(16,185,129,0.20)]"
+            className="border-beam bg-[rgba(15,15,40,0.65)] border border-emerald-500/25 hover:border-emerald-400/40 p-6 rounded-2xl text-center transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(16,185,129,0.20)]"
           >
-            <div className="text-5xl md:text-6xl font-black tabular-nums bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 bg-clip-text text-transparent mb-2">
+            <div className="absolute inset-0 holo-grid opacity-20 pointer-events-none" />
+            <div className="relative z-10 text-5xl md:text-6xl font-black tabular-nums bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 bg-clip-text text-transparent mb-2">
               {allSkills.length}
             </div>
-            <div className="text-sm font-semibold text-slate-400 uppercase tracking-wide">Total Skills</div>
+            <div className="relative z-10 text-sm font-semibold text-slate-400 uppercase tracking-wide">Total Skills</div>
           </motion.div>
 
           {/* Categories */}
           <motion.div
             whileHover={{ y: -6, scale: 1.02 }}
-            className="bg-[rgba(15,15,40,0.65)] border border-emerald-500/25 hover:border-emerald-400/40 p-6 rounded-2xl text-center transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(16,185,129,0.20)]"
+            className="border-beam bg-[rgba(15,15,40,0.65)] border border-emerald-500/25 hover:border-emerald-400/40 p-6 rounded-2xl text-center transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(16,185,129,0.20)]"
           >
-            <div className="text-5xl md:text-6xl font-black tabular-nums bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 bg-clip-text text-transparent mb-2">
+            <div className="absolute inset-0 holo-grid opacity-20 pointer-events-none" />
+            <div className="relative z-10 text-5xl md:text-6xl font-black tabular-nums bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 bg-clip-text text-transparent mb-2">
               {filteredCategories.length}
             </div>
-            <div className="text-sm font-semibold text-slate-400 uppercase tracking-wide">Categories</div>
+            <div className="relative z-10 text-sm font-semibold text-slate-400 uppercase tracking-wide">Categories</div>
           </motion.div>
 
           {/* Advanced+ */}
           <motion.div
             whileHover={{ y: -6, scale: 1.02 }}
-            className="bg-[rgba(15,15,40,0.65)] border border-emerald-500/25 hover:border-emerald-400/40 p-6 rounded-2xl text-center transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(16,185,129,0.20)]"
+            className="border-beam bg-[rgba(15,15,40,0.65)] border border-emerald-500/25 hover:border-emerald-400/40 p-6 rounded-2xl text-center transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(16,185,129,0.20)]"
           >
-            <div className="text-5xl md:text-6xl font-black tabular-nums bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 bg-clip-text text-transparent mb-2">
+            <div className="absolute inset-0 holo-grid opacity-20 pointer-events-none" />
+            <div className="relative z-10 text-5xl md:text-6xl font-black tabular-nums bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 bg-clip-text text-transparent mb-2">
               {allSkills.filter(s => s.level && s.level >= 75).length}
             </div>
-            <div className="text-sm font-semibold text-slate-400 uppercase tracking-wide">Advanced+</div>
+            <div className="relative z-10 text-sm font-semibold text-slate-400 uppercase tracking-wide">Advanced+</div>
           </motion.div>
 
           {/* Core Stack */}
           <motion.div
             whileHover={{ y: -6, scale: 1.02 }}
-            className="bg-[rgba(15,15,40,0.65)] border border-emerald-500/25 hover:border-emerald-400/40 p-6 rounded-2xl text-center transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(16,185,129,0.20)]"
+            className="border-beam bg-[rgba(15,15,40,0.65)] border border-emerald-500/25 hover:border-emerald-400/40 p-6 rounded-2xl text-center transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(16,185,129,0.20)]"
           >
-            <div className="text-5xl md:text-6xl font-black tabular-nums bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 bg-clip-text text-transparent mb-2">
+            <div className="absolute inset-0 holo-grid opacity-20 pointer-events-none" />
+            <div className="relative z-10 text-5xl md:text-6xl font-black tabular-nums bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 bg-clip-text text-transparent mb-2">
               {allSkills.filter(s => s.isPrimary).length}
             </div>
-            <div className="text-sm font-semibold text-slate-400 uppercase tracking-wide">Core Stack</div>
+            <div className="relative z-10 text-sm font-semibold text-slate-400 uppercase tracking-wide">Core Stack</div>
           </motion.div>
         </motion.div>
       )}
@@ -366,60 +371,65 @@ function IndividualSkillCard({ skill, index, onClick }: IndividualSkillCardProps
         delay: (index % 10) * 0.05,
         ease: [0.22, 1, 0.36, 1],
       }}
-      whileHover={{ y: -8, scale: 1.03 }}
-      whileTap={{ scale: 0.96 }}
-      onClick={onClick}
-      className="relative group cursor-pointer"
+      className="h-full"
     >
-      {/* Outer glow on hover */}
-      <div
-        className="absolute -inset-1 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"
-        style={{ background: `rgba(${palette.glow}, 0.5)` }}
-      />
+      <Card3D
+        onClick={onClick}
+        glowColor="emerald"
+        intensity="medium"
+        className="relative group cursor-pointer h-full"
+      >
+        {/* Outer glow on hover */}
+        <div
+          className="absolute -inset-1 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl pointer-events-none"
+          style={{ background: `rgba(${palette.glow}, 0.5)` }}
+        />
 
-      {/* Card Container with solid vivid gradient */}
-      <div className={`relative w-full h-full rounded-2xl p-5 sm:p-6 overflow-hidden transition-all duration-300 bg-gradient-to-br ${palette.gradient} shadow-lg group-hover:shadow-[0_15px_30px_-10px_rgba(${palette.glow},0.6)]`}>
-        
-        {/* Curvy overlapping blob shapes using mix-blend-overlay to pick up background colors dynamically */}
-        {/* Top-left blob */}
-        <div className="absolute top-[-30%] left-[-10%] w-[80%] h-[80%] bg-white/20 rounded-[40%_60%_70%_30%/40%_50%_60%_50%] mix-blend-overlay group-hover:rotate-12 transition-transform duration-700 pointer-events-none" />
-        {/* Bottom-right blob */}
-        <div className="absolute bottom-[-40%] right-[-20%] w-[100%] h-[100%] bg-black/10 rounded-[60%_40%_30%_70%/50%_60%_40%_50%] mix-blend-overlay group-hover:-rotate-12 transition-transform duration-700 pointer-events-none" />
-        {/* Additional accent curve */}
-        <div className="absolute top-[20%] right-[-20%] w-[70%] h-[70%] bg-white/10 rounded-[50%_50%_20%_80%/25%_25%_75%_75%] mix-blend-overlay -rotate-45 group-hover:scale-110 transition-transform duration-700 pointer-events-none" />
-
-        {/* Content */}
-        <div className="relative flex flex-col items-center text-center z-10 h-full justify-center">
+        {/* Card Container with solid vivid gradient */}
+        <div className={`relative w-full h-full rounded-2xl p-5 sm:p-6 overflow-hidden transition-all duration-300 bg-gradient-to-br ${palette.gradient} border border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.3)] group-hover:shadow-[0_15px_30px_-10px_rgba(${palette.glow},0.6)]`}>
+          <div className="absolute inset-0 holo-grid opacity-30 group-hover:opacity-60 transition-opacity duration-500 pointer-events-none" />
           
-          {/* Skill Name */}
-          <h3 className="text-lg sm:text-xl font-bold text-white mb-1.5 leading-tight tracking-tight drop-shadow-md">
-            {skill.name}
-          </h3>
+          {/* Curvy overlapping blob shapes using mix-blend-overlay to pick up background colors dynamically */}
+          {/* Top-left blob */}
+          <div className="absolute top-[-30%] left-[-10%] w-[80%] h-[80%] bg-white/20 rounded-[40%_60%_70%_30%/40%_50%_60%_50%] mix-blend-overlay group-hover:rotate-12 transition-transform duration-700 pointer-events-none" />
+          {/* Bottom-right blob */}
+          <div className="absolute bottom-[-40%] right-[-20%] w-[100%] h-[100%] bg-black/10 rounded-[60%_40%_30%_70%/50%_60%_40%_50%] mix-blend-overlay group-hover:-rotate-12 transition-transform duration-700 pointer-events-none" />
+          {/* Additional accent curve */}
+          <div className="absolute top-[20%] right-[-20%] w-[70%] h-[70%] bg-white/10 rounded-[50%_50%_20%_80%/25%_25%_75%_75%] mix-blend-overlay -rotate-45 group-hover:scale-110 transition-transform duration-700 pointer-events-none" />
 
-          {/* Level Label with icon */}
-          <p className="text-[11px] sm:text-xs text-white/90 mb-5 flex items-center justify-center gap-1 font-medium drop-shadow-sm">
-            {getLevelLabel(level)}
-            {getLevelEmoji(level) && <span className="text-[14px] leading-none">{getLevelEmoji(level)}</span>}
-          </p>
+          {/* Content */}
+          <div className="relative flex flex-col items-center text-center z-10 h-full justify-center">
+            
+            {/* Skill Name */}
+            <h3 className="text-lg sm:text-xl font-bold text-white mb-1.5 leading-tight tracking-tight drop-shadow-md">
+              {skill.name}
+            </h3>
 
-          {/* Progress Bar */}
-          <div className="w-full relative mt-auto">
-            <div className="h-1.5 bg-white/20 rounded-full overflow-hidden shadow-inner">
-              <motion.div
-                initial={{ width: 0 }}
-                whileInView={{ width: `${level}%` }}
-                viewport={{ once: true }}
-                transition={{ duration: 1.2, delay: (index % 10) * 0.05 + 0.2, ease: "easeOut" }}
-                className="h-full bg-white relative rounded-full shadow-[0_0_8px_rgba(255,255,255,0.8)]"
-              />
-            </div>
-            {/* Percentage Text below progress bar */}
-            <div className="text-[10px] text-white/90 mt-2 font-bold tabular-nums tracking-wide text-center drop-shadow-sm">
-              {level}%
+            {/* Level Label with icon */}
+            <p className="text-[11px] sm:text-xs text-white/90 mb-5 flex items-center justify-center gap-1 font-medium drop-shadow-sm">
+              {getLevelLabel(level)}
+              {getLevelEmoji(level) && <span className="text-[14px] leading-none">{getLevelEmoji(level)}</span>}
+            </p>
+
+            {/* Progress Bar */}
+            <div className="w-full relative mt-auto">
+              <div className="h-1.5 bg-[rgba(0,0,0,0.2)] rounded-full overflow-hidden shadow-inner backdrop-blur-sm">
+                <motion.div
+                  initial={{ width: 0 }}
+                  whileInView={{ width: `${level}%` }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1.2, delay: (index % 10) * 0.05 + 0.2, ease: "easeOut" }}
+                  className="h-full bg-white relative rounded-full shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+                />
+              </div>
+              {/* Percentage Text below progress bar */}
+              <div className="text-[10px] text-white/90 mt-2 font-bold tabular-nums tracking-wide text-center drop-shadow-sm">
+                {level}%
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </Card3D>
     </motion.div>
   );
 }

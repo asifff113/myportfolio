@@ -7,6 +7,7 @@ import { Calendar, Clock, Eye, ArrowRight, FileText } from "lucide-react";
 import { BlogPost } from "@/lib/content-types";
 import Section from "@/components/ui/Section";
 import SectionTitle from "@/components/ui/SectionTitle";
+import Card3D from "@/components/ui/Card3D";
 import { formatDate } from "@/lib/utils";
 
 interface BlogSectionProps {
@@ -76,9 +77,11 @@ function BlogCard({ post }: BlogCardProps) {
   return (
     <motion.article
       variants={itemVariants}
-      whileHover={{ y: -8, scale: 1.02 }}
-      className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-teal-500/20 hover:border-teal-400/40 rounded-2xl overflow-hidden group transition-all shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(20,184,166,0.3)]"
+      className="h-full"
     >
+      <Card3D glowColor="teal" intensity="medium" className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-teal-500/20 hover:border-teal-400/40 rounded-2xl overflow-hidden group transition-all shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(20,184,166,0.3)] border-beam h-full flex flex-col">
+        <div className="absolute inset-0 holo-grid opacity-20 pointer-events-none transition-opacity duration-300 group-hover:opacity-40" />
+        <div className="relative z-10 flex flex-col h-full">
       {/* Cover Image */}
       <div className="relative h-48 bg-teal-500/15 overflow-hidden">
         {!imageError && post.coverImageUrl ? (
@@ -165,6 +168,8 @@ function BlogCard({ post }: BlogCardProps) {
           <ArrowRight size={16} className="transition-transform group-hover/link:translate-x-1" />
         </a>
       </div>
+      </div>
+      </Card3D>
     </motion.article>
   );
 }
