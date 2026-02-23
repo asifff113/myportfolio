@@ -89,8 +89,11 @@ export default function Navbar() {
       {/* Progress Bar - rainbow multi-spectrum */}
       <div className="fixed top-0 left-0 right-0 z-[60] h-[3px] bg-gradient-to-r from-transparent via-white/5 to-transparent">
         <div
-          className="h-full bg-gradient-to-r from-indigo-500 via-violet-500 via-cyan-400 via-emerald-400 via-orange-400 to-rose-500 transition-[width] duration-200 ease-out shadow-[0_0_20px_rgba(99,102,241,0.4),0_0_40px_rgba(99,102,241,0.15)]"
-          style={{ width: `${scrollProgress}%` }}
+          className="h-full transition-[width] duration-200 ease-out shadow-[0_0_20px_rgba(99,102,241,0.4),0_0_40px_rgba(99,102,241,0.15)]"
+          style={{
+            width: `${scrollProgress}%`,
+            background: "linear-gradient(to right, #6366f1, #8b5cf6, #22d3ee, #10b981, #f59e0b, #f43f5e)",
+          }}
         />
       </div>
 

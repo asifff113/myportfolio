@@ -1,9 +1,48 @@
 "use client";
 
-import React, { useRef, useMemo } from "react";
+import React, { useRef, useMemo, useState, useEffect, Component, type ReactNode } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Sparkles, Float } from "@react-three/drei";
 import * as THREE from "three";
+
+/* ─── WebGL support check — also test actual context creation ─── */
+function isWebGLAvailable(): boolean {
+  try {
+    const canvas = document.createElement("canvas");
+    const gl =
+      canvas.getContext("webgl2") ||
+      canvas.getContext("webgl") ||
+      canvas.getContext("experimental-webgl");
+    if (!gl) return false;
+    // Verify renderer can actually be created
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+    renderer.dispose();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/* ─── Error Boundary to catch Canvas crashes ─── */
+class CanvasErrorBoundary extends Component<
+  { children: ReactNode; fallback?: ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: ReactNode; fallback?: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error: Error) {
+    console.warn("[HeroCanvas] WebGL error caught:", error.message);
+  }
+  render() {
+    if (this.state.hasError) return this.props.fallback ?? null;
+    return this.props.children;
+  }
+}
 
 /* ─── Flowing Particle Nebula — replaces ring-based orbital core ─── */
 function ParticleNebula() {
@@ -201,36 +240,50 @@ function CameraRig() {
 }
 
 export default function HeroCanvas() {
+  const [canRender, setCanRender] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    setCanRender(isWebGLAvailable());
+  }, []);
+
+  // Still checking or WebGL not available — render nothing
+  if (canRender !== true) return null;
+
   return (
     <div className="absolute inset-0 z-0 pointer-events-none opacity-90">
-      <Canvas
-        dpr={[1, 1.5]}
-        camera={{ position: [0, 0, 8.5], fov: 45 }}
-        frameloop="always"
-        gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
-      >
-        <fog attach="fog" args={["#070716", 12, 22]} />
-        <ambientLight intensity={0.4} />
-        <directionalLight position={[6, 7, 5]} intensity={1.2} color="#e0e7ff" />
+      <CanvasErrorBoundary>
+        <Canvas
+          dpr={[1, 1.5]}
+          camera={{ position: [0, 0, 8.5], fov: 45 }}
+          frameloop="always"
+          gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
+          onCreated={({ gl }) => {
+            gl.setClearColor(0x000000, 0);
+          }}
+        >
+          <fog attach="fog" args={["#070716", 12, 22]} />
+          <ambientLight intensity={0.4} />
+          <directionalLight position={[6, 7, 5]} intensity={1.2} color="#e0e7ff" />
 
-        {/* Colorful volumetric lights */}
-        <pointLight position={[-7, -4, 4]} intensity={2.5} color="#0ea5e9" distance={25} />
-        <pointLight position={[5, 4, -2]} intensity={2.5} color="#ec4899" distance={25} />
-        <pointLight position={[0, -6, 3]} intensity={2} color="#10b981" distance={22} />
-        <pointLight position={[-5, 5, -5]} intensity={2} color="#8b5cf6" distance={22} />
-        <pointLight position={[4, -3, 5]} intensity={1.5} color="#f59e0b" distance={18} />
+          {/* Colorful volumetric lights */}
+          <pointLight position={[-7, -4, 4]} intensity={2.5} color="#0ea5e9" distance={25} />
+          <pointLight position={[5, 4, -2]} intensity={2.5} color="#ec4899" distance={25} />
+          <pointLight position={[0, -6, 3]} intensity={2} color="#10b981" distance={22} />
+          <pointLight position={[-5, 5, -5]} intensity={2} color="#8b5cf6" distance={22} />
+          <pointLight position={[4, -3, 5]} intensity={1.5} color="#f59e0b" distance={18} />
 
-        <ParticleNebula />
-        <GlowOrbs />
-        <DataStreams />
-        <CameraRig />
+          <ParticleNebula />
+          <GlowOrbs />
+          <DataStreams />
+          <CameraRig />
 
-        {/* Multi-layer sparkle particles */}
-        <Sparkles count={120} scale={[14, 10, 10]} size={3.5} speed={0.3} opacity={0.7} color="#6366f1" />
-        <Sparkles count={80} scale={[12, 8, 8]} size={2.8} speed={0.4} opacity={0.55} color="#0ea5e9" />
-        <Sparkles count={60} scale={[10, 12, 10]} size={2.2} speed={0.5} opacity={0.45} color="#ec4899" />
-        <Sparkles count={40} scale={[16, 6, 6]} size={1.8} speed={0.6} opacity={0.35} color="#10b981" />
-      </Canvas>
+          {/* Multi-layer sparkle particles */}
+          <Sparkles count={120} scale={[14, 10, 10]} size={3.5} speed={0.3} opacity={0.7} color="#6366f1" />
+          <Sparkles count={80} scale={[12, 8, 8]} size={2.8} speed={0.4} opacity={0.55} color="#0ea5e9" />
+          <Sparkles count={60} scale={[10, 12, 10]} size={2.2} speed={0.5} opacity={0.45} color="#ec4899" />
+          <Sparkles count={40} scale={[16, 6, 6]} size={1.8} speed={0.6} opacity={0.35} color="#10b981" />
+        </Canvas>
+      </CanvasErrorBoundary>
     </div>
   );
 }

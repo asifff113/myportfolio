@@ -99,9 +99,7 @@ export default function Footer() {
           <p className="text-slate-500 text-sm text-center md:text-left">
             &copy; {new Date().getFullYear()} Md Asif Istiaque Zaman. {t.sections.footer.rights}
           </p>
-          <p className="text-slate-500 text-xs flex items-center gap-1">
-            {t.sections.footer.builtWith}
-          </p>
+
         </div>
         </div>
         </div>

@@ -187,23 +187,6 @@ export default function HeroSection({ personalInfo: initialPersonalInfo }: HeroS
                 {personalInfo.shortBio}
               </motion.p>
 
-              {/* Feature Tags */}
-              <motion.div
-                variants={itemVariants}
-                className="mb-8 flex flex-wrap justify-center lg:justify-start gap-2.5"
-              >
-                <span className="px-3 py-1.5 rounded-full text-xs font-semibold bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 shadow-sm border-beam">
-                  <Sparkles className="inline w-3 h-3 mr-1" />
-                  Multi-color UI
-                </span>
-                <span className="px-3 py-1.5 rounded-full text-xs font-semibold bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 border-beam">
-                  Futuristic Motion
-                </span>
-                <span className="px-3 py-1.5 rounded-full text-xs font-semibold bg-violet-500/15 border border-violet-500/30 text-violet-300 border-beam">
-                  3D Visuals
-                </span>
-              </motion.div>
-
               {/* Current Status Badge */}
               {personalInfo.currentStatus && (
                 <motion.div variants={itemVariants} className="mb-8">
@@ -326,40 +309,7 @@ export default function HeroSection({ personalInfo: initialPersonalInfo }: HeroS
                   {/* Ring accent */}
                   <div className="absolute inset-0 rounded-full ring-1 ring-indigo-500/25" />
 
-                  {/* Location badge */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.8, duration: 0.5 }}
-                    className="absolute -bottom-3 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-2 rounded-2xl bg-[rgba(10,10,30,0.85)] border border-indigo-500/20 backdrop-blur-xl px-4 py-3 shadow-[0_12px_28px_-16px_rgba(0,0,0,0.4)] min-w-[190px] border-beam"
-                  >
-                    <p className="text-xs font-semibold tracking-[0.14em] uppercase text-indigo-400/80 mb-1">
-                      Location
-                    </p>
-                    <p className="text-sm font-semibold text-slate-200 truncate">
-                      {personalInfo.location || "Available Worldwide"}
-                    </p>
-                  </motion.div>
 
-                  <motion.div
-                    initial={{ opacity: 0, x: 18 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 1, duration: 0.55 }}
-                    className="hidden lg:block absolute top-6 -left-10 rounded-xl bg-[rgba(10,10,30,0.80)] border border-violet-500/20 backdrop-blur-lg px-3 py-2 shadow-[0_12px_24px_-16px_rgba(139,92,246,0.5)] float-y-slow"
-                  >
-                    <p className="text-[10px] uppercase tracking-[0.14em] text-violet-300/70">Latency</p>
-                    <p className="text-sm font-semibold text-white">Smooth UX</p>
-                  </motion.div>
-
-                  <motion.div
-                    initial={{ opacity: 0, x: -18 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 1.1, duration: 0.55 }}
-                    className="hidden lg:block absolute bottom-16 -right-12 rounded-xl bg-[rgba(10,10,30,0.80)] border border-cyan-500/20 backdrop-blur-lg px-3 py-2 shadow-[0_12px_24px_-16px_rgba(6,182,212,0.45)] float-y-slow delay-1"
-                  >
-                    <p className="text-[10px] uppercase tracking-[0.14em] text-cyan-300/70">Engine</p>
-                    <p className="text-sm font-semibold text-white">3D Active</p>
-                  </motion.div>
                 </motion.div>
               </div>
             </motion.div>
