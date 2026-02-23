@@ -243,10 +243,18 @@ export default function HeroCanvas() {
   const [canRender, setCanRender] = useState<boolean | null>(null);
 
   useEffect(() => {
+    // Disable 3D canvas on mobile / touch devices — too GPU-heavy
+    const isMobile =
+      window.matchMedia("(max-width: 768px)").matches ||
+      window.matchMedia("(pointer: coarse)").matches;
+    if (isMobile) {
+      setCanRender(false);
+      return;
+    }
     setCanRender(isWebGLAvailable());
   }, []);
 
-  // Still checking or WebGL not available — render nothing
+  // Still checking, mobile, or WebGL not available — render nothing
   if (canRender !== true) return null;
 
   return (

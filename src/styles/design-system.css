@@ -645,6 +645,94 @@
     padding: 1rem;
     border-radius: 1.25rem;
   }
+
+  /* ── Disable heavy animations on mobile ── */
+  .breathing-glow {
+    animation: none !important;
+  }
+  .cyber-border-glow::before {
+    display: none !important;
+  }
+  .neon-border-pulse::before {
+    animation: none !important;
+    opacity: 0.4;
+  }
+  .holo-card::before {
+    display: none !important;
+  }
+  .holo-card:hover {
+    box-shadow: 0 8px 20px -10px rgba(var(--section-rgb), 0.15);
+  }
+  .holo-shimmer::before {
+    display: none !important;
+  }
+  .section-shell::after {
+    animation: none !important;
+    opacity: 0.8;
+  }
+  .section-shell::before {
+    animation: none !important;
+  }
+  .border-beam::after {
+    display: none !important;
+  }
+  .holo-grid::before {
+    display: none !important;
+  }
+  .radar-ping::after {
+    display: none !important;
+  }
+  .glitch-text::before,
+  .glitch-text::after {
+    display: none !important;
+  }
+  .perspective-card:hover > * {
+    transform: none;
+  }
+  .card-magnetic-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -10px rgba(var(--section-rgb), 0.15);
+  }
+  .gradient-text-animated {
+    animation: none !important;
+    background-size: 100% 100%;
+  }
+  .data-dot::before {
+    animation: none !important;
+    opacity: 0.3;
+  }
+  .inner-glow,
+  .inner-glow:hover {
+    box-shadow: none;
+  }
+  .stat-glow {
+    text-shadow: none;
+  }
+  .text-glow-hover:hover {
+    text-shadow: none;
+  }
+  /* Reduce aurora blob GPU cost on mobile */
+  .aurora-blob {
+    animation: none !important;
+    filter: blur(50px);
+    opacity: 0.3;
+  }
+  /* Disable float-y-slow animation on mobile */
+  .float-y-slow {
+    animation: none !important;
+  }
+  /* Free GPU memory: remove will-change on mobile */
+  .will-change-transform {
+    will-change: auto !important;
+  }
+  .parallax-slow, .parallax-medium, .parallax-fast {
+    will-change: auto !important;
+  }
+  /* Reduce heavy glass panels on mobile */
+  .glass-ultra {
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+  }
 }
 
 /* Reduce motion for accessibility */
