@@ -310,32 +310,24 @@ export default function SkillsSection({
 
 
 
-// Array of unique vibrant color combinations for each card
+// Array of unique vibrant color palettes for each card
 const uniqueCardColors = [
-  "from-blue-500/90 via-cyan-500/90 to-teal-500/90",
-  "from-purple-500/90 via-pink-500/90 to-rose-500/90",
-  "from-green-500/90 via-emerald-500/90 to-lime-500/90",
-  "from-orange-500/90 via-amber-500/90 to-yellow-500/90",
-  "from-red-500/90 via-pink-500/90 to-purple-500/90",
-  "from-indigo-500/90 via-blue-500/90 to-cyan-500/90",
-  "from-fuchsia-500/90 via-purple-500/90 to-pink-500/90",
-  "from-sky-500/90 via-blue-500/90 to-indigo-500/90",
-  "from-violet-500/90 via-purple-500/90 to-fuchsia-500/90",
-  "from-lime-500/90 via-green-500/90 to-emerald-500/90",
-  "from-cyan-500/90 via-blue-500/90 to-purple-500/90",
-  "from-pink-500/90 via-rose-500/90 to-red-500/90",
-  "from-teal-500/90 via-cyan-500/90 to-sky-500/90",
-  "from-rose-500/90 via-pink-500/90 to-fuchsia-500/90",
-  "from-amber-500/90 via-orange-500/90 to-red-500/90",
-  "from-emerald-500/90 via-teal-500/90 to-cyan-500/90",
-  "from-purple-500/90 via-violet-500/90 to-indigo-500/90",
-  "from-yellow-500/90 via-amber-500/90 to-orange-500/90",
-  "from-blue-500/90 via-indigo-500/90 to-purple-500/90",
-  "from-green-500/90 via-teal-500/90 to-cyan-500/90",
-  "from-pink-500/90 via-fuchsia-500/90 to-purple-500/90",
-  "from-red-500/90 via-rose-500/90 to-pink-500/90",
-  "from-cyan-500/90 via-sky-500/90 to-blue-500/90",
-  "from-lime-500/90 via-emerald-500/90 to-green-500/90",
+  { gradient: "from-[#662D8C] to-[#ED1E79]", glow: "237,30,121" }, // Purple to Pink
+  { gradient: "from-[#2E3192] to-[#1BFFFF]", glow: "27,255,255" }, // Deep Blue to Cyan
+  { gradient: "from-[#3A1C71] via-[#D76D77] to-[#FFAF7B]", glow: "215,109,119" }, // Purple to Orange
+  { gradient: "from-[#11998E] to-[#38EF7D]", glow: "56,239,125" }, // Green
+  { gradient: "from-[#4E65FF] to-[#92EFFD]", glow: "78,101,255" }, // Blue
+  { gradient: "from-[#8E2DE2] to-[#4A00E0]", glow: "142,45,226" }, // Deep Purple
+  { gradient: "from-[#FF416C] to-[#FF4B2B]", glow: "255,65,108" }, // Red/Orange
+  { gradient: "from-[#00B4DB] to-[#0083B0]", glow: "0,153,255" }, // Ocean Blue
+  { gradient: "from-[#1D976C] to-[#93F9B9]", glow: "29,151,108" }, // Emerald 
+  { gradient: "from-[#B24592] to-[#F15F79]", glow: "241,95,121" }, // Pink
+  { gradient: "from-[#4CB8C4] to-[#3CD3AD]", glow: "60,211,173" }, // Teal
+  { gradient: "from-[#FF512F] to-[#DD2476]", glow: "221,36,118" }, // Orange to Pink
+  { gradient: "from-[#1FA2FF] via-[#12D8FA] to-[#A6FFCB]", glow: "31,162,255" }, // Sky Blue
+  { gradient: "from-[#F09819] to-[#EDDE5D]", glow: "240,152,25" }, // Yellow
+  { gradient: "from-[#DA22FF] to-[#9733EE]", glow: "218,34,255" }, // Magenta to Purple
+  { gradient: "from-[#34e89e] to-[#0f3443]", glow: "52,232,158" }, // Green to Dark Navy
 ];
 
 // Individual Skill Card Component
@@ -346,17 +338,23 @@ interface IndividualSkillCardProps {
   onClick: () => void;
 }
 
-function IndividualSkillCard({ skill, categoryColor, index, onClick }: IndividualSkillCardProps) {
+function IndividualSkillCard({ skill, index, onClick }: IndividualSkillCardProps) {
   const level = skill.level || 70;
   const getLevelLabel = (level: number) => {
-    if (level >= 90) return "Expert";
-    if (level >= 75) return "Advanced";
-    if (level >= 50) return "Intermediate";
-    return "Beginner";
+    if (level >= 90) return "Expert level proficiency";
+    if (level >= 75) return "Advanced level proficiency";
+    if (level >= 50) return "Intermediate level proficiency";
+    return "Beginner level proficiency";
   };
 
-  // Get unique color for this specific card based on its index
-  const uniqueColor = uniqueCardColors[index % uniqueCardColors.length];
+  const getLevelEmoji = (level: number) => {
+    if (level >= 90) return "\u{1F3C6}"; // Trophy
+    if (level >= 75) return "\u2B50"; // Star
+    return "";
+  };
+
+  // Get unique color palette for this specific card
+  const palette = uniqueCardColors[index % uniqueCardColors.length];
 
   return (
     <motion.div
@@ -364,61 +362,61 @@ function IndividualSkillCard({ skill, categoryColor, index, onClick }: Individua
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{
-        duration: 0.4,
-        delay: index * 0.04,
+        duration: 0.45,
+        delay: (index % 10) * 0.05,
+        ease: [0.22, 1, 0.36, 1],
       }}
       whileHover={{ y: -8, scale: 1.03 }}
+      whileTap={{ scale: 0.96 }}
       onClick={onClick}
       className="relative group cursor-pointer"
     >
-      {/* Card Container - vibrant glass with gradient accent */}
-      <div className="bg-[rgba(15,15,40,0.65)] border border-white/8 hover:border-[rgba(var(--section-rgb),0.40)] p-6 rounded-2xl relative overflow-hidden transition-all backdrop-blur-xl shadow-[0_6px_24px_-12px_rgba(var(--section-rgb),0.15)] hover:shadow-[0_16px_40px_-16px_rgba(var(--section-rgb),0.30)] group-hover:bg-[rgba(20,20,45,0.80)]">
-        {/* Gradient Top Border - thicker and more vibrant */}
-        <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${uniqueColor} opacity-90`} />
+      {/* Outer glow on hover */}
+      <div
+        className="absolute -inset-1 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"
+        style={{ background: `rgba(${palette.glow}, 0.5)` }}
+      />
 
-        {/* Holographic shimmer on hover */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-white/10 via-transparent to-white/5 pointer-events-none" />
+      {/* Card Container with solid vivid gradient */}
+      <div className={`relative w-full h-full rounded-2xl p-5 sm:p-6 overflow-hidden transition-all duration-300 bg-gradient-to-br ${palette.gradient} shadow-lg group-hover:shadow-[0_15px_30px_-10px_rgba(${palette.glow},0.6)]`}>
+        
+        {/* Curvy overlapping blob shapes using mix-blend-overlay to pick up background colors dynamically */}
+        {/* Top-left blob */}
+        <div className="absolute top-[-30%] left-[-10%] w-[80%] h-[80%] bg-white/20 rounded-[40%_60%_70%_30%/40%_50%_60%_50%] mix-blend-overlay group-hover:rotate-12 transition-transform duration-700 pointer-events-none" />
+        {/* Bottom-right blob */}
+        <div className="absolute bottom-[-40%] right-[-20%] w-[100%] h-[100%] bg-black/10 rounded-[60%_40%_30%_70%/50%_60%_40%_50%] mix-blend-overlay group-hover:-rotate-12 transition-transform duration-700 pointer-events-none" />
+        {/* Additional accent curve */}
+        <div className="absolute top-[20%] right-[-20%] w-[70%] h-[70%] bg-white/10 rounded-[50%_50%_20%_80%/25%_25%_75%_75%] mix-blend-overlay -rotate-45 group-hover:scale-110 transition-transform duration-700 pointer-events-none" />
 
         {/* Content */}
-        <div className="relative flex flex-col items-center text-center">
-          {/* Icon */}
-          {skill.icon && (
-            <div className="text-5xl mb-4 drop-shadow-sm">
-              {skill.icon.startsWith('http') ? (
-                <img src={skill.icon} alt={skill.name} className="w-14 h-14 object-contain" />
-              ) : (
-                <span>{skill.icon}</span>
-              )}
-            </div>
-          )}
-
+        <div className="relative flex flex-col items-center text-center z-10 h-full justify-center">
+          
           {/* Skill Name */}
-          <h3 className="text-lg font-bold text-white mb-2 leading-tight">
+          <h3 className="text-lg sm:text-xl font-bold text-white mb-1.5 leading-tight tracking-tight drop-shadow-md">
             {skill.name}
           </h3>
 
           {/* Level Label with icon */}
-          <p className="text-xs text-slate-400 mb-4 flex items-center gap-1">
-            {getLevelLabel(level)} level
-            {level >= 90 && <span className="text-amber-500">&#x1F3C6;</span>}
-            {level >= 75 && level < 90 && <span className="text-amber-400">&#x2B50;</span>}
+          <p className="text-[11px] sm:text-xs text-white/90 mb-5 flex items-center justify-center gap-1 font-medium drop-shadow-sm">
+            {getLevelLabel(level)}
+            {getLevelEmoji(level) && <span className="text-[14px] leading-none">{getLevelEmoji(level)}</span>}
           </p>
 
           {/* Progress Bar */}
-          <div className="w-full">
-            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+          <div className="w-full relative mt-auto">
+            <div className="h-1.5 bg-white/20 rounded-full overflow-hidden shadow-inner">
               <motion.div
                 initial={{ width: 0 }}
                 whileInView={{ width: `${level}%` }}
                 viewport={{ once: true }}
-                transition={{ duration: 1.2, delay: index * 0.04 + 0.3, ease: "easeOut" }}
-                className={`h-full bg-gradient-to-r ${uniqueColor} relative rounded-full`}
-              >
-                {/* Glow dot at end */}
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_8px_rgba(var(--section-rgb),0.5)] progress-glow" />
-              </motion.div>
+                transition={{ duration: 1.2, delay: (index % 10) * 0.05 + 0.2, ease: "easeOut" }}
+                className="h-full bg-white relative rounded-full shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+              />
             </div>
-            <div className="text-xs text-slate-400 mt-2 font-semibold tabular-nums">{level}%</div>
+            {/* Percentage Text below progress bar */}
+            <div className="text-[10px] text-white/90 mt-2 font-bold tabular-nums tracking-wide text-center drop-shadow-sm">
+              {level}%
+            </div>
           </div>
         </div>
       </div>

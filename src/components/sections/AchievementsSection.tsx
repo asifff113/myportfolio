@@ -78,13 +78,14 @@ export default function AchievementsSection({ achievements }: AchievementsSectio
             <motion.div
               key={achievement.id || index}
               variants={itemVariants}
-              whileHover={{ y: -6 }}
-              className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-amber-500/20 border-t-2 border-t-amber-500 hover:border-amber-400/40 rounded-2xl p-6 relative overflow-hidden group transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-amber-500/15"
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-amber-500/20 border-t-2 border-t-amber-500 hover:border-amber-400/40 rounded-2xl p-6 relative overflow-hidden group transition-all duration-300 shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(245,158,11,0.3)]"
             >
               {/* Icon */}
               <div className="relative mb-6 z-10">
                 <motion.div
-                  whileHover={{ scale: 1.1 }}
+                  whileHover={{ scale: 1.2, rotate: 15 }}
+                  transition={{ type: "spring", stiffness: 300 }}
                   className="inline-flex p-4 rounded-2xl bg-amber-500/20 border border-amber-200/40"
                 >
                   <Icon className="text-amber-400" size={40} />

@@ -138,8 +138,8 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
             {contactInfo.email && (
               <motion.a
                 href={`mailto:${contactInfo.email}`}
-                whileHover={{ y: -4 }}
-                className="flex items-center gap-5 p-5 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all group shadow-sm hover:shadow-lg hover:shadow-red-500/15"
+                whileHover={{ y: -6, scale: 1.02 }}
+                className="flex items-center gap-5 p-5 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all group shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(244,63,94,0.3)]"
               >
                 <div className="p-3 bg-blue-100 rounded-xl border border-blue-200/40">
                   <Mail size={28} className="text-blue-600" />
@@ -155,8 +155,8 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
             {contactInfo.phone && (
               <motion.a
                 href={`tel:${contactInfo.phone}`}
-                whileHover={{ y: -4 }}
-                className="flex items-center gap-5 p-5 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all group shadow-sm hover:shadow-lg hover:shadow-red-500/15"
+                whileHover={{ y: -6, scale: 1.02 }}
+                className="flex items-center gap-5 p-5 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all group shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(244,63,94,0.3)]"
               >
                 <div className="p-3 bg-purple-100 rounded-xl border border-purple-200/40">
                   <Phone size={28} className="text-purple-600" />
@@ -171,8 +171,8 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
             {/* Location */}
             {contactInfo.location && (
               <motion.div
-                whileHover={{ y: -4 }}
-                className="flex items-center gap-5 p-5 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all group shadow-sm hover:shadow-lg hover:shadow-red-500/15"
+                whileHover={{ y: -6, scale: 1.02 }}
+                className="flex items-center gap-5 p-5 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all group shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(244,63,94,0.3)]"
               >
                 <div className="p-3 bg-emerald-100 rounded-xl border border-emerald-200/40">
                   <MapPin size={28} className="text-emerald-600" />
@@ -187,8 +187,8 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
             {/* Response Time */}
             {contactInfo.responseTime && (
               <motion.div
-                whileHover={{ y: -4 }}
-                className="flex items-center gap-5 p-5 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all group shadow-sm hover:shadow-lg hover:shadow-red-500/15"
+                whileHover={{ y: -6, scale: 1.02 }}
+                className="flex items-center gap-5 p-5 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all group shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(244,63,94,0.3)]"
               >
                 <div className="p-3 bg-amber-100 rounded-xl border border-amber-200/40">
                   <Clock size={28} className="text-amber-600" />
@@ -216,9 +216,9 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
                       href={social.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      whileHover={{ y: -4 }}
+                      whileHover={{ y: -6, scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
-                      className="p-4 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all shadow-sm hover:shadow-md"
+                      className="p-4 bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-red-500/20 hover:border-red-400/40 rounded-xl transition-all shadow-sm hover:shadow-[0_10px_20px_-5px_rgba(244,63,94,0.4)]"
                       aria-label={social.platform}
                     >
                       <Icon size={24} className="text-slate-300" />
@@ -339,7 +339,7 @@ export default function ContactSection({ contactInfo }: ContactSectionProps) {
 
             {/* Submit Button */}
             <motion.button
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ scale: 1.05, boxShadow: "0px 10px 20px -10px rgba(244,63,94,0.5)" }}
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={isSubmitting}

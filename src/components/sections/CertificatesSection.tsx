@@ -211,8 +211,8 @@ function CertificateCard({ certificate, onView }: CertificateCardProps) {
   return (
     <motion.div
       variants={itemVariants}
-      whileHover={{ y: -6 }}
-      className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-cyan-500/20 hover:border-cyan-400/40 rounded-2xl overflow-hidden group relative transition-all duration-300 flex flex-col h-full shadow-sm hover:shadow-lg hover:shadow-cyan-500/15"
+      whileHover={{ y: -8, scale: 1.02 }}
+      className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-cyan-500/20 hover:border-cyan-400/40 rounded-2xl overflow-hidden group relative transition-all duration-300 flex flex-col h-full shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(6,182,212,0.3)]"
     >
       {/* Certified Pill Badge */}
       <div className="absolute top-3 left-3 z-20">
@@ -261,9 +261,13 @@ function CertificateCard({ certificate, onView }: CertificateCardProps) {
       <div className="p-6 flex-1 flex flex-col">
         {/* Icon & Title */}
         <div className="flex items-start gap-3 mb-3">
-          <div className="p-2 rounded-xl bg-cyan-500/20 border border-cyan-500/30 flex-shrink-0">
+          <motion.div 
+            whileHover={{ scale: 1.2, rotate: 15 }}
+            transition={{ type: "spring", stiffness: 300 }}
+            className="p-2 rounded-xl bg-cyan-500/20 border border-cyan-500/30 flex-shrink-0"
+          >
             <Award className="text-cyan-400" size={22} />
-          </div>
+          </motion.div>
           <div className="flex-1">
             <h3 className="text-lg font-bold mb-1 text-white group-hover:text-cyan-400 transition-colors duration-300 line-clamp-2">
               {certificate.title}

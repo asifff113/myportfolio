@@ -5,7 +5,6 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Download, Github, Linkedin, Mail, Twitter, ArrowDown, ArrowRight, Sparkles } from "lucide-react";
 import { PersonalInfo, SocialLink } from "@/lib/content-types";
-import HeroCanvas from "@/components/3d/HeroCanvas";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { useTranslatedPersonalInfo } from "@/lib/i18n/useTranslatedContent";
 
@@ -57,11 +56,8 @@ export default function HeroSection({ personalInfo: initialPersonalInfo }: HeroS
       data-section="hero"
       className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 lg:pt-24"
     >
-      {/* 3D Background */}
-      <HeroCanvas />
-
-      {/* Vibrant accent radials */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_15%_15%,rgba(99,102,241,0.15),transparent_50%),radial-gradient(ellipse_50%_35%_at_85%_20%,rgba(244,63,94,0.12),transparent_45%),radial-gradient(ellipse_60%_40%_at_50%_95%,rgba(6,182,212,0.10),transparent_40%)]" />
+      {/* Ambient glow effects */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_20%_20%,rgba(99,102,241,0.18),transparent_55%),radial-gradient(ellipse_50%_40%_at_80%_25%,rgba(139,92,246,0.14),transparent_50%),radial-gradient(ellipse_60%_45%_at_50%_90%,rgba(6,182,212,0.12),transparent_45%)]" />
 
       {/* Top decorative line */}
       <div className="absolute inset-x-0 top-20 h-px bg-gradient-to-r from-transparent via-indigo-500/35 to-transparent" />

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Orbitron, Space_Grotesk } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "@/styles/globals.css";
-import AnimatedBackground from "@/components/ui/AnimatedBackground";
+import HydrationSafety from "@/components/ui/HydrationSafety";
 import LayoutContent from "@/components/layout/LayoutContent";
 import { LanguageProvider } from "@/lib/i18n/LanguageContext";
 import dynamic from "next/dynamic";
@@ -71,6 +71,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${orbitron.variable} ${spaceGrotesk.variable}`}>
       <body className="min-h-screen">
+        <HydrationSafety />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -80,8 +81,6 @@ export default async function RootLayout({
         >
           <LanguageProvider>
             <GoogleTranslateFix />
-            {/* Global Animated Background */}
-            <AnimatedBackground variant="hero" />
             
             <LayoutContent portfolioContent={portfolioContent}>{children}</LayoutContent>
             <GoogleTranslateWidget />

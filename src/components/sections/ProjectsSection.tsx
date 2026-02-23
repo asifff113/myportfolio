@@ -206,8 +206,9 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
   return (
     <motion.div
       variants={itemVariants}
-      whileHover={{ y: -6 }}
-      className={`bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border rounded-2xl overflow-hidden group relative cursor-pointer transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-orange-500/15 ${
+      whileHover={{ y: -10, scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      className={`bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border rounded-2xl overflow-hidden group relative cursor-pointer transition-all duration-300 shadow-sm hover:shadow-[0_20px_40px_-15px_rgba(249,115,22,0.4)] ${
         featured
           ? "border-2 border-orange-500/30 hover:border-orange-400/50"
           : "border-orange-500/20 hover:border-orange-400/40"
@@ -244,28 +245,32 @@ function ProjectCard({ project, featured = false, onClick }: ProjectCardProps) {
         {/* Overlay on Hover */}
         <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/60 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center pb-6 gap-4">
           {project.githubUrl && (
-            <a
-              href={project.githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="p-3 bg-white/80 border border-orange-200/40 text-slate-700 rounded-full shadow-lg hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-colors"
-              aria-label="View GitHub Repository"
-            >
-              <Github size={20} />
-            </a>
+              <motion.a
+                whileHover={{ scale: 1.1, y: -2 }}
+                whileTap={{ scale: 0.9 }}
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="p-3 bg-white/80 border border-orange-200/40 text-slate-700 rounded-full shadow-[0_8px_16px_-6px_rgba(249,115,22,0.5)] hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-colors"
+                aria-label="View GitHub Repository"
+              >
+                <Github size={20} />
+              </motion.a>
           )}
           {project.liveUrl && (
-            <a
-              href={project.liveUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="p-3 bg-white/80 border border-orange-200/40 text-slate-700 rounded-full shadow-lg hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-colors"
-              aria-label="View Live Demo"
-            >
-              <ExternalLink size={20} />
-            </a>
+              <motion.a
+                whileHover={{ scale: 1.1, y: -2 }}
+                whileTap={{ scale: 0.9 }}
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="p-3 bg-white/80 border border-orange-200/40 text-slate-700 rounded-full shadow-[0_8px_16px_-6px_rgba(249,115,22,0.5)] hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-colors"
+                aria-label="View Live Demo"
+              >
+                <ExternalLink size={20} />
+              </motion.a>
           )}
         </div>
       </div>

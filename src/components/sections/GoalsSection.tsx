@@ -96,8 +96,8 @@ export default function GoalsSection({ goals }: GoalsSectionProps) {
             <motion.div
               key={goal.id || index}
               variants={itemVariants}
-              whileHover={{ y: -4 }}
-              className={`bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-purple-500/20 hover:border-purple-400/40 rounded-2xl p-6 relative overflow-hidden group transition-all shadow-sm hover:shadow-lg hover:shadow-purple-500/15 border-t-2`}
+              whileHover={{ y: -8, scale: 1.02 }}
+              className={`bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-purple-500/20 hover:border-purple-400/40 rounded-2xl p-6 relative overflow-hidden group transition-all shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(168,85,247,0.3)] border-t-2`}
               style={{
                 borderTopColor: "transparent",
               }}
@@ -146,9 +146,13 @@ export default function GoalsSection({ goals }: GoalsSectionProps) {
               {/* Header */}
               <div className="flex items-start justify-between mb-4 pr-24">
                 <div className="flex items-center gap-3">
-                  <div className={`p-3 rounded-xl bg-gradient-to-r ${gradientColor}`}>
+                  <motion.div 
+                    whileHover={{ scale: 1.2, rotate: 15 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                    className={`p-3 rounded-xl bg-gradient-to-r ${gradientColor}`}
+                  >
                     <Target className="text-white" size={22} />
-                  </div>
+                  </motion.div>
                   <div>
                     <h3 className="text-xl font-bold text-white group-hover:text-purple-400 transition-colors duration-300">
                       {goal.title}

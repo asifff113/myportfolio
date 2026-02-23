@@ -62,8 +62,8 @@ export default function EducationSection({ education: initialEducation }: Educat
           <motion.div
             key={item.id || index}
             variants={itemVariants}
-            whileHover={{ y: -4 }}
-            className="bg-[rgba(15,15,40,0.65)] border border-indigo-500/20 hover:border-indigo-400/40 border-t-2 border-t-indigo-500 rounded-2xl p-6 md:p-8 transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(99,102,241,0.20)]"
+            whileHover={{ y: -8, scale: 1.02 }}
+            className="bg-[rgba(15,15,40,0.65)] border border-indigo-500/20 hover:border-indigo-400/40 border-t-2 border-t-indigo-500 rounded-2xl p-6 md:p-8 transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(99,102,241,0.20)] hover:shadow-[0_15px_30px_-10px_rgba(99,102,241,0.3)]"
           >
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
@@ -71,7 +71,8 @@ export default function EducationSection({ education: initialEducation }: Educat
                 <div className="flex items-start gap-4 mb-2">
                   {/* Icon */}
                   <motion.div
-                    whileHover={{ scale: 1.1 }}
+                    whileHover={{ scale: 1.2, rotate: -15 }}
+                    transition={{ type: "spring", stiffness: 300 }}
                     className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-3 flex-shrink-0"
                   >
                     <GraduationCap className="text-indigo-400" size={24} />

@@ -72,9 +72,13 @@ export default function AboutSection({ personalInfo: initialPersonalInfo }: Abou
           className="lg:col-span-2 rounded-2xl p-8 bg-[rgba(15,15,40,0.65)] border border-amber-500/25 hover:border-amber-400/40 transition-all backdrop-blur-xl shadow-[0_8px_30px_-16px_rgba(245,158,11,0.20)]"
         >
           <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-amber-500/15 text-amber-400 shadow-sm">
+            <motion.div 
+              whileHover={{ rotate: 180, scale: 1.2 }}
+              transition={{ duration: 0.3 }}
+              className="p-2 rounded-lg bg-amber-500/15 text-amber-400 shadow-sm"
+            >
               <User className="w-6 h-6" />
-            </div>
+            </motion.div>
             <span className="text-white">Biography</span>
           </h3>
 
@@ -96,9 +100,13 @@ export default function AboutSection({ personalInfo: initialPersonalInfo }: Abou
           whileHover={{ y: -4 }}
           className="rounded-2xl p-6 bg-[rgba(15,15,40,0.65)] border border-emerald-500/25 hover:border-emerald-400/40 transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(16,185,129,0.20)] flex flex-col justify-center items-center text-center"
         >
-          <div className="w-14 h-14 rounded-2xl bg-amber-500/15 flex items-center justify-center mb-4">
+          <motion.div 
+            whileHover={{ scale: 1.1, rotate: [-10, 10, -10, 0] }}
+            transition={{ duration: 0.5 }}
+            className="w-14 h-14 rounded-2xl bg-amber-500/15 flex items-center justify-center mb-4"
+          >
             <Briefcase className="w-7 h-7 text-amber-400" />
-          </div>
+          </motion.div>
           <h4 className="text-lg font-semibold mb-1 text-white">Current Status</h4>
           <div className="px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 text-sm font-medium">
             {personalInfo.currentStatus || "Available"}
@@ -114,9 +122,13 @@ export default function AboutSection({ personalInfo: initialPersonalInfo }: Abou
           whileHover={{ y: -4 }}
           className="rounded-2xl p-6 bg-[rgba(15,15,40,0.65)] border border-amber-500/25 hover:border-amber-400/40 transition-all backdrop-blur-xl shadow-[0_8px_28px_-16px_rgba(245,158,11,0.20)] flex flex-col justify-center items-center text-center"
         >
-          <div className="w-14 h-14 rounded-2xl bg-amber-500/15 flex items-center justify-center mb-4">
+          <motion.div 
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            className="w-14 h-14 rounded-2xl bg-amber-500/15 flex items-center justify-center mb-4"
+          >
             <MapPin className="w-7 h-7 text-amber-400" />
-          </div>
+          </motion.div>
           <h4 className="text-lg font-semibold mb-1 text-white">Location</h4>
           <p className="text-slate-400 font-medium">{personalInfo.location}</p>
         </motion.div>
@@ -137,9 +149,12 @@ export default function AboutSection({ personalInfo: initialPersonalInfo }: Abou
                 item.borderHover
               )}
             >
-              <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-sm", item.iconBg)}>
+              <motion.div 
+                whileHover={{ scale: 1.15, rotate: 10 }}
+                className={cn("w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-sm", item.iconBg)}
+              >
                 <Icon className={cn("w-6 h-6", item.accent)} />
-              </div>
+              </motion.div>
               <div>
                 <h4 className="font-bold text-lg mb-2 text-white">{item.title}</h4>
                 <p className="text-sm text-slate-400 leading-relaxed">{item.description}</p>

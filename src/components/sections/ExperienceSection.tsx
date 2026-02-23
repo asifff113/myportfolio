@@ -83,8 +83,8 @@ export default function ExperienceSection({ experience: initialExperience }: Exp
           <motion.div
             key={item.id || index}
             variants={itemVariants}
-            whileHover={{ y: -4 }}
-            className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-blue-500/20 hover:border-blue-400/40 border-t-2 border-t-blue-500 rounded-2xl p-6 md:p-8 transition-all shadow-sm hover:shadow-lg hover:shadow-blue-500/15"
+            whileHover={{ y: -8, scale: 1.02 }}
+            className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-blue-500/20 hover:border-blue-400/40 border-t-2 border-t-blue-500 rounded-2xl p-6 md:p-8 transition-all shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(59,130,246,0.3)]"
           >
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
@@ -92,7 +92,8 @@ export default function ExperienceSection({ experience: initialExperience }: Exp
                 <div className="flex items-start gap-4 mb-2">
                   {/* Icon */}
                   <motion.div
-                    whileHover={{ scale: 1.1 }}
+                    whileHover={{ scale: 1.2, rotate: 15 }}
+                    transition={{ type: "spring", stiffness: 300 }}
                     className="bg-blue-500/20 border border-blue-200/40 rounded-xl p-3 flex-shrink-0"
                   >
                     <Briefcase className="text-blue-400" size={24} />

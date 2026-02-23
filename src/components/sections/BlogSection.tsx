@@ -76,8 +76,8 @@ function BlogCard({ post }: BlogCardProps) {
   return (
     <motion.article
       variants={itemVariants}
-      whileHover={{ y: -6 }}
-      className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-teal-500/20 hover:border-teal-400/40 rounded-2xl overflow-hidden group transition-all shadow-sm hover:shadow-lg hover:shadow-teal-500/15"
+      whileHover={{ y: -8, scale: 1.02 }}
+      className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-teal-500/20 hover:border-teal-400/40 rounded-2xl overflow-hidden group transition-all shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(20,184,166,0.3)]"
     >
       {/* Cover Image */}
       <div className="relative h-48 bg-teal-500/15 overflow-hidden">

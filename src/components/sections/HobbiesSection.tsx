@@ -71,8 +71,8 @@ export default function HobbiesSection({ hobbies }: HobbiesSectionProps) {
             <motion.div
               key={hobby.id || index}
               variants={itemVariants}
-              whileHover={{ y: -6 }}
-              className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-lime-500/20 hover:border-lime-400/40 rounded-2xl overflow-hidden relative group transition-all shadow-sm hover:shadow-lg hover:shadow-lime-500/15"
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="bg-[rgba(15,15,40,0.65)] backdrop-blur-xl border border-lime-500/20 hover:border-lime-400/40 rounded-2xl overflow-hidden relative group transition-all shadow-sm hover:shadow-[0_15px_30px_-10px_rgba(132,204,22,0.3)]"
             >
               {/* Top gradient bar */}
               <div className={`h-1 bg-gradient-to-r ${hobbyColor} rounded-t-2xl`} />
@@ -93,7 +93,8 @@ export default function HobbiesSection({ hobbies }: HobbiesSectionProps) {
               <div className="relative z-10 p-6">
                 {/* Icon */}
                 <motion.div
-                  whileHover={{ scale: 1.1 }}
+                  whileHover={{ scale: 1.2, rotate: [-10, 10, -10, 0] }}
+                  transition={{ duration: 0.5 }}
                   className="text-5xl mb-4"
                 >
                   {hobby.icon || "✨"}
