@@ -8,7 +8,7 @@ import { CommandMenu } from "@/components/ui/CommandMenu";
 import CustomCursor from "@/components/ui/CustomCursor";
 import ChatWidget from "@/components/ui/ChatWidget";
 
-const ScrollProgress = dynamic(() => import("@/components/ui/ScrollProgress"), { ssr: false });
+// ScrollProgress removed — caused distracting left-to-right sliding bar
 
 import { PortfolioContent } from "@/lib/content-types";
 

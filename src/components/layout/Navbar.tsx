@@ -29,7 +29,6 @@ const navLinks = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
-  const [scrollProgress, setScrollProgress] = useState(0);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const ticking = useRef(false);
   const { user } = useAuth();
@@ -43,13 +42,6 @@ export default function Navbar() {
         requestAnimationFrame(() => {
           setScrolled(window.scrollY > 20);
           setShowBackToTop(window.scrollY > 500);
-
-          // Calculate scroll progress
-          const winScroll = document.documentElement.scrollTop;
-          const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-          if (height > 0) {
-            setScrollProgress((winScroll / height) * 100);
-          }
 
           // Detect active section
           const scrollPosition = window.scrollY + 200;
@@ -86,17 +78,6 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Progress Bar - rainbow multi-spectrum */}
-      <div className="fixed top-0 left-0 right-0 z-[60] h-[3px] bg-gradient-to-r from-transparent via-white/5 to-transparent">
-        <div
-          className="h-full transition-[width] duration-200 ease-out shadow-[0_0_20px_rgba(99,102,241,0.4),0_0_40px_rgba(99,102,241,0.15)]"
-          style={{
-            width: `${scrollProgress}%`,
-            background: "linear-gradient(to right, #6366f1, #8b5cf6, #22d3ee, #10b981, #f59e0b, #f43f5e)",
-          }}
-        />
-      </div>
-
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled

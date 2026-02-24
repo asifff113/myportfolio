@@ -18,10 +18,6 @@ export default function Footer() {
   return (
     <footer className="relative mt-20">
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent" />
-      {/* Energy pulse on top border */}
-      <div className="absolute inset-x-0 top-0 h-px overflow-hidden">
-        <div className="absolute top-0 h-full w-20 bg-gradient-to-r from-transparent via-indigo-400 to-transparent animate-[energy-pulse_4s_ease-in-out_infinite]" />
-      </div>
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_60%_40%_at_15%_20%,rgba(99,102,241,0.10),transparent_40%),radial-gradient(ellipse_50%_35%_at_85%_15%,rgba(236,72,153,0.08),transparent_35%),radial-gradient(ellipse_60%_40%_at_60%_90%,rgba(16,185,129,0.08),transparent_40%)]" />
 
       <div className="container mx-auto px-4 py-12">
